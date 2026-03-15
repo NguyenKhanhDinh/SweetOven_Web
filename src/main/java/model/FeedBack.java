@@ -1,12 +1,26 @@
 package model;
 
-public class FeedBack {
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+public class FeedBack implements Serializable {
 private int id;
 private String fullName;
 private String email;
 private String phoneNumber;
 private String content;
-private String createdAt;
+private LocalDateTime createdAt;
+
+public  FeedBack(int id, String fullName, String email, String phoneNumber, String content, LocalDateTime createdAt) {
+    this.id = id;
+    this.fullName = fullName;
+    this.email = email;
+    this.phoneNumber = phoneNumber;
+    this.content = content;
+    this.createdAt = createdAt;
+}
+public FeedBack() {}
+
 
     public int getId() {
         return id;
@@ -38,7 +52,10 @@ private String createdAt;
     public void setContent(String content) {
         this.content = content;
     }
-    public String getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+    public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
     }
 }

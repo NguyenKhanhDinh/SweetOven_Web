@@ -1,12 +1,26 @@
 package model;
 
-public class Category {
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+public class Category implements Serializable {
     private int id;
     private String name;
     private String description;
     private String thumnail;
-    private String createdAt;
-    private String updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public Category(int id, String name, String description, String thumnail, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.thumnail = thumnail;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+    public Category() {}
+
     public int getId() {
         return id;
     }
@@ -31,16 +45,16 @@ public class Category {
     public void setThumnail(String thumnail) {
         this.thumnail = thumnail;
     }
-    public String getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-    public String getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-    public void setUpdatedAt(String updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

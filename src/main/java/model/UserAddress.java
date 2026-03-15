@@ -1,5 +1,7 @@
 package model;
 
+import java.time.LocalDateTime;
+
 public class UserAddress {
     private int id;
     private int userId;
@@ -8,8 +10,21 @@ public class UserAddress {
     private String district;
     private String province;
     private boolean isDefault;
-    private Deprecated createdAt;
-    private Deprecated updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public UserAddress(int id, int userId, String addressDetail, String ward, String district, String province, boolean isDefault, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.userId = userId;
+        this.addressDetail = addressDetail;
+        this.ward = ward;
+        this.district = district;
+        this.province = province;
+        this.isDefault = isDefault;
+        this.createdAt = createdAt;
+    }
+    public UserAddress(){}
+
     public int getId() {
         return id;
     }
@@ -52,16 +67,16 @@ public class UserAddress {
     public void setDefault(boolean aDefault) {
         isDefault = aDefault;
     }
-    public Deprecated getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-    public void setCreatedAt(Deprecated createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-    public Deprecated getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-    public void setUpdatedAt(Deprecated updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

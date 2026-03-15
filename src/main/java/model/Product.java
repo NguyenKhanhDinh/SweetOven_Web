@@ -1,11 +1,13 @@
 package model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Product {
+public class Product implements Serializable {
     private int id;
     private String productCode;
     private String productName;
@@ -18,8 +20,8 @@ public class Product {
     private String ingredients;
     private boolean featured;
     private String image;
-    private Deprecated createdAt;
-    private Deprecated updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private List<ProductImage> listImages = new ArrayList<>();
 
     public  Product(int id, String productCode, int categoryId, String name, double price, int stock_quantity,
@@ -36,6 +38,7 @@ public class Product {
         this.featured = false;
     }
     public Product(){}
+
     public int getId() {
         return id;
     }
@@ -108,16 +111,16 @@ public class Product {
     public void setImage(String image) {
         this.image = image;
     }
-    public Deprecated getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-    public void setCreatedAt(Deprecated createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-    public Deprecated getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-    public void setUpdatedAt(Deprecated updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
     public List<ProductImage> getListImages() {

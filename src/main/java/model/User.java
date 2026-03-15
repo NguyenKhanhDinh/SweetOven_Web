@@ -1,6 +1,8 @@
 package model;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
-public class User {
+public class User implements Serializable {
     private int id;
     private String avatar;
     private String fullName;
@@ -12,8 +14,25 @@ public class User {
     private int status;
     private boolean isBlocked;
     private int roleId;
-    private  Deprecated createdAt;
-    private  Deprecated updatedAt;
+    private LocalDateTime createdAt;
+    private  LocalDateTime updatedAt;
+
+    public User(int id, String avatar, String fullName, String userName, int gender, String eamil,String phoneNumber,String password,int status,boolean isBlocked,int roleId,LocalDateTime createdAt,LocalDateTime updatedAt) {
+        this.id = id;
+        this.avatar = avatar;
+        this.fullName = fullName;
+        this.userName = userName;
+        this.gender = gender;
+        this.eamil = eamil;
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+        this.status = status;
+        this.isBlocked = isBlocked;
+        this.roleId = roleId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+    public User() {}
 
     public int getId() {
         return id;
@@ -81,16 +100,16 @@ public class User {
     public void setRoleId(int roleId) {
         this.roleId = roleId;
     }
-    public Deprecated getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-    public void setCreatedAt(Deprecated createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-    public Deprecated getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-    public void setUpdatedAt(Deprecated updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

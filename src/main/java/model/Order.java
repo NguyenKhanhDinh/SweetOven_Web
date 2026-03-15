@@ -1,8 +1,10 @@
 package model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-public class Order {
+public class Order implements Serializable {
     private int id;
     private String orderCode;
     private int userId;
@@ -17,8 +19,29 @@ public class Order {
     private String note;
     private int paymentMethod;
     private int orderStatus;
-    private  Deprecated orderDate;
-    private  Deprecated updatedAt;
+    private LocalDateTime orderDate;
+    private  LocalDateTime updatedAt;
+
+    public Order(int id,String orderCode,int userId,String fullName,String phoneNumber,String address,int discountId,BigDecimal subTotal
+    ,BigDecimal discountAmount,BigDecimal shippingFee,BigDecimal toltalAmount,String note,int paymentMethod,int orderStatus,LocalDateTime orderDate,LocalDateTime updatedAt){
+        this.id = id;
+        this.orderCode = orderCode;
+        this.userId = userId;
+        this.fullName = fullName;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.discountId = discountId;
+        this.subTotal = subTotal;
+        this.discountAmount = discountAmount;
+        this.shippingFee = shippingFee;
+        this.toltalAmount = toltalAmount;
+        this.note = note;
+        this.paymentMethod = paymentMethod;
+        this.orderStatus = orderStatus;
+        this.orderDate = orderDate;
+        this.updatedAt = updatedAt;
+    }
+    public Order(){}
 
     public int getId() {
         return id;
@@ -104,16 +127,16 @@ public class Order {
     public void setOrderStatus(int orderStatus) {
         this.orderStatus = orderStatus;
     }
-    public Deprecated getOrderDate() {
+    public LocalDateTime getOrderDate() {
         return orderDate;
     }
-    public void setOrderDate(Deprecated orderDate) {
+    public void setOrderDate(LocalDateTime orderDate) {
         this.orderDate = orderDate;
     }
-    public Deprecated getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-    public void setUpdatedAt(Deprecated updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

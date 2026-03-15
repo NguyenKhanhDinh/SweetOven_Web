@@ -1,12 +1,23 @@
 package model;
 
-public class PasswordResetToken {
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+public class PasswordResetToken implements Serializable {
     private int id;
     private int userId;
     private String resetToken;
-    private Deprecated expiredAt;
-    private Deprecated createdAt;
+    private LocalDateTime expiredAt;
+    private LocalDateTime createdAt;
 
+public PasswordResetToken(int id, int userId, String resetToken, LocalDateTime expiredAt, LocalDateTime createdAt) {
+    this.id = id;
+    this.userId = userId;
+    this.resetToken = resetToken;
+    this.expiredAt = expiredAt;
+    this.createdAt = createdAt;
+}
+public PasswordResetToken() {}
 
     public int getId() {
         return id;
@@ -26,16 +37,16 @@ public class PasswordResetToken {
     public void setResetToken(String resetToken) {
         this.resetToken = resetToken;
     }
-    public Deprecated getExpiredAt() {
+    public LocalDateTime getExpiredAt() {
         return expiredAt;
     }
-    public void setExpiredAt(Deprecated expiredAt) {
+    public void setExpiredAt(LocalDateTime expiredAt) {
         this.expiredAt = expiredAt;
     }
-    public Deprecated getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-    public void setCreatedAt(Deprecated createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 }

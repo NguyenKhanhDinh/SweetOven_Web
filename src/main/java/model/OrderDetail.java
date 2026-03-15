@@ -1,8 +1,10 @@
 package model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-public class OrderDetail {
+public class OrderDetail implements Serializable {
 private int id;
 private int orderId;
 private int productId;
@@ -10,8 +12,20 @@ private String productName;
 private BigDecimal buyPrice;
 private int quantity;
 private BigDecimal totalPrice;
-private Deprecated createdAt;
-private Deprecated updatedAt;
+private LocalDateTime createdAt;
+private LocalDateTime updatedAt;
+
+public OrderDetail(int id, int orderId, int productId, String productName, BigDecimal buyPrice, int quantity, BigDecimal totalPrice, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    this.id = id;
+    this.orderId = orderId;
+    this.productId = productId;
+    this.productName = productName;
+    this.buyPrice = buyPrice;
+    this.quantity = quantity;
+    this.totalPrice = totalPrice;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+}
 
 public int getId() {
 return id;
@@ -55,16 +69,16 @@ public BigDecimal getTotalPrice() {
 public void setTotalPrice(BigDecimal totalPrice) {
     this.totalPrice = totalPrice;
 }
-public Deprecated getCreatedAt() {
+public LocalDateTime getCreatedAt() {
     return createdAt;
 }
-public void setCreatedAt(Deprecated createdAt) {
+public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
 }
-public Deprecated getUpdatedAt() {
+public LocalDateTime getUpdatedAt() {
     return updatedAt;
 }
-public void setUpdatedAt(Deprecated updatedAt) {
+public void setUpdatedAt(LocalDateTime updatedAt) {
     this.updatedAt = updatedAt;
 }
 }

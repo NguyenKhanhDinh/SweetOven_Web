@@ -1,10 +1,20 @@
 package model;
 
+import java.time.LocalDateTime;
+
 public class Payment {
     private int id;
     private int orderId;
     private String paymentMethod;
-    private Deprecated createdAt;
+    private LocalDateTime createdAt;
+
+    public Payment(int id, int orderId, String paymentMethod, LocalDateTime createdAt) {
+        this.id = id;
+        this.orderId = orderId;
+        this.paymentMethod = paymentMethod;
+        this.createdAt = createdAt;
+    }
+    public Payment(){}
 
     public int getId() {
         return id;
@@ -24,10 +34,10 @@ public class Payment {
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
-    public Deprecated getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-    public void setCreatedAt(Deprecated createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 }

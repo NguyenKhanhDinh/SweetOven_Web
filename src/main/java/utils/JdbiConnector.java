@@ -7,6 +7,12 @@ import java.sql.SQLException;
 
 public class JdbiConnector {
     public static Jdbi jdbi;
+    public static Jdbi getJdbi() {
+        if (jdbi == null) {
+            connect();
+        }
+        return jdbi;
+    }
     public static void  connect(){
         MysqlDataSource ds = new MysqlDataSource();
         //jdbc:mysql://localhost:3306/ltweb

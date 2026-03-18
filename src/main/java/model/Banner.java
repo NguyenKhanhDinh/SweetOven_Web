@@ -1,13 +1,28 @@
 package model;
 
-public class Banner {
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+public class Banner implements Serializable {
     private int id;
     private String title;
     private String description;
     private String imageUrl;
     private boolean active;
-    private String createdAt;
-    private String updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public Banner(int id, String title, String description, String imageUrl, boolean active, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.active = active;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+    public Banner() {}
+
     public int getId() {
         return id;
     }
@@ -38,16 +53,16 @@ public class Banner {
     public void setActive(boolean active) {
         this.active = active;
     }
-    public String getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-    public String getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-    public void setUpdatedAt(String updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

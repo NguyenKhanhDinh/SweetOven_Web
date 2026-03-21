@@ -8,13 +8,15 @@ import java.util.List;
 public class ProductDao {
     // lấy ra hiển thị sản phẩm nổi bật
     public List<Product> getFeaturedProducts() {
+
         String sql = "SELECT p.*, pi.image_url " +
                 "FROM product p " +
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
+
                 "WHERE p.is_featured = 1 AND p.status = 1 " +
                 "ORDER BY RAND() " +
                 "LIMIT 4";
-        return JdbiConnector.jdbi.withHandle(handle ->handle.createQuery(sql).mapToBean(Product.class).list());
+        return JdbiConnector.getJdbi().withHandle(handle ->handle.createQuery(sql).mapToBean(Product.class).list());
     }
     // lấy hết sản phẩm hiển thị lên
     public List<Product> getListProduct() {

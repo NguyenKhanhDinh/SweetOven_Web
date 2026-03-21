@@ -45,3 +45,4 @@ public List<Product> getFeaturedProducts() {
      return productDao.getFeaturedProducts();
 }
     }
+

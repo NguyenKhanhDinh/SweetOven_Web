@@ -19,7 +19,7 @@ public class Product implements Serializable {
     private String description;
     private String ingredients;
     private boolean featured;
-    private String image;
+    private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<ProductImage> listImages = new ArrayList<>();
@@ -106,10 +106,10 @@ public class Product implements Serializable {
         this.featured = featured;
     }
     public  String getImage() {
-        return image;
+        return imageUrl;
     }
     public void setImage(String image) {
-        this.image = image;
+        this.imageUrl = imageUrl;
     }
     public LocalDateTime getCreatedAt() {
         return createdAt;

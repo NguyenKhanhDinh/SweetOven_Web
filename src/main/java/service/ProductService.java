@@ -10,6 +10,7 @@ public class ProductService {
     public ProductService() {
         this.productDao = new ProductDao();
     }
+    //featured products for homepage
     public List<Product> getFeaturedProducts() {
         return productDao.getFeaturedProducts();
     }

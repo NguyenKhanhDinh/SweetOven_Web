@@ -31,9 +31,9 @@ public class ProductService {
 
         return  result;
     }
-// lấy sản phẩm theo id
-    public Product getProductById(int id) {
-        return productDao.findById(id);
+    //featured products for homepage
+    public List<Product> getFeaturedProducts() {
+        return productDao.getFeaturedProducts();
     }
 // lâý sản phẩm liên quan
     public List<Product> getRelatedProducts(int categoryId,int currentProductId) {

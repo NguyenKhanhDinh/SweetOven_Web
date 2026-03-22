@@ -6,7 +6,7 @@ import utils.JdbiConnector;
 import java.util.List;
 
 public class ProductDao {
-    // lấy ra hiển thị sản phẩm nổi bật
+    // featured products for homepage
     public List<Product> getFeaturedProducts() {
 
         String sql = "SELECT p.*, pi.image_url " +

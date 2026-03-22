@@ -110,6 +110,24 @@
         .carousel-control-next {
             display: none;
         }
+        .carousel-content .btn-primary-custom {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+        }
+        .carousel-content .btn-primary-custom:hover {
+            background: white;
+            color: var(--primary);
+            border-color: white;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.4);
+        }
 
         .carousel-indicators {
             bottom: 2rem;
@@ -788,7 +806,7 @@
         <div class="carousel-inner">
             <c:forEach var="b" items="${banners}" varStatus="st">
                 <div class="carousel-item ${st.first ? 'active' : ''}"
-                     style="background-image: url('${pageContext.request.contextPath}${b.bannerImageUrl}')">
+                     style="background-image: url('${b.imageUrl}')">
                     <div class="carousel-content">
                         <h1>${b.title}</h1>
                         <p>${b.description}</p>

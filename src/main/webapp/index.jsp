@@ -23,7 +23,8 @@
           <div class="carousel-inner">
               <c:forEach var="b" items="${banners}" varStatus="st">
                   <div class="carousel-item ${st.first ? 'active' : ''}"
-                       style="background-image: url('${pageContext.request.contextPath}${b.bannerImageUrl}')">
+                       style="background-image: url('${pageContext.request.contextPath}${b.imageUrl}')">
+
                       <div class="carousel-content">
                           <h1>${b.title}</h1>
                           <p>${b.description}</p>

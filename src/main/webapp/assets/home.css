@@ -114,7 +114,242 @@ body {
   border-radius: 20px;
   padding: 20px;
 }
+/* ==================== GLOBAL STYLES ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Quicksand', sans-serif;
+}
 
+
+/* ==================== HEADER ==================== */
+/* Let Bootstrap handle the navbar structure, only customize appearance */
+
+header {
+    background: white;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid rgba(138, 75, 36, 0.08);
+}
+
+/* Override Bootstrap navbar styling */
+.navbar {
+    background: white !important;
+    backdrop-filter: blur(6px);
+    padding: 0.9rem 0 !important;
+}
+
+/* Navbar container - proper Bootstrap override */
+.navbar .container {
+    max-width: 1200px;
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 2.8rem;
+    color: #8A4B24 !important;
+    letter-spacing: 2px;
+    text-decoration: none;
+}
+
+.navbar-brand i {
+    color: #E0B680;
+}
+
+/* Navigation Links */
+.navbar-nav .nav-link {
+    font-weight: 600;
+    color: #8A4B24 !important;
+    margin: 0 0.7rem;
+    position: relative;
+    padding: 8px 0;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -6px;
+    width: 0;
+    height: 3px;
+    background: #E0B680;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus {
+    color: #E0B680 !important;
+}
+
+.navbar-nav .nav-link:hover::after,
+.navbar-nav .nav-link.active::after {
+    width: 70%;
+}
+
+/* Search Bar & Icons */
+.nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.nav-icons .form-control {
+    border: 1.5px solid #E0B680;
+    border-radius: 30px;
+    padding: 8px 15px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    width: 200px;
+}
+
+.nav-icons .form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(224, 182, 128, 0.25);
+    border-color: #E0B680;
+    outline: none;
+}
+
+.nav-icons .btn {
+    color: #8A4B24;
+    transition: all 0.3s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 8px;
+}
+
+.nav-icons .btn:hover {
+    color: #E0B680;
+}
+
+/* Cart Badge */
+.badge {
+    background: #E0B680 !important;
+    color: #8A4B24 !important;
+}
+
+/* Responsive - Match Bootstrap breakpoints */
+@media (max-width: 991.98px) {
+    .navbar-brand {
+        font-size: 2.2rem;
+    }
+
+    .navbar-nav {
+        margin-top: 10px;
+    }
+
+    .nav-icons form {
+        display: none;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .navbar-brand {
+        font-size: 1.8rem;
+        letter-spacing: 1px;
+    }
+
+    .navbar-nav .nav-link {
+        margin: 0 0.4rem;
+        font-size: 0.9rem;
+    }
+}
+.footer {
+    background: linear-gradient(160deg, #7A4320 0%, #9A5C34 100%);
+    color: #fff;
+    padding: 4rem 0 2.5rem;
+    margin-top: 5rem;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.08);
+}
+.footer .container {
+    max-width: 1200px;
+}
+
+.footer h4,
+.footer h5 {
+    color: #E0B680;
+    margin-bottom: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.footer p {
+    margin-bottom: 0.8rem;
+    opacity: 0.95;
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+
+.footer a {
+    color: white;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: #E0B680;
+    padding-left: 4px;
+}
+
+/* Social Icons */
+.social-icons {
+    margin-top: 1.7rem;
+    display: flex;
+    gap: 10px;
+}
+
+.social-icons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+    background: #E0B680;
+    color: #3B2A21;
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+
+.footer-bottom {
+    margin-top: 3rem;
+    padding-top: 1.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    text-align: center;
+    font-size: 0.9rem;
+    opacity: 0.85;
+    letter-spacing: 0.5px;
+}
+.text-center {
+    text-align: center;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.justify-content-between {
+    justify-content: space-between;
+}
+
+.ml-auto {
+    margin-left: auto;
+}
 @media (max-width: 768px) {
   .carousel-content h1 {
     font-size: 2rem;

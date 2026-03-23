@@ -6,11 +6,7 @@ import model.Banner;
 import java.util.List;
 
 public class BannerService {
-    private BannerDao bannerDao;
-
-    public BannerService() {
-        this.bannerDao = new BannerDao();
-    }
+    private BannerDao bannerDao = new BannerDao();
 
     //get all banners for homepage
     public List<Banner> getAllBanners(){

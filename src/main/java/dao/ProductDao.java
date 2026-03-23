@@ -63,79 +63,53 @@ public class ProductDao {
         return JdbiConnector.jdbi.withHandle(handle -> handle.createQuery(sql).bind("categoryId", categoryId).mapToBean(Product.class).list());
     }
     // phân trang và tìm kiếm sản phẩm trong trang menu
-    public List<Product> getProductsPaging(int offset, int limit, String keyword, Integer categoryId, String sort){
-        String sql = "SELECT p.*, pi.image_url " +
-                "FROM product p " +
-                "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
-                "WHERE p.status = 1 ";
-        if (keyword != null && !keyword.isEmpty()) {
-            sql+=("AND p.name LIKE :keyword ");
+    public List<Product> getProductsPaging(int offset, int limit){
+        String sql = "SELECT p.*, pi.image_url as image "+"\n" +
+                "FROM product p\n" +
+                "LEFT JOIN productimage pi \n" +
+                "    ON p.id = pi.product_id AND pi.is_primary = 1\n" +
+                "WHERE p.status = 1\n" +
+                "ORDER BY p.id DESC\n" +
+                "LIMIT :limit OFFSET :offset";
+        return JdbiConnector.getJdbi().withHandle(handle ->handle.createQuery(sql).bind("offset",offset).bind("limit",limit).mapToBean(Product.class).list() );
+    }
+    public List<Product> searchProducts(int offset, int limit, String keyword){
+        String sql = "SELECT p.*, pi.image_url as image "+"\n" +
+                "FROM product p\n" +
+                "LEFT JOIN productimage pi \n" +
+                "    ON p.id = pi.product_id AND pi.is_primary = 1\n" +
+                "WHERE p.status = 1\n" +
+                "AND p.name LIKE :keyword\n" +
+                "ORDER BY p.id DESC\n" +
+                "LIMIT :limit OFFSET :offset";
+        return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("keyword","%"+keyword+"%").bind("offset",offset).bind("limit",limit).mapToBean(Product.class).list());
+    }
+    public List<Product> getProductsSort(int offset, int limit, String sort){
+        String orderBy = "p.id DESC";
+        switch (sort){
+            case "price_asc": orderBy = "p.price ASC"; break;
+            case "price_desc": orderBy = "p.price DESC"; break;
+            case "name_asc": orderBy = "p.name ASC"; break;
+            case "name_desc": orderBy = "p.name DESC"; break;
         }
-
-        if (categoryId != null) {
-            sql+=("AND p.category_id = :categoryId ");
-        }
-        // sắp xếp
-        switch (sort) {
-            case "price-asc":
-                sql+=("ORDER BY p.price ASC ");
-                break;
-            case "price-desc":
-                sql+=("ORDER BY p.price DESC ");
-                break;
-            case "name-asc":
-                sql+=("ORDER BY p.name ASC ");
-                break;
-            case "name-desc":
-                sql+=("ORDER BY p.name DESC ");
-                break;
-            default:
-                sql+=("ORDER BY p.id DESC ");
-        }
-        sql+=("LIMIT :limit OFFSET :offset");
-
-        final String finalSql = sql;
-
-        return JdbiConnector.jdbi.withHandle(handle -> {
-            var query = handle.createQuery(finalSql)
-                    .bind("limit", limit)
-                    .bind("offset", offset);
-
-            if (keyword != null && !keyword.isEmpty()) {
-                query.bind("keyword", "%" + keyword + "%");
-            }
-
-            if (categoryId != null) {
-                query.bind("categoryId", categoryId);
-            }
-
-            return query.mapToBean(Product.class).list();
-        });
+        String sql = "SELECT p.*, pi.image_url as image "+"\n" +
+                "FROM product p\n" +
+                "LEFT JOIN productimage pi \n" +
+                "ON p.id = pi.product_id AND pi.is_primary = 1\n" +
+                "WHERE p.status = 1\n" +
+                "ORDER BY " + orderBy+" \n"+
+                "LIMIT :limit OFFSET :offset";
+        return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("offset",offset).bind("limit",limit).mapToBean(Product.class).list());
     }
     //đếm tổng sản phẩm
     public int countPrducts(String keyword, Integer categoryId) {
-        String sql = "SELECT COUNT(*) FROM product WHERE product.status = 1";
-        if (keyword != null && !keyword.isEmpty()) {
-            sql += "AND p.name LIKE :keyword ";
-        }
-
-        if (categoryId != null) {
-            sql += "AND p.category_id = :categoryId ";
-        }
-        final String finalSql = sql;
-        return JdbiConnector.jdbi.withHandle(handle -> {
-            var query = handle.createQuery(finalSql);
-
-            if (keyword != null && !keyword.isEmpty()) {
-                query.bind("keyword", "%" + keyword + "%");
-            }
-
-            if (categoryId != null) {
-                query.bind("categoryId", categoryId);
-            }
-
-            return query.mapTo(Integer.class).one();
-        });
+        String sql = """
+    SELECT COUNT(*) FROM product p
+    WHERE p.status = 1
+    AND p.name LIKE :keyword
+    AND (:categoryId IS NULL OR p.category_id = :categoryId)
+""";
+        return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("keyword","%"+keyword+"%").bind("categoryId",categoryId).mapTo(Integer.class).first());
     }
     // lấy ảnh phụ cho sản phẩm
     public List<String> getProductImages(int productId) {

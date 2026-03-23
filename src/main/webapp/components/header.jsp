@@ -45,19 +45,19 @@
 
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" href="${contextPath}/">TRANG CHỦ</a>
+                        <a class="nav-link ${param.activePage == 'home' ? 'active' : ''}" href="${contextPath}/">TRANG CHỦ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="${contextPath}/menu.jsp">SẢN PHẨM</a>
+                        <a class="nav-link ${param.activePage == 'menu' ? 'active' : ''}" href="${contextPath}/menu.jsp">SẢN PHẨM</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="${contextPath}/introduce.jsp">GIỚI THIỆU</a>
+                        <a class="nav-link ${param.activePage == 'introduce' ? 'active' : ''}" href="${contextPath}/introduce.jsp">GIỚI THIỆU</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="${contextPath}/blog.jsp">BLOG</a>
+                        <a class="nav-link ${param.activePage == 'blog' ? 'active' : ''}" href="${contextPath}/blog.jsp">BLOG</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="${contextPath}/contact.jsp">LIÊN HỆ</a>
+                        <a class="nav-link ${param.activePage == 'contact' ? 'active' : ''}" href="${contextPath}/contact.jsp">LIÊN HỆ</a>
                     </li>
                 </ul>
 

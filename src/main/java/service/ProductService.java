@@ -40,9 +40,5 @@ public class ProductService {
         int limit = 8;
         return productDao.getRelatedProducts(categoryId,limit,currentProductId);
     }
-//lấy sản phẩm nổi bật
-public List<Product> getFeaturedProducts() {
-     return productDao.getFeaturedProducts();
-}
     }
 

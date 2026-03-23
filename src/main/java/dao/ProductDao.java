@@ -9,10 +9,9 @@ public class ProductDao {
     // featured products for homepage
     public List<Product> getFeaturedProducts() {
 
-        String sql = "SELECT p.*, pi.image_url " +
+        String sql = "SELECT p.*, pi.image_url as image " +
                 "FROM product p " +
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
-
                 "WHERE p.is_featured = 1 AND p.status = 1 " +
                 "ORDER BY RAND() " +
                 "LIMIT 4";

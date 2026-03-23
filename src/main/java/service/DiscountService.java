@@ -6,11 +6,9 @@ import model.Discount;
 import java.util.List;
 
 public class DiscountService {
-    private DiscountDao discountDao;
+    private DiscountDao discountDao = new  DiscountDao();
 
-    public DiscountService() {
-        this.discountDao = new DiscountDao();
-    }
+    //get all discounts for homepage
     public List<Discount> getAllDiscounts() {
         return discountDao.getAllDiscounts();
     }

@@ -6,7 +6,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import model.Banner;
+import model.Discount;
 import model.Product;
+import service.DiscountService;
 import service.ProductService;
 import service.BannerService;
 
@@ -18,15 +20,23 @@ import java.util.List;
     public class HomepageController extends HttpServlet {
     private ProductService productService;
     private BannerService bannerService;
+    private DiscountService discountService;
     public void init() {
         this.productService = new ProductService();
         this.bannerService = new BannerService();
+        this.discountService = new DiscountService();
     }
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //for featured products
         List<Product> feturedProducts = productService.getFeaturedProducts();
         request.setAttribute("featuredProducts", feturedProducts);
+        //banners
         List<Banner> banners = bannerService.getAllBanners();
         request.setAttribute("banners", banners);
+        //discounts
+        List<Discount> discounts = discountService.getAllDiscounts();
+        request.setAttribute("discounts",discounts) ;
+
         request.getRequestDispatcher("/index.jsp").forward(request, response);
     }
 

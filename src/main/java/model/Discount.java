@@ -3,6 +3,7 @@ package model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Discount implements Serializable {
     private int id;
@@ -90,5 +91,12 @@ public class Discount implements Serializable {
     }
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+    public String getFormattedEndDate() {
+        if (this.endDate != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            return this.endDate.format(formatter);
+        }
+        return "Chưa có ngày kết thúc";
     }
 }

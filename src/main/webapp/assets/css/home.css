@@ -19,58 +19,6 @@ body {
   padding-top: 80px;
 }
 
-header {
-  background: white;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  border-bottom: 1px solid rgba(138, 75, 36, 0.08);
-}
-
-.navbar {
-  background: white !important;
-  padding: 0.9rem 0 !important;
-}
-
-.navbar-brand {
-  font-weight: 800;
-  font-size: 2rem;
-  color: var(--primary) !important;
-}
-
-.navbar-brand i {
-  color: var(--secondary);
-}
-
-.navbar-nav .nav-link {
-  font-weight: 600;
-  color: var(--primary) !important;
-  margin: 0 0.7rem;
-  position: relative;
-}
-
-.navbar-nav .nav-link:hover {
-  color: var(--secondary) !important;
-}
-
-.nav-icons {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.nav-icons .form-control {
-  border-radius: 30px;
-  border: 1.5px solid var(--secondary);
-}
-
-.nav-icons .btn {
-  border: none;
-  background: none;
-  color: var(--primary);
-}
-
-.nav-icons .btn:hover {
-  color: var(--secondary);
-}
 
 .hero-carousel,
 #heroCarousel,
@@ -242,26 +190,6 @@ header {
   font-weight: bold;
   color: var(--primary);
 }
-
-.footer {
-  background: linear-gradient(160deg, #7A4320, #9A5C34);
-  color: white;
-  padding: 40px 0;
-  margin-top: 50px;
-}
-
-.footer h4 {
-  color: var(--secondary);
-}
-
-.footer a {
-  color: white;
-}
-
-.footer a:hover {
-  color: var(--secondary);
-}
-
 .social-icons {
   display: flex;
   gap: 10px;
@@ -277,7 +205,136 @@ header {
   align-items: center;
   justify-content: center;
 }
+/* Category Row Scroll */
+.category-row-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 1.5rem;
+    padding: 0.5rem 0 1.5rem;
+    scrollbar-width: thin;
+    scroll-behavior: smooth;
+}
 
+.category-row-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.category-row-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.category-row-scroll::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+.category-scroll-item {
+    flex: 0 0 auto;
+    width: 280px;
+}
+
+/* Promo Row Scroll */
+.promo-row-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 1.5rem;
+    padding: 0.5rem 0 1rem;
+    scrollbar-width: thin;
+}
+
+.promo-row-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.promo-row-scroll::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+}
+
+.promo-row-scroll::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 10px;
+}
+
+.promo-item {
+    flex: 0 0 auto;
+    width: 280px;
+}
+
+
+.category-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    height: 100%;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+.category-bg {
+    height: 180px;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.5s ease;
+}
+
+.category-card:hover .category-bg {
+    transform: scale(1.05);
+}
+
+.category-content {
+    padding: 1.2rem;
+    text-align: center;
+}
+
+.category-icon {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.category-content h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+}
+
+.category-content p {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.btn-category {
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 0.4rem 1rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: var(--transition);
+}
+
+.btn-category:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-category i {
+    margin-left: 0.3rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-category:hover i {
+    transform: translateX(3px);
+}
 @media (max-width: 768px) {
   .carousel-content h1 {
     font-size: 2rem;

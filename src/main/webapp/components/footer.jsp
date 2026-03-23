@@ -1,4 +1,3 @@
-</main>
 
 <footer class="footer">
     <div class="container">
@@ -6,12 +5,3 @@
         <p>Tiệm bánh ngọt thủ công mỗi ngày</p>
     </div>
 </footer>
-
-<!-- JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- QUAN TRỌNG -->
-<script src="${pageContext.request.contextPath}/assets/js/main.js"></script>
-
-</body>
-</html>

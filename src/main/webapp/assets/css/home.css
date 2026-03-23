@@ -1,0 +1,293 @@
+:root {
+  --primary: #8B4513;
+  --secondary: #D4A76A;
+  --light: #FFF9F0;
+  --shadow: 0 10px 30px rgba(0,0,0,0.08);
+  --transition: all 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Quicksand', sans-serif;
+}
+
+body {
+  color: #333;
+  line-height: 1.6;
+  padding-top: 80px;
+}
+
+header {
+  background: white;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(138, 75, 36, 0.08);
+}
+
+.navbar {
+  background: white !important;
+  padding: 0.9rem 0 !important;
+}
+
+.navbar-brand {
+  font-weight: 800;
+  font-size: 2rem;
+  color: var(--primary) !important;
+}
+
+.navbar-brand i {
+  color: var(--secondary);
+}
+
+.navbar-nav .nav-link {
+  font-weight: 600;
+  color: var(--primary) !important;
+  margin: 0 0.7rem;
+  position: relative;
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--secondary) !important;
+}
+
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.nav-icons .form-control {
+  border-radius: 30px;
+  border: 1.5px solid var(--secondary);
+}
+
+.nav-icons .btn {
+  border: none;
+  background: none;
+  color: var(--primary);
+}
+
+.nav-icons .btn:hover {
+  color: var(--secondary);
+}
+
+.hero-carousel,
+#heroCarousel,
+#heroCarousel .carousel-item {
+  height: 90vh;
+}
+
+.carousel-item {
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.carousel-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+}
+
+.carousel-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  text-align: center;
+}
+
+.carousel-content h1 {
+  font-size: 3rem;
+}
+
+.carousel-content p {
+  margin: 1rem 0;
+}
+
+.btn-primary-custom {
+  background: var(--primary);
+  color: white;
+  border-radius: 50px;
+  padding: 10px 25px;
+  border: none;
+  transition: var(--transition);
+}
+
+.btn-primary-custom:hover {
+  background: var(--secondary);
+  color: var(--primary);
+}
+
+.product-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.product-card:hover {
+  transform: translateY(-10px);
+}
+
+.product-img img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.product-content {
+  padding: 15px;
+}
+
+.product-price {
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.product-badge {
+  position: absolute;
+  background: red;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 10px;
+  top: 10px;
+  left: 10px;
+}
+
+.btn-add-to-cart {
+  width: 100%;
+  border: none;
+  background: var(--primary);
+  color: white;
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.btn-add-to-cart:hover {
+  background: var(--secondary);
+}
+
+.promotions-section {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 50px 0;
+}
+
+.promo-card {
+  background: white;
+  color: #333;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.promo-code {
+  background: var(--primary);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.category-card {
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  transition: var(--transition);
+}
+
+.category-card:hover {
+  transform: scale(1.05);
+}
+
+.category-bg {
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+}
+
+.category-content {
+  padding: 15px;
+  background: white;
+  text-align: center;
+}
+
+.review-card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.customer-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.statistics-section {
+  background: var(--light);
+  padding: 50px 0;
+  text-align: center;
+}
+
+.statistics-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+.footer {
+  background: linear-gradient(160deg, #7A4320, #9A5C34);
+  color: white;
+  padding: 40px 0;
+  margin-top: 50px;
+}
+
+.footer h4 {
+  color: var(--secondary);
+}
+
+.footer a {
+  color: white;
+}
+
+.footer a:hover {
+  color: var(--secondary);
+}
+
+.social-icons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.social-icons a {
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .carousel-content h1 {
+    font-size: 2rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.5rem;
+  }
+
+  .nav-icons form {
+    display: none;
+  }
+}

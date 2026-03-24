@@ -2,8 +2,7 @@
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 
-<!doctype html>
-<html lang="vi">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -56,6 +55,3 @@
         </div>
     </nav>
 </header>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>

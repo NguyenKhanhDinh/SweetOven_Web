@@ -261,8 +261,6 @@ body {
     flex: 0 0 auto;
     width: 280px;
 }
-
-
 .category-card {
     background: white;
     border-radius: 20px;
@@ -335,6 +333,7 @@ body {
 .btn-category:hover i {
     transform: translateX(3px);
 }
+
 @media (max-width: 768px) {
   .carousel-content h1 {
     font-size: 2rem;

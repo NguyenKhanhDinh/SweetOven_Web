@@ -1,59 +1,74 @@
+
 .footer {
-    background-color: #fdf6e3;
-    padding: 60px 0 20px;
-    color: #333;
-    border-top: 2px solid rgba(212, 167, 106, 0.3);
-    margin-top: 50px;
+  background: linear-gradient(160deg, #7A4320 0%, #9A5C34 100%);
+  color: #fff;
+  padding: 4rem 0 2.5rem;
+  margin-top: 5rem;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.08);
 }
 
-.footer h4 {
-    color: #8B4513;
-    font-weight: 700;
-    margin-bottom: 20px;
-    font-size: 1.3rem;
+.footer .container {
+  max-width: 1200px;
+}
+
+.footer h4,
+.footer h5 {
+  color: #E0B680;
+  margin-bottom: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
 }
 
 .footer p {
-    margin-bottom: 10px;
-    line-height: 1.6;
+  margin-bottom: 0.8rem;
+  opacity: 0.95;
+  line-height: 1.7;
+  font-size: 0.95rem;
 }
 
-.footer i {
-    color: #D4A76A;
+.footer a {
+  color: white;
+  transition: all 0.3s ease;
+  text-decoration: none;
 }
 
-.footer .social-icons {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
+.footer a:hover {
+  color: #E0B680;
+  padding-left: 4px;
 }
 
-.footer .social-icons a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: rgba(139, 69, 19, 0.1);
-    border-radius: 50%;
-    font-size: 1.1rem;
-    color: #8B4513;
-    transition: all 0.3s ease;
-    text-decoration: none;
+.social-icons {
+  margin-top: 1.7rem;
+  display: flex;
+  gap: 10px;
 }
 
-.footer .social-icons a:hover {
-    background: #D4A76A;
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(212, 167, 106, 0.4);
+.social-icons a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+  background: #E0B680;
+  color: #3B2A21;
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
 }
 
 .footer-bottom {
-    text-align: center;
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(139, 69, 19, 0.1);
-    font-size: 0.9rem;
-    color: #666;
+  margin-top: 3rem;
+  padding-top: 1.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.85;
+  letter-spacing: 0.5px;
 }

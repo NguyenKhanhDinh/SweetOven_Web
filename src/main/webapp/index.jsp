@@ -799,8 +799,8 @@
 </head>
 <body>
 
-<jsp:include page="components/header.jsp" />
-
+<jsp:include page="components/header.jsp">
+    <jsp:param name="activePage" value="home" /> </jsp:include>
 <main>
     <div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel">
         <div class="carousel-inner">
@@ -875,40 +875,40 @@
             <div class="promo-row-scroll">
                 <c:forEach var="d" items="${discounts}">
                     <div class="promo-item">
+
                         <div class="promo-card w-100">
                             <div class="promo-icon">
-                                <i class="fas ${d.discountType ? 'fa-percentage' : 'fa-hand-holding-usd'}"></i>
+                                <i class="fas ${d.discountType == 1 ? 'fa-percentage' : 'fa-hand-holding-usd'}"></i>
                             </div>
+
                             <div class="promo-discount">
                                 <c:choose>
-                                    <c:when test="${d.discountType == true}">
+                                    <c:when test="${d.discountType == 1}">
                                         <fmt:formatNumber value="${d.value}" maxFractionDigits="0" />%
                                     </c:when>
                                     <c:otherwise>
-                                        <fmt:formatNumber value="${d.value}" type="number" groupingUsed="true"
-                                                          maxFractionDigits="0" />VNĐ
+                                        <fmt:formatNumber value="${d.value}" type="number" groupingUsed="true" maxFractionDigits="0" /> VNĐ
                                     </c:otherwise>
                                 </c:choose>
                             </div>
+
                             <h4>
                                 <c:choose>
-                                    <c:when test="${d.discountType == true}">Ưu Đãi Đặc Biệt</c:when>
+                                    <c:when test="${d.discountType == 1}">Ưu Đãi Đặc Biệt</c:when>
                                     <c:otherwise>Giảm Trực Tiếp</c:otherwise>
                                 </c:choose>
                             </h4>
-                            <p>Cho đơn hàng từ
-                                <fmt:formatNumber value="${d.minValueOrder}" type="number" groupingUsed="true"
-                                                  maxFractionDigits="0" />đ
-                            </p>
+
+                            <p>Cho đơn hàng từ <fmt:formatNumber value="${d.minValueOrder}" type="number" groupingUsed="true" maxFractionDigits="0" />đ</p>
+
                             <div class="promo-code">${d.code}</div>
+
                             <p class="promo-condition">${d.description}</p>
-                            <p class="promo-condition">
-                                HSD:
-                                <fmt:formatDate value="${d.endDate}" pattern="dd/MM/yyyy" />
-                            </p>
+                            <p class="promo-condition">HSD: ${d.formattedEndDate}</p>
                         </div>
                     </div>
                 </c:forEach>
+
                 <c:if test="${empty discounts}">
                     <div class="col-12 text-center text-white">
                         <p>Hiện tại chưa có mã giảm giá nào hấp dẫn. Hãy quay lại sau nhé!</p>

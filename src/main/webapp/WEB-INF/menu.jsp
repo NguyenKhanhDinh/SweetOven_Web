@@ -391,15 +391,16 @@
                         <h3>DANH MỤC</h3>
                         <ul class="category-list">
                             <li>
-                                <a href="${pageContext.request.contextPath}/menu?categoryId=&keyword=${keyword != null ? keyword : ''}&sort=${sort != null ? sort : 'default'}"
-                                   class="${currentCategory == null ? 'active' : ''}">TẤT CẢ SẢN
-                                    PHẨM</a>
+                                <a href="${pageContext.request.contextPath}/menu?categoryId=&keyword=${keyword}&sort=${sort}"
+                                class="${currentCategory == null ? 'active' : ''}">
+                                TẤT CẢ SẢN PHẨM
+                                </a>
                             </li>
-                            <c:forEach var="c" items="${categories}">
+                            <c:forEach var="c" items="${categoryList}">
                                 <li>
-                                    <a href="${pageContext.request.contextPath}/menu?categoryId=${c.id}&keyword=${keyword != null ? keyword : ''}&sort=${sort != null ? sort : 'default'}"
-                                       class="${currentCategory != null && currentCategory.id == c.id ? 'active' : ''}">
-                                            ${c.name.toUpperCase()}
+                                    <a href="${pageContext.request.contextPath}/menu?categoryId=${c.id}&keyword=${keyword}&sort=${sort}"
+                                    class="${currentCategory != null && currentCategory.id == c.id ? 'active' : ''}">
+                                        ${c.name}
                                     </a>
                                 </li>
                             </c:forEach>
@@ -412,7 +413,9 @@
             <section class="col-lg-9 products-area">
                 <div class="products-header">
                     <div class="section-title">
-                        <h2 id="category-title">TẤT CẢ SẢN PHẨM</h2>
+                        <h2>
+                            ${currentCategory != null ? currentCategory.name : 'TẤT CẢ SẢN PHẨM'}
+                        </h2>
                         <div class="results-count" id="results-count"></div>
                     </div>
                     <div class="filter-section">
@@ -422,17 +425,12 @@
                                        value="${keyword != null ? keyword : ''}">
                                 <input type="hidden" name="categoryId"
                                        value="${currentCategory != null ? currentCategory.id : ''}">
-                                <select name="sort" class="form-select" onchange="this.form.submit()">
-                                    <option value="default" ${sort==null || sort=='default' ? 'selected'
-                                            : '' }>Mặc định</option>
-                                    <option value="price_asc" ${sort=='price_asc' ? 'selected' : '' }>
-                                        Giá: Thấp → Cao</option>
-                                    <option value="price_desc" ${sort=='price_desc' ? 'selected' : '' }>
-                                        Giá: Cao → Thấp</option>
-                                    <option value="name_asc" ${sort=='name_asc' ? 'selected' : '' }>Tên:
-                                        A → Z</option>
-                                    <option value="name_desc" ${sort=='name_desc' ? 'selected' : '' }>
-                                        Tên: Z → A</option>
+                                <select name="sort" onchange="this.form.submit()">
+                                    <option value="default" ${sort==null || sort=='' ? 'selected' : ''}>Mặc định</option>
+                                    <option value="price_asc" ${sort=='price_asc' ? 'selected' : ''}>Giá Thấp-Cao</option>
+                                    <option value="price_desc" ${sort=='price_desc' ? 'selected' : ''}>Giá Cao-Thấp</option>
+                                    <option value="name_asc" ${sort=='name_asc' ? 'selected' : ''}>Tên A-Z</option>
+                                    <option value="name_desc" ${sort=='name_desc' ? 'selected' : ''}>Tên Z-A</option>
                                 </select>
                             </form>
 
@@ -488,24 +486,25 @@
                             <!-- PREV -->
                             <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   href="${pageContext.request.contextPath}/menu?page=${currentPage - 1}&keyword=${keyword}&sort=${sort}">
+                                   href="${pageContext.request.contextPath}/menu?page=${currentPage - 1}&keyword=${keyword != null ? keyword : ''}&sort=${sort != null ? sort : ''}&categoryId=${currentCategory != null ? currentCategory.id : ''}">
                                     «
                                 </a>
                             </li>
 
-
+                            <!-- PAGE NUMBERS -->
                             <c:forEach begin="1" end="${totalPages}" var="i">
                                 <li class="page-item ${i == currentPage ? 'active' : ''}">
                                     <a class="page-link"
-                                       href="${pageContext.request.contextPath}/menu?page=${i}&keyword=${keyword}&sort=${sort}">
+                                       href="${pageContext.request.contextPath}/menu?page=${i}&keyword=${keyword != null ? keyword : ''}&sort=${sort != null ? sort : ''}&categoryId=${currentCategory != null ? currentCategory.id : ''}">
                                             ${i}
                                     </a>
                                 </li>
                             </c:forEach>
 
+                            <!-- NEXT -->
                             <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   href="${pageContext.request.contextPath}/menu?page=${currentPage + 1}&keyword=${keyword}&sort=${sort}">
+                                   href="${pageContext.request.contextPath}/menu?page=${currentPage + 1}&keyword=${keyword != null ? keyword : ''}&sort=${sort != null ? sort : ''}&categoryId=${currentCategory != null ? currentCategory.id : ''}">
                                     »
                                 </a>
                             </li>

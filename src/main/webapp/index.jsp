@@ -85,64 +85,72 @@
         </div>
 
         <div class="text-center mt-5">
-          <a href="menu" class="btn btn-primary-custom">Xem tất cả sản phẩm</a>
+          <a href="menu" class="btn-view-all">
+              <i class="fas fa-store me-2"></i>
+              Xem Tất Cả Sản Phẩm
+              <i class="fas fa-arrow-right"></i>
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- Promotions Section -->
     <section id="promotions" class="promotions-section">
-      <div class="container">
-        <div class="section-title">
-          <h2>Mã Giảm Giá</h2>
-          <p>Lưu ngay các mã giảm giá hấp dẫn cho đơn hàng của bạn</p>
-        </div>
+        <div class="container">
+            <div class="section-title">
+                <h2>Mã Giảm Giá</h2>
+                <p>Lưu ngay các mã giảm giá hấp dẫn cho đơn hàng của bạn</p>
+            </div>
 
-        <div class="promo-row-scroll">
-          <c:forEach var="d" items="${discounts}">
-            <div class="promo-item">
-              <div class="promo-card w-100">
-                <div class="promo-icon">
-                  <i class="fas ${d.discountType ? 'fa-percentage' : 'fa-hand-holding-usd'}"></i>
-                </div>
-                <div class="promo-discount">
-                  <c:choose>
-                    <c:when test="${d.discountType == true}">
-                      <fmt:formatNumber value="${d.value}" maxFractionDigits="0" />%
-                    </c:when>
-                    <c:otherwise>
-                      <fmt:formatNumber value="${d.value}" type="number" groupingUsed="true"
-                                        maxFractionDigits="0" />VNĐ
-                    </c:otherwise>
-                  </c:choose>
-                </div>
-                <h4>
-                  <c:choose>
-                    <c:when test="${d.discountType == true}">Ưu Đãi Đặc Biệt</c:when>
-                    <c:otherwise>Giảm Trực Tiếp</c:otherwise>
-                  </c:choose>
-                </h4>
-                <p>Cho đơn hàng từ
-                  <fmt:formatNumber value="${d.minValueOrder}" type="number" groupingUsed="true"
-                                    maxFractionDigits="0" />đ
-                </p>
-                <div class="promo-code">${d.code}</div>
-                <p class="promo-condition">${d.description}</p>
-                <p class="promo-condition">
-                  HSD:
-                  <fmt:formatDate value="${d.endDate}" pattern="dd/MM/yyyy" />
-                </p>
-              </div>
+            <div class="promo-row-scroll">
+                <c:forEach var="d" items="${discounts}">
+                    <div class="promo-item">
+                        <div class="promo-card w-100">
+                            <div class="promo-icon">
+                                <%-- discountType là int: 1 = %, 0 = số tiền --%>
+                                <i class="fas ${d.discountType == 1 ? 'fa-percent' : 'fa-hand-holding-usd'}"></i>
+                            </div>
+                            <div class="promo-discount">
+                                <c:choose>
+                                    <c:when test="${d.discountType == 1}">
+                                        <fmt:formatNumber value="${d.value}" maxFractionDigits="0" />%
+                                    </c:when>
+                                    <c:otherwise>
+                                        <fmt:formatNumber value="${d.value}" type="number" groupingUsed="true"
+                                                          maxFractionDigits="0" /> VNĐ
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                            <h4>
+                                <c:choose>
+                                    <c:when test="${d.discountType == 1}">Ưu Đãi Đặc Biệt</c:when>
+                                    <c:otherwise>Giảm Trực Tiếp</c:otherwise>
+                                </c:choose>
+                            </h4>
+                            <p>Cho đơn hàng từ
+                                <fmt:formatNumber value="${d.minValueOrder}" type="number" groupingUsed="true"
+                                                  maxFractionDigits="0" />đ
+                            </p>
+                            <div class="promo-code">${d.code}</div>
+                            <p class="promo-condition">${d.description}</p>
+                            <p class="promo-condition">
+                                HSD: ${d.formattedEndDate}
+                            </p>
+                            <%-- Thêm badge hết hạn --%>
+                            <c:if test="${d.endDate < now}">
+                                <div class="promo-expired-badge">Hết hạn</div>
+                            </c:if>
+                        </div>
+                    </div>
+                </c:forEach>
+                <c:if test="${empty discounts}">
+                    <div class="col-12 text-center text-white">
+                        <p>Hiện tại chưa có mã giảm giá nào hấp dẫn. Hãy quay lại sau nhé!</p>
+                    </div>
+                </c:if>
             </div>
-          </c:forEach>
-          <c:if test="${empty discounts}">
-            <div class="col-12 text-center text-white">
-              <p>Hiện tại chưa có mã giảm giá nào hấp dẫn. Hãy quay lại sau nhé!</p>
-            </div>
-          </c:if>
         </div>
-      </div>
     </section>
+
 
     <!-- Categories Section -->
     <section class="categories-section">
@@ -174,9 +182,10 @@
         </div>
 
         <div class="text-center mt-5">
-          <a href="menu" class="btn btn-primary-custom">
-            <i class="fas fa-store me-2"></i>
-            Xem Tất Cả Sản Phẩm
+          <a href="menu" class="btn-view-all">
+              <i class="fas fa-store me-2"></i>
+              Xem Tất Cả Sản Phẩm
+              <i class="fas fa-arrow-right"></i>
           </a>
         </div>
       </div>

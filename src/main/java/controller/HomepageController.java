@@ -32,7 +32,7 @@ import java.util.List;
     }
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //for featured products
-        List<Product> feturedProducts = productService.getFeaturedProducts();
+        List<Product> feturedProducts = productService.getFeaturedProductsWithDiscount();
         request.setAttribute("featuredProducts", feturedProducts);
         //banners
         List<Banner> banners = bannerService.getAllBanners();

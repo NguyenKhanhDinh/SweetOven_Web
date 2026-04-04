@@ -135,12 +135,6 @@
                             <p class="promo-condition">
                                 HSD: ${d.formattedEndDate}
                             </p>
-                            <button class="btn-save-voucher"
-                                onclick="saveVoucher(${d.id}, '${d.code}', this)">
-                                    <i class="far fa-bookmark"></i>
-                                    <span>Lưu voucher</span>
-                            </button>
-
 
                         </div>
                     </div>

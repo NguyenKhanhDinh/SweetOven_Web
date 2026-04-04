@@ -1,1 +1,240 @@
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: "Quicksand", sans-serif; } body { font-family: "Quicksand", sans-serif; color: #333; line-height: 1.6; padding-top: 100px; background-color: #fdf6e3; } /* ==================== HEADER ==================== */ header { background: white; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); border-bottom: 1px solid rgba(138, 75, 36, 0.08); } .navbar { background: white !important; backdrop-filter: blur(6px); padding: 0.9rem 0 !important; } .navbar .container-fluid { position: relative; } /* ==================== LOGO SECTION ==================== */ .navbar-brand { color: #8a4b24 !important; text-decoration: none; display: flex; align-items: center; } .navbar-brand .logo-icon { color: #e0b680; margin-right: 15px; font-size: 2.2rem; } .brand-text { display: flex; flex-direction: column; justify-content: center; } .brand-name { font-weight: 700; font-size: 2rem; letter-spacing: 2px; line-height: 1.1; } .slogan { font-size: 0.85rem; font-weight: 500; color: #b08d73; font-style: italic; letter-spacing: 0.5px; } /* ==================== NAVIGATION LINKS ==================== */ .navbar-nav .nav-link { font-weight: 700; color: #8a4b24 !important; margin: 0 0.7rem; position: relative; padding: 8px 0; transition: all 0.3s ease; } .navbar-nav .nav-link::after { content: ""; position: absolute; left: 50%; bottom: -6px; width: 0; height: 3px; background: #e0b680; border-radius: 3px; transition: all 0.3s ease; transform: translateX(-50%); } .navbar-nav .nav-link:hover, .navbar-nav .nav-link:focus { color: #e0b680 !important; } .navbar-nav .nav-link:hover::after, .navbar-nav .nav-link.active::after { width: 70%; } /* ==================== SEARCH BAR & ICONS ==================== */ .nav-icons { display: flex; align-items: center; gap: 15px; } .search-form { position: relative; display: flex; align-items: center; } .nav-icons .form-control { border: 1.5px solid #e0b680; border-radius: 30px; padding: 8px 40px 8px 15px; transition: all 0.3s ease; font-size: 14px; width: 235px; } .nav-icons .form-control:focus { box-shadow: 0 0 0 0.25rem rgba(224, 182, 128, 0.25); border-color: #e0b680; outline: none; } .search-btn { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #8a4b24; padding: 5px 10px; cursor: pointer; z-index: 10; transition: all 0.3s ease; } .search-btn:hover { color: #e0b680; } .nav-icons > a.btn { color: #8a4b24; transition: all 0.3s ease; background: none; border: none; font-size: 1.1rem; padding: 8px; } .nav-icons > a.btn:hover { color: #e0b680; } .badge { background: #e0b680 !important; color: #8a4b24 !important; } /* ==================== ALIGNMENT & RESPONSIVE ==================== */ @media (min-width: 992px) { .navbar-nav { position: absolute !important; left: 50% !important; transform: translateX(-50%) !important; margin: 0 !important; width: max-content; display: flex; justify-content: center; } .nav-icons { margin-left: auto !important; } } /* Responsive Fixes */ @media (max-width: 991.98px) { .brand-name { font-size: 1.6rem; } .navbar-brand .logo-icon { font-size: 1.8rem; margin-right: 10px; } .slogan { font-size: 0.75rem; } .navbar-nav { margin-top: 10px; } .nav-icons form { display: none; } } @media (max-width: 575.98px) { .brand-name { font-size: 1.4rem; letter-spacing: 1px; } .navbar-brand .logo-icon { font-size: 1.6rem; margin-right: 8px; } .navbar-nav .nav-link { margin: 0 0.4rem; font-size: 0.9rem; } }
+/* ==================== ROOT ==================== */
+:root {
+    --main-color: #3C2F27;
+    --text-light: #ffffff;
+    --text-light-soft: rgba(255, 255, 255, 0.7);
+    --hover-light: #dddddd;
+    --bg-color: #fdf6e3;
+}
+
+/* ==================== RESET ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Quicksand", sans-serif;
+}
+
+body {
+    color: #333;
+    line-height: 1.6;
+    padding-top: 100px;
+    background-color: var(--bg-color);
+}
+
+/* ==================== HEADER ==================== */
+header {
+    background: var(--main-color);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2); /* viền trắng mỏng */
+}
+
+.navbar {
+    background: var(--main-color) !important;
+    backdrop-filter: blur(6px);
+    padding: calc(0.9rem - 2px) 0 !important;
+    border-bottom: 2px solid #ffffff;
+}
+
+.navbar .container-fluid {
+    position: relative;
+}
+
+/* ==================== LOGO ==================== */
+.navbar-brand {
+    color: var(--text-light) !important;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand .logo-icon {
+    color: var(--text-light);
+    margin-right: 15px;
+    font-size: 2.2rem;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.brand-name {
+    font-weight: 700;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    line-height: 1.1;
+    color: var(--text-light);
+}
+
+.slogan {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-light-soft);
+    font-style: italic;
+    letter-spacing: 0.5px;
+}
+
+/* ==================== NAVIGATION ==================== */
+.navbar-nav .nav-link {
+    font-weight: 700;
+    color: var(--text-light) !important;
+    margin: 0 0.7rem;
+    position: relative;
+    padding: 8px 0;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -6px;
+    width: 0;
+    height: 3px;
+    background: var(--text-light);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus {
+    color: var(--hover-light) !important;
+}
+
+.navbar-nav .nav-link:hover::after,
+.navbar-nav .nav-link.active::after {
+    width: 70%;
+}
+
+/* ==================== SEARCH & ICON ==================== */
+.nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.search-form {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.nav-icons .form-control {
+    border: 1.5px solid var(--text-light);
+    border-radius: 30px;
+    padding: 8px 40px 8px 15px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    width: 235px;
+    background: transparent;
+    color: var(--text-light);
+}
+
+.nav-icons .form-control::placeholder {
+    color: var(--text-light-soft);
+}
+
+.nav-icons .form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.2);
+    border-color: var(--text-light);
+    outline: none;
+}
+
+.search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-light);
+    padding: 5px 10px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+    color: var(--hover-light);
+}
+
+.nav-icons > a.btn {
+    color: var(--text-light);
+    transition: all 0.3s ease;
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    padding: 8px;
+}
+
+.nav-icons > a.btn:hover {
+    color: var(--hover-light);
+}
+
+/* ==================== BADGE ==================== */
+.badge {
+    background: var(--text-light) !important;
+    color: var(--main-color) !important;
+}
+
+/* ==================== DESKTOP ==================== */
+@media (min-width: 992px) {
+    .navbar-nav {
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        margin: 0 !important;
+        width: max-content;
+        display: flex;
+        justify-content: center;
+    }
+
+    .nav-icons {
+        margin-left: auto !important;
+    }
+}
+
+/* ==================== TABLET ==================== */
+@media (max-width: 991.98px) {
+    .brand-name {
+        font-size: 1.6rem;
+    }
+
+    .navbar-brand .logo-icon {
+        font-size: 1.8rem;
+        margin-right: 10px;
+    }
+
+    .slogan {
+        font-size: 0.75rem;
+    }
+
+    .navbar-nav {
+        margin-top: 10px;
+    }
+
+    .nav-icons form {
+        display: none;
+    }
+}
+
+/* ==================== MOBILE ==================== */
+@media (max-width: 575.98px) {
+    .brand-name {
+        font-size: 1.4rem;
+        letter-spacing: 1px;
+    }
+
+    .navbar-brand .logo-icon {
+        font-size: 1.6rem;
+        margin-right: 8px;
+    }
+
+    .navbar-nav .nav-link {
+        margin: 0 0.4rem;
+        font-size: 0.9rem;
+    }
+}

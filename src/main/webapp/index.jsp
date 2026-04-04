@@ -9,11 +9,6 @@
   <title>Sweet Oven Bakery - Bánh ngọt & Đồ nướng</title>
   <meta name="description" content="Tiệm bánh ngọt & đồ nướng thủ công - Sweet Oven Bakery" />
   <link rel="icon" href="${pageContext.request.contextPath}/assets/picture/logo.png">
-
-  <!-- CSS Files -->
-  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/style.css">
-  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/header.css">
-  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/footer.css">
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/home.css">
 
   <!-- External Libraries -->

@@ -99,4 +99,42 @@ public class Discount implements Serializable {
         }
         return "Chưa có ngày kết thúc";
     }
+    public boolean isValid() {
+        LocalDateTime now = LocalDateTime.now();
+        return (startDate == null || now.isAfter(startDate)) &&
+                (endDate == null || now.isBefore(endDate));
+    }
+
+    public String getFormattedStartDate() {
+        if (this.startDate != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            return this.startDate.format(formatter);
+        }
+        return "Không có";
+    }public String getDisplayValue() {
+        if (discountType == 1) {
+            return value.stripTrailingZeros().toPlainString() + "%";
+        } else {
+            return String.format("%,.0f VNĐ", value);
+        }
+    }
+
+    public String getDisplayMinOrder() {
+        if (minValueOrder == null || minValueOrder.compareTo(BigDecimal.ZERO) == 0) {
+            return "0đ";
+        }
+        return String.format("%,.0fđ", minValueOrder);
+    }
+    public boolean isPercentage() {
+        return discountType == 1;
+    }
+    public String getIconClass() {
+        return discountType == 1 ? "fa-percent" : "fa-hand-holding-usd";
+    }
+    public String getDisplayTitle() {
+        return discountType == 1 ? "Ưu Đãi Đặc Biệt" : "Giảm Trực Tiếp";
+    }
+
+
+
 }

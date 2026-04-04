@@ -149,6 +149,13 @@
                 </c:if>
             </div>
         </div>
+        <div class="text-center mt-5">
+                  <a href="discount" class="btn-view-all">
+                      <i class="fas fa-store me-2"></i>
+                      Xem Tất Cả Mã Giảm Giá
+                      <i class="fas fa-arrow-right"></i>
+                  </a>
+        </div>
     </section>
 
 

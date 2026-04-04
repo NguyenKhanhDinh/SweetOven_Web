@@ -76,9 +76,26 @@
                     </span>
                     </a>
 
-                    <a href="${contextPath}/profile.jsp" class="btn icon-action" id="userIcon">
-                        <i class="fas fa-user"></i>
-                    </a>
+                    <c:choose>
+                        <c:when test="${not empty sessionScope.user}">
+                            <a href="${contextPath}/profile.jsp" class="btn icon-action p-0 d-flex align-items-center justify-content-center" id="userIcon" title="Xin chào, ${sessionScope.user.fullName}" style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid #D4A76A;">
+                                <c:choose>
+                                    <c:when test="${not empty sessionScope.user.avatar}">
+                                        <img src="${contextPath}/${sessionScope.user.avatar}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <i class="fas fa-user-circle" style="font-size: 24px; color: #8B4513;"></i>
+                                    </c:otherwise>
+                                </c:choose>
+
+                            </a>
+                        </c:when>
+                        <c:otherwise>
+                            <a href="${contextPath}/login" class="btn icon-action" id="userIcon" title="Đăng nhập">
+                                <i class="fas fa-user"></i>
+                            </a>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
 
             </div>

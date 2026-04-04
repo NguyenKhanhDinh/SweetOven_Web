@@ -15,4 +15,8 @@ public class CategoryDao {
             "ORDER BY c.id ASC";
     return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).mapToBean(Category.class).list());
     }
+    public Category getCategoryById(int categoryId){
+        String sql = "SELECT * FROM category WHERE id = :id";
+        return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("id",categoryId).mapToBean(Category.class).findOne().orElse(null));
+    }
 }

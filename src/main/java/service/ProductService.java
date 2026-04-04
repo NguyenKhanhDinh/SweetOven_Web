@@ -34,5 +34,12 @@ public class ProductService {
         int limit = 8;
         return productDao.getRelatedProducts(categoryId,limit,currentProductId);
     }
+    // tìm sản phẩm theo category
+    public List<Product> getProductsByCategoryId(int categoryId) {
+       return productDao.getProductsByCategory(categoryId);
+    }
+    public List<Product> getProducts(int offset, int limit, String keyword, String sort, Integer categoryId) {
+       return productDao.getProducts(offset, limit,keyword, sort, categoryId);
+    }
     }
 

@@ -1,1 +1,203 @@
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: "Quicksand", sans-serif; } body { font-family: "Quicksand", sans-serif; color: #333; line-height: 1.6; padding-top: 100px; background-color: #fdf6e3; } /* ==================== HEADER ==================== */ header { background: white; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); border-bottom: 1px solid rgba(138, 75, 36, 0.08); } .navbar { background: white !important; backdrop-filter: blur(6px); padding: 0.9rem 0 !important; } .navbar .container-fluid { position: relative; } /* ==================== LOGO SECTION ==================== */ .navbar-brand { color: #8a4b24 !important; text-decoration: none; display: flex; align-items: center; } .navbar-brand .logo-icon { color: #e0b680; margin-right: 15px; font-size: 2.2rem; } .brand-text { display: flex; flex-direction: column; justify-content: center; } .brand-name { font-weight: 700; font-size: 2rem; letter-spacing: 2px; line-height: 1.1; } .slogan { font-size: 0.85rem; font-weight: 500; color: #b08d73; font-style: italic; letter-spacing: 0.5px; } /* ==================== NAVIGATION LINKS ==================== */ .navbar-nav .nav-link { font-weight: 700; color: #8a4b24 !important; margin: 0 0.7rem; position: relative; padding: 8px 0; transition: all 0.3s ease; } .navbar-nav .nav-link::after { content: ""; position: absolute; left: 50%; bottom: -6px; width: 0; height: 3px; background: #e0b680; border-radius: 3px; transition: all 0.3s ease; transform: translateX(-50%); } .navbar-nav .nav-link:hover, .navbar-nav .nav-link:focus { color: #e0b680 !important; } .navbar-nav .nav-link:hover::after, .navbar-nav .nav-link.active::after { width: 70%; } /* ==================== SEARCH BAR & ICONS ==================== */ .nav-icons { display: flex; align-items: center; gap: 15px; } .search-form { position: relative; display: flex; align-items: center; } .nav-icons .form-control { border: 1.5px solid #e0b680; border-radius: 30px; padding: 8px 40px 8px 15px; transition: all 0.3s ease; font-size: 14px; width: 235px; } .nav-icons .form-control:focus { box-shadow: 0 0 0 0.25rem rgba(224, 182, 128, 0.25); border-color: #e0b680; outline: none; } .search-btn { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #8a4b24; padding: 5px 10px; cursor: pointer; z-index: 10; transition: all 0.3s ease; } .search-btn:hover { color: #e0b680; } .nav-icons > a.btn { color: #8a4b24; transition: all 0.3s ease; background: none; border: none; font-size: 1.1rem; padding: 8px; } .nav-icons > a.btn:hover { color: #e0b680; } .badge { background: #e0b680 !important; color: #8a4b24 !important; } /* ==================== ALIGNMENT & RESPONSIVE ==================== */ @media (min-width: 992px) { .navbar-nav { position: absolute !important; left: 50% !important; transform: translateX(-50%) !important; margin: 0 !important; width: max-content; display: flex; justify-content: center; } .nav-icons { margin-left: auto !important; } } /* Responsive Fixes */ @media (max-width: 991.98px) { .brand-name { font-size: 1.6rem; } .navbar-brand .logo-icon { font-size: 1.8rem; margin-right: 10px; } .slogan { font-size: 0.75rem; } .navbar-nav { margin-top: 10px; } .nav-icons form { display: none; } } @media (max-width: 575.98px) { .brand-name { font-size: 1.4rem; letter-spacing: 1px; } .navbar-brand .logo-icon { font-size: 1.6rem; margin-right: 8px; } .navbar-nav .nav-link { margin: 0 0.4rem; font-size: 0.9rem; } }
+/* ================================================================
+   1. HỆ THỐNG LAYOUT TỔNG THỂ (FIX LỖI FOOTER CHÈN NỘI DUNG)
+   ================================================================ */
+/* Thiết lập body thành Flexbox để đẩy Footer xuống đáy trang */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    padding-top: 100px; /* Khoảng cách để không bị Header đè */
+    background-color: #fdf6e3;
+    font-family: "Quicksand", sans-serif;
+}
+
+/* Thẻ main đóng vai trò là "lò xo" giãn ra chiếm hết khoảng trống */
+main {
+    flex: 1 0 auto;
+}
+
+/* ================================================================
+   2. CHI TIẾT FOOTER
+   ================================================================ */
+footer {
+    background-color: #3c2f27; /* Màu nâu đậm Sweet Oven */
+    color: #fdf6e3;
+    padding: 60px 0 20px;
+    border-top: 5px solid #e0b680; /* Đường kẻ vàng đồng điểm nhấn */
+}
+
+.footer-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+}
+
+/* --- Khối giới thiệu --- */
+.footer-about .footer-logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #e0b680;
+    margin-bottom: 15px;
+    display: block;
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.footer-about p {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: #d4a76a;
+}
+
+/* --- Tiêu đề cột --- */
+.footer-column h4 {
+    color: #e0b680;
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+    position: relative;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.footer-column h4::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 40px;
+    height: 2px;
+    background-color: #e0b680;
+}
+
+/* --- Danh sách liên kết --- */
+.footer-column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-column ul li {
+    margin-bottom: 12px;
+}
+
+.footer-column ul li a {
+    color: #fdf6e3;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.footer-column ul li a:hover {
+    color: #e0b680;
+    padding-left: 8px;
+}
+
+/* --- Liên hệ & Mạng xã hội --- */
+.footer-contact p {
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.footer-contact i {
+    color: #e0b680;
+    width: 20px;
+    font-size: 1.1rem;
+}
+
+/* --- SOCIAL LINKS (ĐÃ PHÓNG TO & ĐÚNG MÀU NỀN TẢNG) --- */
+.social-links {
+    margin-top: 25px;
+    display: flex;
+    gap: 15px;
+}
+
+.social-links a {
+    width: 45px; /* Kích thước nút to hơn */
+    height: 45px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #e0b680;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-decoration: none;
+    font-size: 1.4rem; /* Icon to rõ */
+    border: 1px solid rgba(224, 182, 128, 0.2);
+}
+
+/* Hiệu ứng hover chung */
+.social-links a:hover {
+    color: #fff;
+    transform: translateY(-5px) scale(1.1);
+    border-color: transparent;
+}
+
+/* Màu đặc trưng từng nền tảng khi di chuột vào */
+.social-links a.facebook:hover {
+    background-color: #1877F2;
+    box-shadow: 0 5px 15px rgba(24, 119, 242, 0.4);
+}
+
+.social-links a.instagram:hover {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    box-shadow: 0 5px 15px rgba(214, 36, 159, 0.4);
+}
+
+.social-links a.youtube:hover {
+    background-color: #FF0000;
+    box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+}
+
+.social-links a.tiktok:hover {
+    background-color: #000000;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    border: 1px solid #fe2c55;
+}
+
+/* --- Bản quyền --- */
+.footer-bottom {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(224, 182, 128, 0.1);
+}
+
+.footer-bottom p {
+    font-size: 0.85rem;
+    color: #85756b;
+}
+
+/* ================================================================
+   3. RESPONSIVE (GIAO DIỆN DI ĐỘNG)
+   ================================================================ */
+@media (max-width: 768px) {
+    footer {
+        padding: 40px 0 20px;
+        text-align: center;
+    }
+
+    .footer-column h4::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .footer-contact p {
+        justify-content: center;
+    }
+
+    .social-links {
+        justify-content: center;
+    }
+
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+}

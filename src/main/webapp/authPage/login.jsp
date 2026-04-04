@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #8B4513;      /* Nâu sẫm */
+            --primary: #3C2F27;      /* Nâu sẫm */
             --primary-hover: #6d360f;
             --accent: #D4A76A;       /* Vàng nâu */
             --bg-color: #F9F6F0;     /* Màu nền sáng trơn */

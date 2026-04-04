@@ -43,46 +43,82 @@
       </div>
     </div>
 
-    <!-- Featured Products Section -->
     <section class="py-5 my-5">
       <div class="container">
         <div class="section-title">
           <h2>Sản Phẩm Nổi Bật</h2>
           <p>Những chiếc bánh được yêu thích nhất tại Sweet Oven Bakery</p>
         </div>
+            <div class="row g-4">
+                <c:forEach var="p" items="${featuredProducts}">
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="product-card">
+                            <!-- Badge hết hàng -->
+                            <c:if test="${p.stockQuantity <= 0}">
+                                <div class="product-badge sold-out">Hết hàng</div>
+                            </c:if>
 
-        <div class="row g-4">
-          <c:forEach var="p" items="${featuredProducts}">
-            <div class="col-md-6 col-lg-4 col-xl-3">
-              <div class="product-card">
-                <c:if test="${p.stockQuantity <= 0}">
-                  <div class="product-badge">Hết hàng</div>
-                </c:if>
-                <div class="product-img" onclick="goToProductDetail(${p.id})">
-                  <img src="${p.image}" alt="${p.name}">
-                </div>
-                <div class="product-content">
-                  <h3>${p.name}</h3>
-                  <div class="product-price">
-                    <fmt:formatNumber value="${p.price}" type="number" /> VNĐ
-                  </div>
-                  <form method="get" action="${pageContext.request.contextPath}/add-cart"
-                        onclick="event.stopPropagation();">
-                    <input type="hidden" name="productId" value="${p.id}">
-                    <input type="hidden" name="quantity" value="1">
-                    <input type="hidden" name="returnUrl" value="${pageContext.request.contextPath}/">
-                    <button type="submit" class="btn-add-to-cart" ${p.stockQuantity <=0 ? 'disabled' : '' }>
-                      <c:choose>
-                        <c:when test="${p.stockQuantity <= 0}">Hết hàng</c:when>
-                        <c:otherwise>Thêm vào giỏ</c:otherwise>
-                      </c:choose>
-                    </button>
-                  </form>
-                </div>
-              </div>
+                            <!-- Badge giảm giá - chỉ hiển thị khi có giảm giá hợp lệ -->
+                            <c:if test="${p.hasDiscount() and p.discountPercent != null and p.discountPercent > 0}">
+                                <div class="discount-badge">
+                                    -${p.discountPercent.intValue()}%
+                                </div>
+                            </c:if>
+
+                            <div class="product-img" onclick="goToProductDetail(${p.id})">
+                                <img src="${p.image}" alt="${p.name}" onerror="this.src='${pageContext.request.contextPath}/assets/images/placeholder.jpg'">
+                            </div>
+
+                            <div class="product-content">
+                                <h3 class="product-title">${p.name}</h3>
+
+                                <div class="product-price-wrapper">
+                                    <c:choose>
+                                        <c:when test="${p.hasDiscount() and p.discountedPrice != null and p.discountedPrice > 0}">
+                                            <div class="product-price has-discount">
+                                                <span class="original-price">
+                                                    <fmt:formatNumber value="${p.price}" type="number" pattern="#,##0" />đ
+                                                </span>
+                                                <span class="discounted-price">
+                                                    <fmt:formatNumber value="${p.discountedPrice}" type="number" pattern="#,##0" />đ
+                                                </span>
+                                            </div>
+                                            <div class="saved-info">
+                                                <i class="fas fa-gift"></i>
+                                                Tiết kiệm: <fmt:formatNumber value="${p.price - p.discountedPrice}" type="number" pattern="#,##0" />đ
+                                            </div>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div class="product-price">
+                                                <span class="normal-price">
+                                                    <fmt:formatNumber value="${p.price}" type="number" pattern="#,##0" />đ
+                                                </span>
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+
+                                <form method="get" action="${pageContext.request.contextPath}/add-cart"
+                                      onclick="event.stopPropagation();">
+                                    <input type="hidden" name="productId" value="${p.id}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <input type="hidden" name="returnUrl" value="${pageContext.request.contextPath}/">
+                                    <button type="submit" class="btn-add-to-cart" ${p.stockQuantity <= 0 ? 'disabled' : ''}>
+                                        <c:choose>
+                                            <c:when test="${p.stockQuantity <= 0}">
+                                                <i class="fas fa-times-circle"></i> Hết hàng
+                                            </c:when>
+                                            <c:otherwise>
+                                                <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </c:forEach>
             </div>
-          </c:forEach>
-        </div>
 
         <div class="text-center mt-5">
           <a href="menu" class="btn-view-all">
@@ -135,10 +171,13 @@
                             <p class="promo-condition">
                                 HSD: ${d.formattedEndDate}
                             </p>
-                            <%-- Thêm badge hết hạn --%>
-                            <c:if test="${d.endDate < now}">
-                                <div class="promo-expired-badge">Hết hạn</div>
-                            </c:if>
+                            <button class="btn-save-voucher"
+                                onclick="saveVoucher(${d.id}, '${d.code}', this)">
+                                    <i class="far fa-bookmark"></i>
+                                    <span>Lưu voucher</span>
+                            </button>
+
+
                         </div>
                     </div>
                 </c:forEach>

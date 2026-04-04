@@ -1,12 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
-<c:set var="contextPath" value="${pageContext.request.contextPath}" />
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
 <!doctype html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Sweet Oven Bakery - Footer</title>
 
     <link
@@ -22,7 +22,7 @@
             rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="${contextPath}/components/css/footer.css" />
+    <link rel="stylesheet" href="${contextPath}/components/css/footer.css"/>
 </head>
 <body>
 
@@ -31,12 +31,13 @@
         <div class="row">
             <div class="col-lg-4 mb-4 mb-lg-0">
                 <h4>Sweet Oven Bakery</h4>
-                <p>Tiệm bánh ngọt & đồ nướng được làm thủ công mỗi ngày, mang đến hương vị ngọt ngào và chân thật nhất. Chúng tôi tin rằng hạnh phúc có thể bắt đầu từ một chiếc bánh ấm nóng vừa ra lò.</p>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-tiktok"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
+                <p>Tiệm bánh ngọt & đồ nướng được làm thủ công mỗi ngày, mang đến hương vị ngọt ngào và chân thật nhất.
+                    Chúng tôi tin rằng hạnh phúc có thể bắt đầu từ một chiếc bánh ấm nóng vừa ra lò.</p>
+                <div class="social-links">
+                    <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="youtube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="tiktok"><i class="fab fa-tiktok"></i></a>
                 </div>
             </div>
 

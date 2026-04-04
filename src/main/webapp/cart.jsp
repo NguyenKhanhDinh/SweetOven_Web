@@ -12,9 +12,11 @@
     <meta name="description" content="Tiệm bánh ngọt & đồ nướng thủ công - Sweet Oven Bakery" />
     <link rel="icon" href="${pageContext.request.contextPath}/assets/picture/logo.png">
 
+    <!-- Các thư viện bên ngoài -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 
     <style>
         :root {
@@ -28,20 +30,28 @@
             --brand: #3c2f27;
         }
 
+        /* --- SỬA LỖI LAYOUT BẰNG FLEXBOX --- */
         body {
-            /* Thêm padding-top để fix lỗi bị header đè mất chữ */
             padding-top: 100px;
             font-family: 'Quicksand', sans-serif;
             background: var(--bg);
             color: var(--brand);
             margin: 0;
+            /* Cấu trúc Flexbox giúp đẩy footer xuống đáy */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         main {
             padding: 20px 0 60px 0;
+            /* Bắt buộc main giãn ra để lấp đầy khoảng trống */
+            flex: 1 0 auto;
         }
+        /* ------------------------------------ */
 
-        h1 {
+        /* Đổi h1 thành class để tránh ảnh hưởng đến h1 của Header/Footer */
+        .cart-title {
             text-align: center;
             margin-bottom: 40px;
             font-size: 32px;
@@ -179,7 +189,7 @@
         .checkout-actions {
             display: flex;
             flex-direction: column;
-            align-items: flex-end; /* Căn nút sang phải */
+            align-items: flex-end;
             margin-top: 20px;
         }
 
@@ -231,7 +241,7 @@
             }
 
             .btn-checkout {
-                width: 100%; /* Nút full width trên mobile */
+                width: 100%;
             }
         }
     </style>
@@ -243,7 +253,8 @@
 
 <main>
     <div class="container">
-        <h1>GIỎ HÀNG</h1>
+        <!-- Đã sửa thành class .cart-title -->
+        <h1 class="cart-title">GIỎ HÀNG</h1>
 
         <table class="content" aria-label="Giỏ hàng">
             <thead>
@@ -273,7 +284,7 @@
                 <tr>
                     <td class="san-pham">
                         <div class="img-container">
-                            <img src="${item.imageUrl}">
+                            <img src="${item.imageUrl}" alt="${item.product.name}">
                             <c:if test="${item.product.stockQuantity <= 0}">
                                 <div class="out-of-stock-overlay">Hết hàng</div>
                             </c:if>
@@ -317,7 +328,7 @@
                     <td style="text-align:center">
                         <form action="${pageContext.request.contextPath}/del-item" method="post" onsubmit="return confirm('Xóa sản phẩm này?')">
                             <input type="hidden" name="productId" value="${item.product.id}">
-                            <button type="submit" class="btn btn-link text-danger">
+                            <button type="submit" class="btn btn-link text-danger" title="Xóa sản phẩm">
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
                         </form>

@@ -10,8 +10,7 @@
     <link rel="icon" href="${pageContext.request.contextPath}/assets/picture/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- Đã thêm font Fredoka cho tiêu đề tròn trịa, chắc nét -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #8B4513;      /* Nâu sẫm */
@@ -70,11 +69,10 @@
             z-index: 2;
         }
 
-        /* Đã cập nhật font chữ cho Sweet Oven */
         .sidebar-content h1 {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 3.5rem; /* Điều chỉnh kích thước một chút để cân đối với font đậm */
-            font-weight: 700;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 600;
             margin-bottom: 15px;
             text-shadow: 2px 2px 8px rgba(0,0,0,0.15);
             letter-spacing: 1px;
@@ -360,7 +358,7 @@
     <div class="sidebar">
         <div class="sidebar-content">
             <h1>Sweet Oven</h1>
-            <p>Bánh tươi mỗi ngày, ngọt ngào trọn vị.<br>Cùng khám phá những hương vị tuyệt vời nhất!</p>
+            <p>Bánh tươi mỗi ngày, ngọt ngào trọn vị.<br>Cùng khám phá những hương vị tuyệt vời!</p>
             <p style="font-size: 0.95rem; margin-bottom: 15px; opacity: 0.9; font-weight: 400;">Bạn chưa có tài khoản?</p>
             <a href="register" class="btn-outline">ĐĂNG KÝ NGAY</a>
         </div>

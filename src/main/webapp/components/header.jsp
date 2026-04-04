@@ -34,7 +34,7 @@
               <i class="fas fa-search"></i>
             </button>
           </form>
-          <a href="${pageContext.request.contextPath}/my-cart" class="btn position-relative">
+          <a href="${pageContext.request.contextPath}/cart.jsp" class="btn position-relative">
             <i class="fas fa-shopping-cart"></i>
             <c:if test="${sessionScope.cart != null && sessionScope.cart.totalItems > 0}">
               <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">

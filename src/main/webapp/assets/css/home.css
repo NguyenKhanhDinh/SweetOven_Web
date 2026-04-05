@@ -291,7 +291,6 @@ body {
   color: var(--secondary);
 }
 
-/* UTIL */
 .btn-back-top {
   position: fixed;
   bottom: 20px;
@@ -309,7 +308,41 @@ body {
   bottom: 20px;
   right: 20px;
 }
+.btn-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 50px;
 
+  background: linear-gradient(135deg, var(--primary), #A0522D);
+  color: #fff;
+
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+
+  transition: var(--transition);
+  box-shadow: 0 6px 18px rgba(139, 69, 19, 0.3);
+}
+
+.btn-view-all i {
+  transition: var(--transition);
+}
+
+
+.btn-view-all:hover {
+  background: linear-gradient(135deg, var(--secondary), #E6B17E);
+  color: var(--primary);
+
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(212, 167, 106, 0.4);
+}
+
+/* Icon animation */
+.btn-view-all:hover i:last-child {
+  transform: translateX(5px);
+}
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .carousel-content h1 {

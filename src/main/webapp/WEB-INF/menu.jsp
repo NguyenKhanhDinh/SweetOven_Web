@@ -26,28 +26,26 @@
     <jsp:param name="activePage" value="menu" />
 </jsp:include>
 
+
 <main class="main-content">
     <div class="container">
         <div class="row">
 
-            <!-- SIDEBAR -->
             <aside class="col-lg-3">
                 <div class="sidebar">
                     <div class="sidebar-category">
                         <h3>DANH MỤC</h3>
                         <ul class="category-list">
                             <li>
-                                <a href="${pageContext.request.contextPath}/menu"
-                                   class="${currentCategory == null ? 'active' : ''}">
-                                    TẤT CẢ SẢN PHẨM
-                                </a>
+                                <a href="${pageContext.request.contextPath}/menu?categoryId=&keyword=${keyword != null ? keyword : ''}&sort=${sort != null ? sort : 'default'}"
+                                    class="${currentCategory == null ? 'active' : ''}">TẤT CẢ SẢN
+                                    PHẨM</a>
                             </li>
-
-                            <c:forEach var="c" items="${categoryList}">
+                            <c:forEach var="c" items="${categories}">
                                 <li>
-                                    <a href="${pageContext.request.contextPath}/menu?categoryId=${c.id}"
-                                       class="${currentCategory != null && currentCategory.id == c.id ? 'active' : ''}">
-                                        ${c.name}
+                                    <a href="${pageContext.request.contextPath}/menu?categoryId=${c.id}&keyword=${keyword != null ? keyword : ''}&sort=${sort != null ? sort : 'default'}"
+                                        class="${currentCategory != null && currentCategory.id == c.id ? 'active' : ''}">
+                                        ${c.name.toUpperCase()}
                                     </a>
                                 </li>
                             </c:forEach>
@@ -56,58 +54,99 @@
                 </div>
             </aside>
 
-            <!-- PRODUCTS -->
+
             <section class="col-lg-9 products-area">
                 <div class="products-header">
                     <div class="section-title">
-                        <h2>
-                            ${currentCategory != null ? currentCategory.name : 'TẤT CẢ SẢN PHẨM'}
-                        </h2>
+                        <h2 id="category-title">TẤT CẢ SẢN PHẨM</h2>
                         <div class="results-count" id="results-count"></div>
+                    </div>
+                    <div class="filter-section">
+                        <div class="price-filter">
+                            <form action="${pageContext.request.contextPath}/menu" method="get">
+                                <input type="hidden" name="keyword"
+                                    value="${keyword != null ? keyword : ''}">
+                                <input type="hidden" name="categoryId"
+                                    value="${currentCategory != null ? currentCategory.id : ''}">
+                                <select name="sort" class="form-select" onchange="this.form.submit()">
+                                    <option value="default" ${sort==null || sort=='default' ? 'selected'
+                                        : '' }>Mặc định</option>
+                                    <option value="price-asc" ${sort=='price-asc' ? 'selected' : '' }>
+                                        Giá: Thấp → Cao</option>
+                                    <option value="price-desc" ${sort=='price-desc' ? 'selected' : '' }>
+                                        Giá: Cao → Thấp</option>
+                                    <option value="name-asc" ${sort=='name-asc' ? 'selected' : '' }>Tên:
+                                        A → Z</option>
+                                    <option value="name-desc" ${sort=='name-desc' ? 'selected' : '' }>
+                                        Tên: Z → A</option>
+                                </select>
+                            </form>
+
+                        </div>
                     </div>
                 </div>
 
-                <div class="products-grid">
+                <div id="products-container">
+                    <div class="products-grid">
 
-                    <c:forEach var="p" items="${products}">
-                        <div class="product-card">
+                        <c:forEach var="p" items="${list}">
 
-                            <c:if test="${p.stockQuantity <= 0}">
-                                <div class="product-badge">Hết hàng</div>
-                            </c:if>
+                            <div class="product-card" data-product-id="${p.id}" data-name="${p.name}"
+                                data-price="${p.price}" data-category="${p.categoryId}">
+                                <c:if test="${p.stockQuantity <= 0}">
+                                    <div class="product-badge">Hết hàng</div>
+                                </c:if>
 
-                            <div class="product-img" onclick="goToProductDetail(${p.id})">
-                                <img src="${p.image}" alt="${p.name}">
-                            </div>
-
-                            <div class="product-content">
-                                <h3>${p.name}</h3>
-
-                                <div class="product-price">
-                                    <fmt:formatNumber value="${p.price}" /> VNĐ
+                                <div class="product-img" onclick="goToProductDetail(${p.id})">
+                                    <img src="${p.image}" alt="${p.name}">
                                 </div>
+                                <div class="product-content">
+                                    <h3>${p.name}</h3>
+                                    <div class="product-price">
+                                        <fmt:formatNumber value="${p.price}" type="number" /> VNĐ
+                                    </div>
 
-                                <form action="${pageContext.request.contextPath}/add-cart">
-                                    <input type="hidden" name="productId" value="${p.id}">
-                                    <button class="btn-add-to-cart" ${p.stockQuantity <=0 ? 'disabled' : ''}>
-                                        ${p.stockQuantity <= 0 ? 'Hết hàng' : 'Thêm vào giỏ'}
-                                    </button>
-                                </form>
+                                    <form method="get"
+                                        action="${pageContext.request.contextPath}/add-cart">
+                                        <input type="hidden" name="productId" value="${p.id}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <input type="hidden" name="returnUrl"
+                                            value="${pageContext.request.contextPath}/menu">
+                                        <button type="submit" class="btn-add-to-cart" ${p.stockQuantity
+                                            <=0 ? 'disabled' : '' }>
+                                            <c:choose>
+                                                <c:when test="${p.stockQuantity <= 0}">Hết hàng</c:when>
+                                                <c:otherwise>Thêm vào giỏ</c:otherwise>
+                                            </c:choose>
+                                        </button>
+                                    </form>
+
+                                </div>
                             </div>
-                        </div>
-                    </c:forEach>
+                        </c:forEach>
 
+
+                    </div>
+
+
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination" id="pagination">
+                        </ul>
+                    </nav>
                 </div>
             </section>
-
         </div>
     </div>
 </main>
 
+
 <!-- Toast -->
+
 <div class="toast-notification" id="toast">
-    <i class="fas fa-check-circle"></i>
-    <span id="toast-message"></span>
+    <div class="d-flex align-items-center">
+        <i class="fas fa-check-circle me-2"></i>
+        <span id="toast-message">Đã thêm vào giỏ hàng!</span>
+    </div>
 </div>
 
 <jsp:include page="/components/footer.jsp" />

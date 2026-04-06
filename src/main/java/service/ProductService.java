@@ -29,17 +29,20 @@ public class ProductService {
     public List<Product> getFeaturedProducts() {
         return productDao.getFeaturedProducts();
     }
-// lâý sản phẩm liên quan
-    public List<Product> getRelatedProducts(int categoryId,int currentProductId) {
-        int limit = 8;
-        return productDao.getRelatedProducts(categoryId,limit,currentProductId);
-    }
+
     // tìm sản phẩm theo category
     public List<Product> getProductsByCategoryId(int categoryId) {
        return productDao.getProductsByCategory(categoryId);
     }
     public List<Product> getProducts(int offset, int limit, String keyword, String sort, Integer categoryId) {
        return productDao.getProducts(offset, limit,keyword, sort, categoryId);
+    }
+    public Product findById(int id) {
+        return productDao.findById(id);
+    }
+    public List<Product> getRelatedProducts(int categoryId, int currentProductId) {
+        int limit = 8;
+        return productDao.getRelatedProducts(categoryId, currentProductId, limit);
     }
     }
 

@@ -41,7 +41,7 @@
                                     class="${currentCategory == null ? 'active' : ''}">TẤT CẢ SẢN
                                     PHẨM</a>
                             </li>
-                            <c:forEach var="c" items="${categories}">
+                            <c:forEach var="c" items="${categoryList}">
                                 <li>
                                     <a href="${pageContext.request.contextPath}/menu?categoryId=${c.id}&keyword=${keyword != null ? keyword : ''}&sort=${sort != null ? sort : 'default'}"
                                         class="${currentCategory != null && currentCategory.id == c.id ? 'active' : ''}">
@@ -89,7 +89,7 @@
                 <div id="products-container">
                     <div class="products-grid">
 
-                        <c:forEach var="p" items="${list}">
+                        <c:forEach var="p" items="${products}">
 
                             <div class="product-card" data-product-id="${p.id}" data-name="${p.name}"
                                 data-price="${p.price}" data-category="${p.categoryId}">

@@ -29,8 +29,8 @@ public class ListProductCotroller extends HttpServlet {
         int limit = 30;
         int offset = (page - 1) * limit;
 
-        if(keyword == null) keyword = "";
-        if(sort == null) sort = "";
+        if(keyword == null || keyword.trim().isEmpty()) keyword = "";
+        if(sort == null || sort.trim().isEmpty() || "default".equals(sort)) sort = "";
         Integer categoryId = null;
         if (categoryIdParam != null && !categoryIdParam.isEmpty()) {
             categoryId = Integer.parseInt(categoryIdParam);

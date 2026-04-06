@@ -44,7 +44,7 @@
                             <c:forEach var="c" items="${categoryList}">
                                 <li>
                                     <a href="${pageContext.request.contextPath}/menu?categoryId=${c.id}&keyword=${keyword != null ? keyword : ''}&sort=${sort != null ? sort : 'default'}"
-                                        class="${currentCategory != null && currentCategory.id == c.id ? 'active' : ''}">
+                                       class="${currentCategory != null && currentCategory.id == c.id ? 'active' : ''}">
                                         ${c.name.toUpperCase()}
                                     </a>
                                 </li>
@@ -68,18 +68,13 @@
                                     value="${keyword != null ? keyword : ''}">
                                 <input type="hidden" name="categoryId"
                                     value="${currentCategory != null ? currentCategory.id : ''}">
-                                <select name="sort" class="form-select" onchange="this.form.submit()">
-                                    <option value="default" ${sort==null || sort=='default' ? 'selected'
-                                        : '' }>Mặc định</option>
-                                    <option value="price-asc" ${sort=='price-asc' ? 'selected' : '' }>
-                                        Giá: Thấp → Cao</option>
-                                    <option value="price-desc" ${sort=='price-desc' ? 'selected' : '' }>
-                                        Giá: Cao → Thấp</option>
-                                    <option value="name-asc" ${sort=='name-asc' ? 'selected' : '' }>Tên:
-                                        A → Z</option>
-                                    <option value="name-desc" ${sort=='name-desc' ? 'selected' : '' }>
-                                        Tên: Z → A</option>
-                                </select>
+                                    <select name="sort" class="form-select" onchange="this.form.submit()">
+                                        <option value="default" ${sort == null || sort == 'default' ? 'selected' : ''}>Mặc định</option>
+                                        <option value="price_asc" ${sort == 'price_asc' ? 'selected' : ''}>Giá: Thấp → Cao</option>
+                                        <option value="price_desc" ${sort == 'price_desc' ? 'selected' : ''}>Giá: Cao → Thấp</option>
+                                        <option value="name_asc" ${sort == 'name_asc' ? 'selected' : ''}>Tên: A → Z</option>
+                                        <option value="name_desc" ${sort == 'name_desc' ? 'selected' : ''}>Tên: Z → A</option>
+                                    </select>
                             </form>
 
                         </div>

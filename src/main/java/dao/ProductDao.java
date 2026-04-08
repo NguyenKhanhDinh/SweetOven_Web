@@ -3,6 +3,7 @@ package dao;
 import model.Product;
 import utils.JdbiConnector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDao {
@@ -119,13 +120,32 @@ public class ProductDao {
 
     //đếm tổng sản phẩm
     public int countPrducts(String keyword, Integer categoryId) {
-        String sql = """
-    SELECT COUNT(*) FROM product p
-    WHERE p.status = 1
-    AND p.name LIKE :keyword
-    AND (:categoryId IS NULL OR p.category_id = :categoryId)
-""";
-        return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("keyword", "%" + keyword + "%").bind("categoryId", categoryId).mapTo(Integer.class).first());
+        StringBuilder sql = new StringBuilder("""
+        SELECT COUNT(*) FROM product p
+        WHERE p.status = 1
+    """);
+
+        List<Object> params = new ArrayList<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND p.name LIKE ?");
+            params.add("%" + keyword + "%");
+        }
+
+        if (categoryId != null) {
+            sql.append(" AND p.category_id = ?");
+            params.add(categoryId);
+        }
+
+        final String finalSql = sql.toString();
+
+        return JdbiConnector.getJdbi().withHandle(handle -> {
+            var query = handle.createQuery(finalSql);
+            for (int i = 0; i < params.size(); i++) {
+                query.bind(i, params.get(i));
+            }
+            return query.mapTo(Integer.class).first();
+        });
     }
 
     // lấy ảnh phụ cho sản phẩm
@@ -139,23 +159,29 @@ public class ProductDao {
                         .list()
         );
     }
-
     public List<Product> getProducts(int offset, int limit, String keyword, String sort, Integer categoryId) {
         StringBuilder sql = new StringBuilder("""
-                    SELECT p.*, pi.image_url as image
-                    FROM product p
-                    LEFT JOIN productimage pi 
-                        ON p.id = pi.product_id AND pi.is_primary = 1
-                    WHERE p.status = 1
-                """);
+        SELECT p.*, pi.image_url as image
+        FROM product p
+        LEFT JOIN productimage pi 
+            ON p.id = pi.product_id AND pi.is_primary = 1
+        WHERE p.status = 1
+    """);
+
+        List<Object> params = new ArrayList<>();
+
         if (categoryId != null) {
-            sql.append(" AND p.category_id = :categoryId");
+            sql.append(" AND p.category_id = ?");
+            params.add(categoryId);
         }
-        if (keyword != null && !keyword.isEmpty()) {
-            sql.append(" AND p.name LIKE :keyword");
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND p.name LIKE ?");
+            params.add("%" + keyword + "%");
         }
+
         String orderBy = "p.id DESC";
-        if (sort != null && !sort.isEmpty()) {
+        if (sort != null && !sort.isEmpty() && !"default".equals(sort)) {
             switch (sort) {
                 case "price_asc":
                     orderBy = "p.price ASC";
@@ -172,17 +198,19 @@ public class ProductDao {
             }
         }
         sql.append(" ORDER BY ").append(orderBy);
-        sql.append(" LIMIT :limit OFFSET :offset");
-        return JdbiConnector.getJdbi().withHandle(handle ->{var query = handle.createQuery(sql.toString()).bind("limit", limit).bind("offset", offset);
-            if (categoryId != null) {
-                query.bind("categoryId", categoryId);
-            }
+        sql.append(" LIMIT ? OFFSET ?");
+        params.add(limit);
+        params.add(offset);
 
-            if (keyword != null && !keyword.isEmpty()) {
-                query.bind("keyword", "%" + keyword + "%");
-            }
+        final String finalSql = sql.toString();
 
+        return JdbiConnector.getJdbi().withHandle(handle -> {
+            var query = handle.createQuery(finalSql);
+            for (int i = 0; i < params.size(); i++) {
+                query.bind(i, params.get(i));
+            }
             return query.mapToBean(Product.class).list();
         });
     }
+
 }

@@ -125,7 +125,34 @@
 
 
                     <nav aria-label="Page navigation">
-                        <ul class="pagination" id="pagination">
+                        <ul class="pagination justify-content-center">
+
+                            <!-- PREV -->
+                            <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   href="${pageContext.request.contextPath}/menu?page=${currentPage - 1}&keyword=${keyword != null ? keyword : ''}&sort=${sort != null ? sort : ''}&categoryId=${currentCategory != null ? currentCategory.id : ''}">
+                                    «
+                                </a>
+                            </li>
+
+                            <!-- PAGE NUMBERS -->
+                            <c:forEach begin="1" end="${totalPages}" var="i">
+                                <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                    <a class="page-link"
+                                       href="${pageContext.request.contextPath}/menu?page=${i}&keyword=${keyword != null ? keyword : ''}&sort=${sort != null ? sort : ''}&categoryId=${currentCategory != null ? currentCategory.id : ''}">
+                                            ${i}
+                                    </a>
+                                </li>
+                            </c:forEach>
+
+                            <!-- NEXT -->
+                            <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   href="${pageContext.request.contextPath}/menu?page=${currentPage + 1}&keyword=${keyword != null ? keyword : ''}&sort=${sort != null ? sort : ''}&categoryId=${currentCategory != null ? currentCategory.id : ''}">
+                                    »
+                                </a>
+                            </li>
+
                         </ul>
                     </nav>
                 </div>

@@ -92,9 +92,11 @@
                                     <div class="product-badge">Hết hàng</div>
                                 </c:if>
 
-                                <div class="product-img" onclick="goToProductDetail(${p.id})">
-                                    <img src="${p.image}" alt="${p.name}">
-                                </div>
+                                    <div class="product-img">
+                                        <a href="${pageContext.request.contextPath}/product?id=${p.id}">
+                                            <img src="${p.image}" alt="${p.name}">
+                                        </a>
+                                    </div>
                                 <div class="product-content">
                                     <h3>${p.name}</h3>
                                     <div class="product-price">

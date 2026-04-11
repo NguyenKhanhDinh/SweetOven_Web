@@ -14,4 +14,8 @@ public class UserDao {
                 handle.createQuery(sql).bind("username", username).bind("password", password).mapToBean(User.class).findFirst().orElse(null)
         );
     }
+    public User findById(int id) {
+        String sql = "SELECT * FROM `user` WHERE id = :id";
+        return JdbiConnector.getJdbi().withHandle(handle ->handle.createQuery(sql).bind("id", id).mapToBean(User.class).findFirst().orElse(null));
+    }
 }

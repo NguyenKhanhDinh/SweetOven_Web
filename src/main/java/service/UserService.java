@@ -12,5 +12,8 @@ public class UserService {
         }
         return userDao.login(username, password);
     }
-
+   // dùng lấy thông tin hiển thị trang profile
+    public User findById(int id) {
+       return userDao.findById(id);
+    }
 }

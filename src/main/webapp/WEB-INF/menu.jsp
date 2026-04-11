@@ -87,7 +87,7 @@
                         <c:forEach var="p" items="${products}">
 
                             <div class="product-card" data-product-id="${p.id}" data-name="${p.name}"
-                                data-price="${p.price}" data-category="${p.categoryId}">
+                                data-price="${p.displayPrice}" data-category="${p.categoryId}">
                                 <c:if test="${p.stockQuantity <= 0}">
                                     <div class="product-badge">Hết hàng</div>
                                 </c:if>
@@ -98,7 +98,7 @@
                                 <div class="product-content">
                                     <h3>${p.name}</h3>
                                     <div class="product-price">
-                                        <fmt:formatNumber value="${p.price}" type="number" /> VNĐ
+                                        <fmt:formatNumber value="${p.displayPrice}" type="number" /> VNĐ
                                     </div>
 
                                     <form method="get"

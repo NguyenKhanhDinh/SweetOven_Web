@@ -16,4 +16,26 @@ public class UserService {
     public User findById(int id) {
        return userDao.findById(id);
     }
+    // dùng cập nhật thông tin trang profile
+    public String updateProfile(User user) {
+        if(user == null) {
+            return "Dữ liệu rỗng";
+        }
+        if(user.getFullName() == null || user.getFullName().isBlank()) {
+            return "Thiếu họ tên";
+        }
+        Integer gender = user.getGender();
+        if (gender != 0 || gender !=1) {
+            return "Giới tính không hợp lệ";
+        }
+        if(user.getEmail() == null || user.getEmail().isBlank()) {
+            return "Thiếu email";
+        }
+        if(user.getPhoneNumber() == null || !user.getPhoneNumber().matches("\\d{9,11}")) {
+            return "Số điện thoại không hợp lệ";
+        }
+
+        boolean result = userDao.updateProfile(user);
+        return result?"SUCCESS": "Lỗi database";
+    }
 }

@@ -1,5 +1,6 @@
 package dao;
 import model.User;
+import org.jdbi.v3.core.Handle;
 import utils.JdbiConnector;
 public class UserDao {
     //check login
@@ -17,5 +18,23 @@ public class UserDao {
     public User findById(int id) {
         String sql = "SELECT * FROM `user` WHERE id = :id";
         return JdbiConnector.getJdbi().withHandle(handle ->handle.createQuery(sql).bind("id", id).mapToBean(User.class).findFirst().orElse(null));
+    }
+    public boolean updateProfile(User user) {
+        String sql = """
+                    
+                UPDATE user SET full_name = :fullName, email = :email, phone_number = :phone, gender = :gender WHERE id = :id """;
+        try {
+            Handle handle = JdbiConnector.getJdbi().open();
+            int rows = handle.createUpdate( sql).bind("fullName",user.getFullName())
+                    .bind("email" ,user.getEmail())
+                    .bind("phone", user.getPhoneNumber())
+                    .bind("gender",user.getGender())
+                    .bind("id", user.getId())
+                    .execute();
+            return (rows > 0);
+
+    } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

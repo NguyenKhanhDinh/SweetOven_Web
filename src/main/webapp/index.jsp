@@ -59,7 +59,7 @@
                 <div class="product-content">
                   <h3>${p.name}</h3>
                   <div class="product-price">
-                    <fmt:formatNumber value="${p.price}" type="number" /> VNĐ
+                    <fmt:formatNumber value="${p.displayPrice}" type="number" /> VNĐ
                   </div>
                   <form method="get" action="${pageContext.request.contextPath}/add-cart"
                         onclick="event.stopPropagation();">

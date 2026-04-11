@@ -21,7 +21,6 @@
             --light:#FFF9F0;
         }
 
-        /* HERO */
         .contact-page .hero {
             padding:120px 20px 60px;
             text-align:center;
@@ -38,7 +37,6 @@
             color:#6b4f2d;
         }
 
-        /* LAYOUT */
         .contact-page .wrapper {
             max-width:1200px;
             margin:auto;
@@ -64,19 +62,6 @@
             margin-bottom:20px;
         }
 
-        /* INFO */
-        .contact-page .info p {
-            display:flex;
-            gap:10px;
-            margin-bottom:12px;
-            color:#444;
-        }
-
-        .contact-page .info i {
-            color:var(--secondary);
-        }
-
-        /* FORM */
         .contact-page input,
         .contact-page textarea {
             width:100%;
@@ -99,7 +84,6 @@
             background:#c89555;
         }
 
-        /* MAP */
         .contact-page iframe {
             width:100%;
             border-radius:15px;
@@ -107,7 +91,6 @@
             border:none;
         }
 
-        /* RESPONSIVE */
         @media(max-width:768px){
             .contact-page .grid {
                 grid-template-columns:1fr;
@@ -118,20 +101,17 @@
 
 <body>
 
-<!-- ✅ HEADER INCLUDE -->
 <jsp:include page="/components/header.jsp">
     <jsp:param name="activePage" value="contact"/>
 </jsp:include>
 
 <div class="contact-page">
 
-    <!-- HERO -->
     <section class="hero">
         <h1>Liên hệ với chúng tôi</h1>
         <p>Sweet Oven luôn sẵn sàng hỗ trợ bạn 💛</p>
     </section>
 
-    <!-- CONTENT -->
     <div class="wrapper">
         <div class="grid">
 
@@ -154,26 +134,33 @@
             <div class="card">
                 <h3>Gửi tin nhắn</h3>
 
+                <!-- THÔNG BÁO -->
+                <c:if test="${not empty sessionScope.successMsg}">
+                    <div class="alert alert-success">
+                            ${sessionScope.successMsg}
+                    </div>
+                    <c:remove var="successMsg" scope="session"/>
+                </c:if>
+
+                <c:if test="${not empty sessionScope.errorMsg}">
+                    <div class="alert alert-danger">
+                            ${sessionScope.errorMsg}
+                    </div>
+                    <c:remove var="errorMsg" scope="session"/>
+                </c:if>
+
                 <form action="${pageContext.request.contextPath}/contact" method="post">
+
                     <input type="text" name="fullName" placeholder="Họ và tên" required>
+
                     <input type="email" name="email" placeholder="Email" required>
+
                     <input type="text" name="phoneNumber" placeholder="Số điện thoại">
+
                     <textarea name="content" placeholder="Nội dung" required></textarea>
 
                     <button type="submit">Gửi liên hệ</button>
                 </form>
-
-                <c:if test="${requestScope.successMsg}">
-                    <div class="alert alert-success mt-3">
-                        Gửi thành công!
-                    </div>
-                </c:if>
-
-                <c:if test="${requestScope.errorMsg}">
-                    <div class="alert alert-danger mt-3">
-                        Gửi thất bại!
-                    </div>
-                </c:if>
 
             </div>
 
@@ -182,7 +169,6 @@
 
 </div>
 
-<!-- ✅ FOOTER INCLUDE -->
 <jsp:include page="/components/footer.jsp"/>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

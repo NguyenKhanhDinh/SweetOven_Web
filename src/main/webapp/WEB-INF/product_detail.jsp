@@ -58,14 +58,7 @@
                     </c:otherwise>
                 </c:choose>
             </p>
-            <p class="product-desc">
-                ${product.description}
-            </p>
 
-            <div class="product-ingredients">
-                <strong>Thành phần chính:</strong>
-                ${product.ingredients}
-            </div>
 
             <div class="product-actions">
                 <form method="get" action="${pageContext.request.contextPath}/add-cart">
@@ -109,6 +102,28 @@
             </div>
         </div>
     </section>
+        <section class="product-description">
+            <div class="product-tabs">
+                <div class="tab-btn active" onclick="switchTab('desc', this)">MÔ TẢ CHUNG</div>
+                <div class="tab-btn" onclick="switchTab('comment', this)">BÌNH LUẬN</div>
+            </div>
+
+            <div class="desc-container">
+                <div id="desc" class="tab-content active">
+                    <p class="desc-text">${product.description}</p>
+
+                    <div class="desc-ingredients">
+                        <strong>Thành phần chính:</strong>
+                        <p>${product.ingredients}</p>
+                    </div>
+                </div>
+
+                <div id="comment" class="tab-content">
+                    <p>Chưa có bình luận nào.</p>
+                </div>
+            </div>
+
+        </section>
 
     <section class="related-products">
         <div class="section-title">
@@ -170,6 +185,15 @@
 
         </div>
     </section>
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-body p-0">
+            <img src="" id="modalImage" class="img-fluid w-100" alt="Phóng to">
+          </div>
+        </div>
+      </div>
+    </div>
 
 </main>
   <%@ include file="/components/footer.jsp" %>

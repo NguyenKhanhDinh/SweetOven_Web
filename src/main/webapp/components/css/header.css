@@ -1,13 +1,12 @@
-/* ==================== ROOT ==================== */
+/* ==================== ROOT & GLOBAL ==================== */
 :root {
-    --main-color: #3C2F27;
-    --text-light: #ffffff;
-    --text-light-soft: rgba(255, 255, 255, 0.7);
-    --hover-light: #dddddd;
-    --bg-color: #fdf6e3;
+    --header-bg: #ffffff;
+    --primary-color: #3C2F27;
+    --primary-soft: rgba(60, 47, 39, 0.7);
+    --hover-color: #5a463a;
+    --bg-body: #fdf6e3;
 }
 
-/* ==================== RESET ==================== */
 * {
     margin: 0;
     padding: 0;
@@ -16,225 +15,160 @@
 }
 
 body {
-    color: #333;
-    line-height: 1.6;
-    padding-top: 100px;
-    background-color: var(--bg-color);
+    padding-top: 90px;
+    background-color: var(--bg-body);
 }
 
-/* ==================== HEADER ==================== */
-header {
-    background: var(--main-color);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.2); /* viền trắng mỏng */
-}
-
+/* ==================== NAVBAR ==================== */
 .navbar {
-    background: var(--main-color) !important;
-    backdrop-filter: blur(6px);
-    padding: calc(0.9rem - 2px) 0 !important;
-    border-bottom: 2px solid #ffffff;
+    background: var(--header-bg) !important;
+    padding: 12px 0 !important;
+    border-bottom: 1px solid #eee;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.navbar .container-fluid {
-    position: relative;
-}
-
-/* ==================== LOGO ==================== */
+/* LOGO */
 .navbar-brand {
-    color: var(--text-light) !important;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
+    color: var(--primary-color) !important;
+    flex-shrink: 0;
 }
 
-.navbar-brand .logo-icon {
-    color: var(--text-light);
-    margin-right: 15px;
-    font-size: 2.2rem;
-}
-
-.brand-text {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+.logo-icon {
+    font-size: 2rem;
+    margin-right: 12px;
+    color: var(--primary-color);
 }
 
 .brand-name {
     font-weight: 700;
-    font-size: 2rem;
-    letter-spacing: 2px;
+    font-size: 1.6rem;
     line-height: 1.1;
-    color: var(--text-light);
 }
 
 .slogan {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text-light-soft);
-    font-style: italic;
-    letter-spacing: 0.5px;
+    font-size: 0.75rem;
+    color: var(--primary-soft);
 }
 
-/* ==================== NAVIGATION ==================== */
+/* MENU */
 .navbar-nav .nav-link {
     font-weight: 700;
-    color: var(--text-light) !important;
-    margin: 0 0.7rem;
-    position: relative;
+    color: var(--primary-color) !important;
+    margin: 0 10px;
     padding: 8px 0;
-    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    position: relative;
 }
 
 .navbar-nav .nav-link::after {
     content: "";
     position: absolute;
+    bottom: 0;
     left: 50%;
-    bottom: -6px;
     width: 0;
-    height: 3px;
-    background: var(--text-light);
-    border-radius: 3px;
-    transition: all 0.3s ease;
+    height: 2px;
+    background: var(--primary-color);
+    transition: 0.3s ease;
     transform: translateX(-50%);
-}
-
-.navbar-nav .nav-link:hover,
-.navbar-nav .nav-link:focus {
-    color: var(--hover-light) !important;
 }
 
 .navbar-nav .nav-link:hover::after,
 .navbar-nav .nav-link.active::after {
-    width: 70%;
+    width: 100%;
 }
 
-/* ==================== SEARCH & ICON ==================== */
-.nav-icons {
+/* ICONS */
+.icon-action {
+    color: var(--primary-color) !important;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    padding: 5px;
+    transition: 0.3s;
+}
+
+.icon-action:hover {
+    color: var(--hover-color) !important;
+}
+
+#cart-badge {
+    background: var(--primary-color) !important;
+    color: white !important;
+}
+
+.user-avatar {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--primary-color);
+}
+
+/* ==================== SEARCH DROPDOWN (HOVER EFFECT) ==================== */
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border-bottom: 3px solid var(--primary-color);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+
+    /* Ẩn mặc định */
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 999;
+}
+
+/* Khi có class active (thông qua JS hover) */
+.search-dropdown.active {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.search-form-full {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
-.search-form {
-    position: relative;
-    display: flex;
-    align-items: center;
+.search-form-full .form-control {
+    border: 1.2px solid #ddd;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
 }
 
-.nav-icons .form-control {
-    border: 1.5px solid var(--text-light);
-    border-radius: 30px;
-    padding: 8px 40px 8px 15px;
-    transition: all 0.3s ease;
-    font-size: 14px;
-    width: 235px;
-    background: transparent;
-    color: var(--text-light);
+.search-form-full .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(60, 47, 39, 0.1);
 }
 
-.nav-icons .form-control::placeholder {
-    color: var(--text-light-soft);
-}
-
-.nav-icons .form-control:focus {
-    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.2);
-    border-color: var(--text-light);
-    outline: none;
-}
-
-.search-btn {
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
+.btn-submit-search {
+    background: var(--primary-color);
+    color: white;
     border: none;
-    color: var(--text-light);
-    padding: 5px 10px;
-    cursor: pointer;
-    z-index: 10;
-    transition: all 0.3s ease;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: 700;
+    transition: 0.3s;
+    white-space: nowrap;
 }
 
-.search-btn:hover {
-    color: var(--hover-light);
+.btn-submit-search:hover {
+    background: var(--hover-color);
 }
 
-.nav-icons > a.btn {
-    color: var(--text-light);
-    transition: all 0.3s ease;
-    background: none;
-    border: none;
-    font-size: 1.1rem;
-    padding: 8px;
-}
-
-.nav-icons > a.btn:hover {
-    color: var(--hover-light);
-}
-
-/* ==================== BADGE ==================== */
-.badge {
-    background: var(--text-light) !important;
-    color: var(--main-color) !important;
-}
-
-/* ==================== DESKTOP ==================== */
-@media (min-width: 992px) {
-    .navbar-nav {
-        position: absolute !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        margin: 0 !important;
-        width: max-content;
-        display: flex;
-        justify-content: center;
-    }
-
-    .nav-icons {
-        margin-left: auto !important;
-    }
-}
-
-/* ==================== TABLET ==================== */
+/* ==================== RESPONSIVE ==================== */
 @media (max-width: 991.98px) {
-    .brand-name {
-        font-size: 1.6rem;
-    }
-
-    .navbar-brand .logo-icon {
-        font-size: 1.8rem;
-        margin-right: 10px;
-    }
-
-    .slogan {
-        font-size: 0.75rem;
-    }
-
     .navbar-nav {
-        margin-top: 10px;
+        margin: 20px 0 !important;
     }
-
-    .nav-icons form {
-        display: none;
-    }
-}
-
-/* ==================== MOBILE ==================== */
-@media (max-width: 575.98px) {
-    .brand-name {
-        font-size: 1.4rem;
-        letter-spacing: 1px;
-    }
-
-    .navbar-brand .logo-icon {
-        font-size: 1.6rem;
-        margin-right: 8px;
-    }
-
-    .navbar-nav .nav-link {
-        margin: 0 0.4rem;
-        font-size: 0.9rem;
+    .search-dropdown {
+        position: static; /* Trên mobile cho nằm cố định khi mở menu */
+        box-shadow: none;
+        border-top: 1px solid #eee;
     }
 }

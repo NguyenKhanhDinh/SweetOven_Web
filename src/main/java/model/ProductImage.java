@@ -32,7 +32,7 @@ public class ProductImage implements Serializable {
         return imageUrl;
     }
     public void setImageUrl(String imageUrl) {
-        imageUrl = imageUrl;
+        this.imageUrl = imageUrl;
     }
     public boolean isPrimary() {
         return isPrimary;

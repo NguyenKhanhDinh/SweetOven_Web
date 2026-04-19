@@ -30,8 +30,8 @@ public class ProductDao {
     }
 
     public int addProduct(Product p) {
-        String sql = "INSERT INTO product (product_code, category_id, name, price, stock_quantity, status, description, ingredients, is_featured, created_at, updated_at) "
-                + "VALUES (:productCode,:categoryId, :name, :price,:stockQuantity, :status, :description, :ingredients, :isFeatured, now(),now())";
+        String sql = "INSERT INTO product (product_code, category_id, name, original_price, discount_price, stock_quantity, status, description, ingredients, is_featured, created_at, updated_at) "
+                + "VALUES (:productCode,:categoryId, :name, :discountPrice, :stockQuantity,:stockQuantity, :status, :description, :ingredients, :isFeatured, now(),now())";
         return JdbiConnector.jdbi.withHandle(handle -> handle.createUpdate(sql).bindBean(p).executeAndReturnGeneratedKeys("id").mapTo(int.class).one());
     }
 
@@ -96,10 +96,10 @@ public class ProductDao {
         String orderBy = "p.id DESC";
         switch (sort) {
             case "price_asc":
-                orderBy = "p.price ASC";
+                orderBy = "COALESCE(NULLIF(p.discount_price, 0), p.original_price) ASC";
                 break;
             case "price_desc":
-                orderBy = "p.price DESC";
+                orderBy = "COALESCE(NULLIF(p.discount_price, 0), p.original_price) DESC";
                 break;
             case "name_asc":
                 orderBy = "p.name ASC";
@@ -184,10 +184,10 @@ public class ProductDao {
         if (sort != null && !sort.isEmpty() && !"default".equals(sort)) {
             switch (sort) {
                 case "price_asc":
-                    orderBy = "p.price ASC";
+                    orderBy = "COALESCE(NULLIF(p.discount_price, 0), p.original_price) ASC";
                     break;
                 case "price_desc":
-                    orderBy = "p.price DESC";
+                    orderBy = "COALESCE(NULLIF(p.discount_price, 0), p.original_price) DESC";
                     break;
                 case "name_asc":
                     orderBy = "p.name ASC";

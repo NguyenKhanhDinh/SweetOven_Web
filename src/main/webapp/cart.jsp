@@ -298,7 +298,7 @@
                     </td>
 
                     <td>
-                        <fmt:formatNumber value="${item.product.price}" type="number" /> VNĐ
+                        <fmt:formatNumber value="${item.product.displayPrice}" type="number" /> VNĐ
                     </td>
 
                     <td>
@@ -322,7 +322,7 @@
                     </td>
 
                     <td>
-                        <fmt:formatNumber value="${item.product.price * item.quantity}" type="number" /> VNĐ
+                        <fmt:formatNumber value="${item.product.displayPrice * item.quantity}" type="number" /> VNĐ
                     </td>
 
                     <td style="text-align:center">

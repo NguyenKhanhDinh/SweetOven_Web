@@ -108,3 +108,9 @@
 0:0:0:0:0:0:0:1 - - [15/Apr/2026:20:57:05 +0700] "GET /assets/css/style.css HTTP/1.1" 404 780
 0:0:0:0:0:0:0:1 - - [15/Apr/2026:20:57:05 +0700] "GET /assets/css/product_detail.css HTTP/1.1" 200 10696
 0:0:0:0:0:0:0:1 - - [15/Apr/2026:20:57:05 +0700] "GET /assets/js/product_detail.js HTTP/1.1" 200 1419
+0:0:0:0:0:0:0:1 - - [15/Apr/2026:20:58:25 +0700] "GET / HTTP/1.1" 200 27667
+0:0:0:0:0:0:0:1 - - [15/Apr/2026:20:58:25 +0700] "GET /assets/picture/94fd47cb-82f2-478c-9250-9749ad2c1cbb.jpg HTTP/1.1" 404 815
+0:0:0:0:0:0:0:1 - - [15/Apr/2026:20:58:27 +0700] "GET /product?id=5 HTTP/1.1" 200 25532
+0:0:0:0:0:0:0:1 - - [15/Apr/2026:20:58:27 +0700] "GET /assets/css/style.css HTTP/1.1" 404 780
+0:0:0:0:0:0:0:1 - - [15/Apr/2026:20:58:27 +0700] "GET /assets/css/product_detail.css HTTP/1.1" 304 -
+0:0:0:0:0:0:0:1 - - [15/Apr/2026:20:58:27 +0700] "GET /assets/js/product_detail.js HTTP/1.1" 304 -

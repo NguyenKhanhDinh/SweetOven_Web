@@ -322,7 +322,9 @@
         <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#passwordModal">
             Đổi mật khẩu
         </button>
-        <a href="logout" class="btn btn-danger">Đăng xuất</a>
+        <form action="/logout" method="post">
+            <button type="submit" class="btn btn-danger">Đăng xuất</button>
+        </form>
     </div>
 
 </div>

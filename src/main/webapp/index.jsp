@@ -53,13 +53,15 @@
                 <c:if test="${p.stockQuantity <= 0}">
                   <div class="product-badge">Hết hàng</div>
                 </c:if>
-                <div class="product-img" onclick="goToProductDetail(${p.id})">
-                  <img src="${p.image}" alt="${p.name}">
+                <div class="product-img">
+                    <a href="${pageContext.request.contextPath}/product?id=${p.id}">
+                        <img src="${p.image}" alt="${p.name}">
+                    </a>
                 </div>
                 <div class="product-content">
                   <h3>${p.name}</h3>
                   <div class="product-price">
-                    <fmt:formatNumber value="${p.price}" type="number" /> VNĐ
+                    <fmt:formatNumber value="${p.displayPrice}" type="number" /> VNĐ
                   </div>
                   <form method="get" action="${pageContext.request.contextPath}/add-cart"
                         onclick="event.stopPropagation();">

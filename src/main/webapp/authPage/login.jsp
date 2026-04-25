@@ -9,7 +9,6 @@
 
     <link rel="icon" href="${pageContext.request.contextPath}/assets/picture/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Đã thêm font Fredoka cho tiêu đề tròn trịa, chắc nét -->
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
@@ -35,15 +34,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: var(--bg-color); /* Nền trơn 1 màu */
+            background-color: var(--bg-color);
             padding: 20px;
         }
 
-        /* Container chính */
+        /* Container chính (Đồng bộ với Register: 900px x 560px) */
         .login-container {
             width: 900px;
             max-width: 100%;
-            height: 600px;
+            min-height: 560px;
             background: var(--white);
             border-radius: 24px;
             box-shadow: 0 20px 40px rgba(139, 69, 19, 0.08);
@@ -52,10 +51,10 @@
             position: relative;
         }
 
-        /* --- Cột trái: Nền trơn một màu --- */
+        /* --- Cột trái: Sidebar (Đồng bộ 45%) --- */
         .sidebar {
-            width: 50%;
-            background-color: var(--primary); /* Sử dụng màu nâu sẫm trơn, không họa tiết */
+            width: 45%;
+            background-color: var(--primary);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -66,34 +65,34 @@
 
         .sidebar-content {
             text-align: center;
-            padding: 40px;
+            padding: 30px;
             z-index: 2;
         }
 
         .sidebar-content h1 {
             font-family: 'Quicksand', sans-serif;
-            font-size: 2.5rem;
+            font-size: 2.3rem; /* Đồng bộ */
             font-weight: 600;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             text-shadow: 2px 2px 8px rgba(0,0,0,0.15);
             letter-spacing: 1px;
         }
 
         .sidebar-content p {
-            font-size: 1.15rem;
-            margin-bottom: 30px;
+            font-size: 1.1rem; /* Đồng bộ */
+            margin-bottom: 25px;
             font-weight: 500;
             line-height: 1.5;
         }
 
         .btn-outline {
             border: 2px solid var(--white);
-            padding: 12px 35px;
+            padding: 10px 30px; /* Đồng bộ */
             border-radius: 30px;
             color: var(--white);
             text-decoration: none;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.95rem; /* Đồng bộ */
             letter-spacing: 1px;
             transition: all 0.3s ease;
             display: inline-block;
@@ -106,10 +105,10 @@
             transform: translateY(-2px);
         }
 
-        /* --- Cột phải: Form Đăng nhập --- */
+        /* --- Cột phải: Form Đăng nhập (Đồng bộ 55%) --- */
         .form-box {
-            width: 50%;
-            padding: 50px 60px;
+            width: 55%;
+            padding: 35px 40px; /* Đồng bộ */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -118,11 +117,11 @@
 
         .login-header {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 25px;
         }
 
         .login-header h2 {
-            font-size: 28px;
+            font-size: 26px; /* Đồng bộ */
             color: var(--primary);
             font-weight: 800;
             letter-spacing: 1px;
@@ -131,25 +130,25 @@
 
         .input-group {
             position: relative;
-            margin-bottom: 22px;
+            margin-bottom: 18px; /* Thu nhỏ khoảng cách */
         }
 
-        .input-group i {
+        .input-group i:not(.toggle-password) {
             position: absolute;
-            left: 20px;
+            left: 18px; /* Đồng bộ */
             top: 50%;
             transform: translateY(-50%);
             color: #aaa;
             transition: 0.3s;
-            font-size: 1.1rem;
+            font-size: 1.05rem; /* Đồng bộ */
         }
 
         .input-group input {
             width: 100%;
-            padding: 16px 15px 16px 55px;
+            padding: 14px 15px 14px 50px; /* Đồng bộ với input của form đăng ký */
             border: 1.5px solid #eaeaea;
             border-radius: 12px;
-            font-size: 15px;
+            font-size: 14px; /* Đồng bộ */
             font-weight: 500;
             color: var(--text-main);
             background: #fafafa;
@@ -168,32 +167,52 @@
             box-shadow: 0 0 0 4px rgba(212, 167, 106, 0.15);
         }
 
-        .input-group input:focus + i {
+        .input-group input:focus + i:not(.toggle-password) {
             color: var(--primary);
+        }
+
+        .input-group .toggle-password {
+            position: absolute;
+            left: auto;
+            right: 18px; /* Đồng bộ */
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 1.05rem; /* Đồng bộ */
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .input-group .toggle-password:hover {
+            color: var(--primary);
+        }
+
+        .input-group input#password {
+            padding-right: 45px; /* Đồng bộ */
         }
 
         .error-message {
             background-color: #fff0f0;
             color: #d63031;
-            padding: 12px;
+            padding: 10px; /* Đồng bộ */
             border-radius: 10px;
-            font-size: 14px;
+            font-size: 13.5px; /* Đồng bộ */
             font-weight: 500;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px; /* Đồng bộ */
             border: 1px solid #ffcccc;
         }
 
         .actions {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .actions a {
             color: #777;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 13.5px; /* Thu nhỏ xíu cho gọn */
             font-weight: 600;
             transition: 0.3s;
         }
@@ -205,12 +224,12 @@
 
         .login-btn {
             width: 100%;
-            padding: 16px;
+            padding: 14px; /* Đồng bộ */
             border: none;
             border-radius: 12px;
             background: var(--primary);
             color: white;
-            font-size: 16px;
+            font-size: 15px; /* Đồng bộ */
             font-weight: 700;
             letter-spacing: 1px;
             cursor: pointer;
@@ -226,7 +245,7 @@
 
         .divider {
             text-align: center;
-            margin: 30px 0 25px;
+            margin: 25px 0 20px;
             position: relative;
         }
 
@@ -258,15 +277,15 @@
         }
 
         .social-btn {
-            width: 48px;
-            height: 48px;
+            width: 45px; /* Thu nhỏ một chút cho cân đối */
+            height: 45px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             text-decoration: none;
             transition: all 0.3s ease;
-            font-size: 20px;
+            font-size: 18px;
             border: 1px solid transparent;
         }
 
@@ -289,8 +308,8 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
         .social-btn.google svg {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
         }
         .social-btn.google:hover {
             background: #fdfdfd;
@@ -299,7 +318,7 @@
         }
 
         .back-home {
-            margin-top: 35px;
+            margin-top: 30px;
             text-align: center;
         }
 
@@ -317,19 +336,6 @@
         .back-home a:hover {
             color: var(--primary);
             transform: translateX(-5px);
-        }
-        .input-group .toggle-password {
-            left: auto;
-            right: 20px;
-            cursor: pointer;
-        }
-
-        .input-group .toggle-password:hover {
-            color: var(--primary);
-        }
-
-        .input-group input#password {
-            padding-right: 50px;
         }
 
         /* --- RESPONSIVE MOBILE --- */
@@ -350,7 +356,7 @@
                 padding: 0;
             }
 
-            .sidebar-content h1 { font-size: 3rem; margin-bottom: 5px; }
+            .sidebar-content h1 { font-size: 2.5rem; margin-bottom: 5px; }
             .sidebar-content p { display: none; }
 
             .sidebar-content .btn-outline {
@@ -361,7 +367,7 @@
 
             .form-box {
                 width: 100%;
-                padding: 40px 25px;
+                padding: 30px 20px;
             }
         }
     </style>
@@ -374,7 +380,7 @@
             <h1>Sweet Oven</h1>
             <p>Bánh tươi mỗi ngày, ngọt ngào trọn vị.<br>Cùng khám phá những hương vị tuyệt vời!</p>
             <p style="font-size: 0.95rem; margin-bottom: 15px; opacity: 0.9; font-weight: 400;">Bạn chưa có tài khoản?</p>
-            <a href="register" class="btn-outline">ĐĂNG KÝ NGAY</a>
+            <a href="${pageContext.request.contextPath}/authPage/register.jsp" class="btn-outline">ĐĂNG KÝ NGAY</a>
         </div>
     </div>
 
@@ -424,7 +430,7 @@
                  data-auto_prompt="false">
             </div>
 
-            <div style="position: relative; display: inline-block; width: 48px; height: 48px; border-radius: 50%; cursor: pointer;">
+            <div style="position: relative; display: inline-block; width: 45px; height: 45px; border-radius: 50%; cursor: pointer;">
 
                 <a href="javascript:void(0)" class="social-btn google" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
@@ -454,6 +460,7 @@
     document.addEventListener("DOMContentLoaded", function() {
         const togglePassword = document.getElementById("togglePassword");
         const passwordInput = document.getElementById("password");
+
         togglePassword.addEventListener("click", function () {
             const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
             passwordInput.setAttribute("type", type);
@@ -463,3 +470,4 @@
     });
 </script>
 </body>
+</html>

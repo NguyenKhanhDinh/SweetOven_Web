@@ -199,6 +199,14 @@
             transform:translateY(-2px);
             color:#fff;
         }
+        #addressModal select,
+        #addressModal select option {
+            color: #333 !important;
+            background-color: #fff !important;
+        }
+        #addressModal .form-control {
+            color: #333 !important;
+        }
     </style>
 </head>
 
@@ -491,32 +499,70 @@
 </div>
 
 <!-- ADDRESS -->
+<div class="card-box" style="grid-column:span 2;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="section-title m-0">Địa chỉ giao hàng</div>
+        <button class="btn btn-main btn-sm" data-bs-toggle="modal" data-bs-target="#addressModal">+ Thêm địa chỉ</button>
+    </div>
+
+    <div class="scroll-box">
+        <c:choose>
+            <c:when test="${empty addresses}">
+                <div class="text-center p-4 text-muted">
+                    <i class="fa fa-map-location-dot fa-2x mb-2"></i>
+                    <div>Bạn chưa có địa chỉ giao hàng nào.</div>
+                </div>
+            </c:when>
+            <c:otherwise>
+                <c:forEach var="a" items="${addresses}">
+                    <div class="address-item">
+                        <div class="d-flex justify-content-between">
+                            <b>${a.addressDetail}</b>
+                            <c:if test="${a.isDefault}">
+                                <span class="badge bg-success">Mặc định</span>
+                            </c:if>
+                        </div>
+                        <div class="text-muted">
+                                ${a.ward}, ${a.district}, ${a.province}
+                        </div>
+                        <div class="d-flex gap-2 mt-2">
+                            <div class="icon-btn" title="Sửa"><i class="fa fa-pen"></i></div>
+                            <div class="icon-btn text-danger" title="Xóa"><i class="fa fa-trash"></i></div>
+                        </div>
+                    </div>
+                </c:forEach>
+            </c:otherwise>
+        </c:choose>
+    </div>
+</div>
+<!-- MODAL THÊM ĐỊA CHỈ -->
 <div class="modal fade" id="addressModal">
     <div class="modal-dialog">
         <form action="address" method="post" class="modal-content">
-
             <div class="modal-header">
-                <h5>Thêm địa chỉ</h5>
+                <h5>Thêm địa chỉ giao hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-
             <div class="modal-body">
-
-                <input class="form-control mb-2" name="addressDetail" placeholder="Số nhà, tên đường">
-
-                <select class="form-control mb-2" id="province" name="province"></select>
-                <select class="form-control mb-2" id="district" name="district"></select>
-                <select class="form-control" id="ward" name="ward"></select>
-
+                <input class="form-control mb-2" name="addressDetail" placeholder="Số nhà, tên đường" required>
+                <select class="form-control mb-2" id="province" name="province" required>
+                    <option value="">Chọn Tỉnh/Thành phố</option>
+                </select>
+                <select class="form-control mb-2" id="district" name="district" required>
+                    <option value="">Chọn Quận/Huyện</option>
+                </select>
+                <select class="form-control" id="ward" name="ward" required>
+                    <option value="">Chọn Phường/Xã</option>
+                </select>
             </div>
-
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button class="btn btn-main">Lưu</button>
+                <button class="btn btn-main">Lưu địa chỉ</button>
             </div>
-
         </form>
     </div>
 </div>
+
 
 <!-- PASSWORD -->
 <div class="modal fade" id="passwordModal">
@@ -549,45 +595,64 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    const province = document.getElementById("province");
-    const district = document.getElementById("district");
-    const ward = document.getElementById("ward");
+    const provinceSelect = document.getElementById("province");
+    const districtSelect = document.getElementById("district");
+    const wardSelect = document.getElementById("ward");
 
+    // 1. Load Tỉnh/Thành
     fetch("https://provinces.open-api.vn/api/p/")
-        .then(res=>res.json())
-        .then(data=>{
-            let html='<option value="">Chọn tỉnh / thành</option>';
-            data.forEach(p=>{
-                html += `<option value="${p.code}">${p.name}</option>`;
+        .then(res => res.json())
+        .then(data => {
+            provinceSelect.options.length = 0;
+            provinceSelect.options.add(new Option("Chọn tỉnh / thành", ""));
+            data.forEach(p => {
+                let option = new Option(p.name, p.name);
+                option.setAttribute("data-id", p.code);
+                provinceSelect.options.add(option);
             });
-            province.innerHTML = html;
         });
 
-    province.onchange = function(){
-        fetch("https://provinces.open-api.vn/api/p/"+this.value+"?depth=2")
-            .then(res=>res.json())
-            .then(data=>{
-                let html='<option value="">Chọn quận / huyện</option>';
-                data.districts.forEach(d=>{
-                    html += `<option value="${d.code}">${d.name}</option>`;
+    // 2. Khi chọn Tỉnh -> Load Huyện
+    provinceSelect.onchange = function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const pCode = selectedOption.getAttribute("data-id");
+
+        districtSelect.options.length = 0;
+        districtSelect.options.add(new Option("Chọn quận / huyện", ""));
+        wardSelect.options.length = 0;
+        wardSelect.options.add(new Option("Chọn phường / xã", ""));
+
+        if (!pCode) return;
+
+        fetch("https://provinces.open-api.vn/api/p/" + pCode + "?depth=2")
+            .then(res => res.json())
+            .then(data => {
+                data.districts.forEach(d => {
+                    let option = new Option(d.name, d.name);
+                    option.setAttribute("data-id", d.code);
+                    districtSelect.options.add(option);
                 });
-                district.innerHTML = html;
-                ward.innerHTML = '<option>Chọn phường / xã</option>';
             });
     }
 
-    district.onchange = function(){
-        fetch("https://provinces.open-api.vn/api/d/"+this.value+"?depth=2")
-            .then(res=>res.json())
-            .then(data=>{
-                let html='<option value="">Chọn phường / xã</option>';
-                data.wards.forEach(w=>{
-                    html += `<option value="${w.name}">${w.name}</option>`;
+    // 3. Khi chọn Huyện -> Load Xã
+    districtSelect.onchange = function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const dCode = selectedOption.getAttribute("data-id");
+
+        wardSelect.options.length = 0;
+        wardSelect.options.add(new Option("Chọn phường / xã", ""));
+
+        if (!dCode) return;
+
+        fetch("https://provinces.open-api.vn/api/d/" + dCode + "?depth=2")
+            .then(res => res.json())
+            .then(data => {
+                data.wards.forEach(w => {
+                    wardSelect.options.add(new Option(w.name, w.name));
                 });
-                ward.innerHTML = html;
             });
     }
 </script>
-
 </body>
 </html>

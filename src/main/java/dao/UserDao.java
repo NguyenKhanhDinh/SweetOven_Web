@@ -54,4 +54,21 @@ public class UserDao {
         String sql = "SELECT COUNT(*) FROM `user` WHERE phone_number = :phone";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("phone", phone).mapTo(Integer.class).one())>0;
     }
+    //insert account to DB
+    public boolean insertUser(User user){
+        String sql = "INSERT INTO `user` (full_name, username, email, phone_number, password, gender, role_id, status, is_blocked) VALUES (:fullName, :username, :email, :phone, :password, :gender, :roleId, :status, :blocked) ";
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createUpdate(sql)
+                        .bind("fullName",  user.getFullName())
+                        .bind("username",  user.getUserName())
+                        .bind("email",     user.getEmail())
+                        .bind("phone",     user.getPhoneNumber())
+                        .bind("password",  user.getPassword())
+                        .bind("gender",    user.getGender())
+                        .bind("roleId",    user.getRoleId())
+                        .bind("status",    user.getStatus())
+                        .bind("blocked",   user.isBlocked())
+                        .execute()
+        ) > 0;
+    }
 }

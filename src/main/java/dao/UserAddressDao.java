@@ -21,4 +21,18 @@ public class UserAddressDao {
                 """;
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql).bindBean(userAddress).execute())>0;
     }
+    public boolean updateUserAddress(UserAddress userAddress){
+        String sql = """
+                UPDATE user_address 
+                SET address_detail = :addressDetail, ward = :ward, district = :district, province = :province
+                WHERE id = :id AND user_id = :userId
+                """;
+        return JdbiConnector.getJdbi().withHandle(handle ->handle.createUpdate(sql).bindBean(userAddress).execute())>0;
+    }
+    public boolean deleteUserAddress(int id,int userId){
+        String sql = """
+                DELETE FROM user_address WHERE id = :id AND user_id = :userId
+                """;
+        return JdbiConnector.getJdbi().withHandle(handle ->handle.createUpdate(sql).bind("id",id).bind("userId",userId).execute())>0;
+    }
 }

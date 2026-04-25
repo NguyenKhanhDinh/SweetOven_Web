@@ -502,7 +502,10 @@
 <div class="card-box" style="grid-column:span 2;">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="section-title m-0">Địa chỉ giao hàng</div>
-        <button class="btn btn-main btn-sm" data-bs-toggle="modal" data-bs-target="#addressModal">+ Thêm địa chỉ</button>
+        <button class="btn btn-main btn-sm" data-bs-toggle="modal" data-bs-target="#addressModal"
+                onclick="openAddModal()">
+            + Thêm địa chỉ
+        </button>
     </div>
 
     <div class="scroll-box">
@@ -535,16 +538,19 @@
         </c:choose>
     </div>
 </div>
-<!-- MODAL THÊM ĐỊA CHỈ -->
-<div class="modal fade" id="addressModal">
+<div class="modal fade" id="addressModal" tabindex="-1">
     <div class="modal-dialog">
         <form action="address" method="post" class="modal-content">
+            <input type="hidden" name="action" id="addressAction" value="add">
+            <input type="hidden" name="id" id="addressId" value="">
+
             <div class="modal-header">
-                <h5>Thêm địa chỉ giao hàng</h5>
+                <h5 id="addressModalTitle">Thêm địa chỉ giao hàng</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <input class="form-control mb-2" name="addressDetail" placeholder="Số nhà, tên đường" required>
+                <input class="form-control mb-2" name="addressDetail" id="addressDetail"
+                       placeholder="Số nhà, tên đường" required>
                 <select class="form-control mb-2" id="province" name="province" required>
                     <option value="">Chọn Tỉnh/Thành phố</option>
                 </select>
@@ -557,7 +563,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button class="btn btn-main">Lưu địa chỉ</button>
+                <button class="btn btn-main" id="addressSubmitBtn">Lưu địa chỉ</button>
             </div>
         </form>
     </div>
@@ -652,6 +658,94 @@
                     wardSelect.options.add(new Option(w.name, w.name));
                 });
             });
+    }
+
+    function openAddModal() {
+        document.getElementById("addressModalTitle").textContent = "Thêm địa chỉ giao hàng";
+        document.getElementById("addressAction").value = "add";
+        document.getElementById("addressId").value = "";
+        document.getElementById("addressDetail").value = "";
+        document.getElementById("addressSubmitBtn").textContent = "Lưu địa chỉ";
+
+        // Reset dropdowns
+        provinceSelect.value = "";
+        districtSelect.options.length = 0;
+        districtSelect.add(new Option("Chọn quận / huyện", ""));
+        wardSelect.options.length = 0;
+        wardSelect.add(new Option("Chọn phường / xã", ""));
+    }
+    function openEditModal(id, detail, province, district, ward) {
+        document.getElementById("addressModalTitle").textContent = "Chỉnh sửa địa chỉ";
+        document.getElementById("addressAction").value = "edit";
+        document.getElementById("addressId").value = id;
+        document.getElementById("addressDetail").value = detail;
+        document.getElementById("addressSubmitBtn").textContent = "Cập nhật";
+
+        // Mở modal
+        new bootstrap.Modal(document.getElementById("addressModal")).show();
+
+        // Chờ provinces load xong rồi set giá trị
+        function setProvinceAndLoadDistricts() {
+            // Set province
+            for (let i = 0; i < provinceSelect.options.length; i++) {
+                if (provinceSelect.options[i].value === province) {
+                    provinceSelect.selectedIndex = i;
+                    break;
+                }
+            }
+            const pOpt = provinceSelect.options[provinceSelect.selectedIndex];
+            const pCode = pOpt ? pOpt.getAttribute("data-id") : null;
+            if (!pCode) {
+                // Thử lại sau 500ms nếu tỉnh chưa load xong
+                setTimeout(setProvinceAndLoadDistricts, 500);
+                return;
+            }
+
+            // Load huyện rồi set
+            fetch("https://provinces.open-api.vn/api/p/" + pCode + "?depth=2")
+                .then(res => res.json())
+                .then(data => {
+                    districtSelect.options.length = 0;
+                    districtSelect.add(new Option("Chọn quận / huyện", ""));
+                    data.districts.forEach(d => {
+                        let opt = new Option(d.name, d.name);
+                        opt.setAttribute("data-id", d.code);
+                        districtSelect.add(opt);
+                    });
+                    // Set district
+                    for (let i = 0; i < districtSelect.options.length; i++) {
+                        if (districtSelect.options[i].value === district) {
+                            districtSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                    const dOpt = districtSelect.options[districtSelect.selectedIndex];
+                    const dCode = dOpt ? dOpt.getAttribute("data-id") : null;
+                    if (!dCode) return;
+
+                    // Load xã rồi set
+                    fetch("https://provinces.open-api.vn/api/d/" + dCode + "?depth=2")
+                        .then(res => res.json())
+                        .then(data2 => {
+                            wardSelect.options.length = 0;
+                            wardSelect.add(new Option("Chọn phường / xã", ""));
+                            data2.wards.forEach(w => wardSelect.add(new Option(w.name, w.name)));
+                            // Set ward
+                            for (let i = 0; i < wardSelect.options.length; i++) {
+                                if (wardSelect.options[i].value === ward) {
+                                    wardSelect.selectedIndex = i;
+                                    break;
+                                }
+                            }
+                        });
+                });
+        }
+
+        if (provinceSelect.options.length > 1) {
+            setProvinceAndLoadDistricts();
+        } else {
+            setTimeout(setProvinceAndLoadDistricts, 800);
+        }
     }
 </script>
 </body>

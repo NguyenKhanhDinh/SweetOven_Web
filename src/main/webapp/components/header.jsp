@@ -40,16 +40,17 @@
                         <a class="nav-link ${param.activePage == 'menu' ? 'active' : ''}" href="${contextPath}/menu">SẢN PHẨM</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link ${param.activePage == 'introduce' ? 'active' : ''}" href="${contextPath}/introduce.jsp">GIỚI THIỆU</a>
+                        <a class="nav-link ${param.activePage == 'introduce' ? 'active' : ''}" href="${contextPath}/introduce">GIỚI THIỆU</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link ${param.activePage == 'blog' ? 'active' : ''}" href="${contextPath}/blog.jsp">BLOG</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link ${param.activePage == 'contact' ? 'active' : ''}" href="${contextPath}/contact.jsp">LIÊN HỆ</a>
+                        <a class="nav-link ${param.activePage == 'contact' ? 'active' : ''}" href="${contextPath}/contact">LIÊN HỆ</a>
                     </li>
                 </ul>
 
+                <!-- Nhóm Icon: Tìm kiếm, Giỏ hàng, User -->
                 <div class="nav-icons d-flex align-items-center">
 
                     <div id="search-wrapper" class="d-inline-block">
@@ -65,12 +66,22 @@
                         </span>
                     </a>
 
+                    <!-- Icon Thành viên / Avatar -->
                     <c:choose>
                         <c:when test="${not empty sessionScope.user}">
-                            <a href="${contextPath}/profile" class="btn icon-action d-flex align-items-center">
+                            <%-- Dùng class 'btn icon-action' của đồng nghiệp để đẹp, nhưng dùng logic Cloudinary của bạn --%>
+                            <a href="${contextPath}/profile" class="btn icon-action d-flex align-items-center" title="Xin chào, ${sessionScope.user.fullName}">
                                 <c:choose>
                                     <c:when test="${not empty sessionScope.user.avatar}">
-                                        <img src="${contextPath}/${sessionScope.user.avatar}" alt="Avatar" width="28" height="28" class="user-avatar">
+                                        <c:choose>
+                                            <%-- Logic Cloudinary của bạn --%>
+                                            <c:when test="${sessionScope.user.avatar.startsWith('http')}">
+                                                <img src="${sessionScope.user.avatar}" alt="Avatar" width="28" height="28" class="user-avatar">
+                                            </c:when>
+                                            <c:otherwise>
+                                                <img src="${contextPath}/${sessionScope.user.avatar}" alt="Avatar" width="28" height="28" class="user-avatar">
+                                            </c:otherwise>
+                                        </c:choose>
                                     </c:when>
                                     <c:otherwise>
                                         <i class="fas fa-user-circle fs-4"></i>
@@ -78,6 +89,7 @@
                                 </c:choose>
                             </a>
                         </c:when>
+
                         <c:otherwise>
                             <a href="${contextPath}/login" class="btn icon-action" title="Đăng nhập">
                                 <i class="fas fa-user"></i>

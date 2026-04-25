@@ -6,14 +6,19 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.Order;
 import model.User;
+import service.OrderService;
 import service.UserService;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/profile")
 public class ProfileController extends HttpServlet {
+
     UserService userService = new UserService();
+    OrderService orderService = new OrderService();
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User loginUser = (User) request.getSession().getAttribute("user");
         if (loginUser == null) {
@@ -21,7 +26,10 @@ public class ProfileController extends HttpServlet {
             return;
         }
         User user = userService.findById(loginUser.getId());
+        List<Order> orders = orderService.getOrdersByUserId(loginUser.getId());
+
         request.setAttribute("user", user);
+        request.setAttribute("orders", orders);
         request.getRequestDispatcher("/WEB-INF/user.jsp").forward(request, response);
     }
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -42,21 +50,24 @@ public class ProfileController extends HttpServlet {
         loginUser.setFullName(fullName);
         loginUser.setEmail(email);
         loginUser.setPhoneNumber(phone);
-        int gender =-1;
         try {
             if (genderStr != null && !genderStr.isBlank()) {
                 loginUser.setGender(Integer.parseInt(genderStr));
             }
         } catch (NumberFormatException e) {
-           gender =-1;
+          loginUser.setGender(-1);
         }
 
-        String message = userService.updateProfile(loginUser);
-        if ("SUCCESS".equals(message)) {
+        boolean result = userService.updateProfile(loginUser);
+
+        if (result) {
+            User freshUser = userService.findById(loginUser.getId());
+            session.setAttribute("user", freshUser);
+
             session.setAttribute("successMsg", "Cập nhật thành công!");
-        }else{
-            session.setAttribute("errorMsg",message);
+        } else {
+            session.setAttribute("errorMsg", "Cập nhật thất bại!");
         }
-        response.sendRedirect(request.getContextPath()+"/profile");
+        response.sendRedirect(request.getContextPath() + "/profile");
     }
 }

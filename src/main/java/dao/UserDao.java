@@ -37,4 +37,11 @@ public class UserDao {
             throw new RuntimeException(e);
         }
     }
+    public boolean updateAvatar(int userId, String avatar) {
+        String sql = """
+                UPDATE user SET avatar = :avatar
+                WHERE id = :id
+        """;
+        return JdbiConnector.getJdbi().withHandle(handle ->handle.createUpdate(sql).bind("avatar",avatar).bind("id",userId).execute())>0;
+    }
 }

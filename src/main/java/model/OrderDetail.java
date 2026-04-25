@@ -2,7 +2,9 @@ package model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 public class OrderDetail implements Serializable {
 private int id;
@@ -81,4 +83,16 @@ public LocalDateTime getUpdatedAt() {
 public void setUpdatedAt(LocalDateTime updatedAt) {
     this.updatedAt = updatedAt;
 }
+
+    public String getTotalPriceFormatted() {
+        if(totalPrice == null) return "0 đ";
+        NumberFormat nf = NumberFormat.getInstance(new Locale("vi","VN"));
+        return nf.format(totalPrice) + " đ";
+    }
+
+    public String getBuyPriceFormatted() {
+        if(buyPrice == null) return "0 đ";
+        NumberFormat nf = NumberFormat.getInstance(new Locale("vi","VN"));
+        return nf.format(buyPrice) + " đ";
+    }
 }

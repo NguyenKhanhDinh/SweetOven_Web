@@ -1,0 +1,29 @@
+package dao;
+
+import model.Order;
+import utils.JdbiConnector;
+
+import java.util.List;
+
+public class OrderDao {
+    // phương thức để hiển thị đơn hàng ở trang profile
+    public List<Order> getOrdersByUserId(int userId) {
+        String sql = """
+            SELECT *
+            FROM `order`
+            WHERE user_id = :userId
+            ORDER BY order_date DESC
+            """;
+        return JdbiConnector.getJdbi().withHandle(handle ->handle.createQuery(sql).bind("userId",userId).mapToBean(Order.class).list());
+    }
+    // lấy đơn hàng theo id đơn hàng để hiển thị cho trang chi tiết đơn hàng
+    public Order getOrderByOrderId(int orderId) {
+        String sql = """
+            SELECT *
+            FROM `order`
+            WHERE id = :orderId
+            """;
+        return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("orderId",orderId).mapToBean(Order.class).findFirst().orElse(null));
+    }
+
+}

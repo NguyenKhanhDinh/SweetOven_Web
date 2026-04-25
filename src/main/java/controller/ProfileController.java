@@ -8,7 +8,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Order;
 import model.User;
+import model.UserAddress;
 import service.OrderService;
+import service.UserAddressService;
 import service.UserService;
 
 import java.io.IOException;
@@ -19,6 +21,7 @@ public class ProfileController extends HttpServlet {
 
     UserService userService = new UserService();
     OrderService orderService = new OrderService();
+    UserAddressService userAddressService = new UserAddressService();
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User loginUser = (User) request.getSession().getAttribute("user");
         if (loginUser == null) {
@@ -27,9 +30,11 @@ public class ProfileController extends HttpServlet {
         }
         User user = userService.findById(loginUser.getId());
         List<Order> orders = orderService.getOrdersByUserId(loginUser.getId());
+        List<UserAddress> addresses = userAddressService.getUserAddressByUserId(user.getId());
 
         request.setAttribute("user", user);
         request.setAttribute("orders", orders);
+        request.setAttribute("addresses", addresses);
         request.getRequestDispatcher("/WEB-INF/user.jsp").forward(request, response);
     }
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

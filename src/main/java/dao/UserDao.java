@@ -20,9 +20,7 @@ public class UserDao {
         return JdbiConnector.getJdbi().withHandle(handle ->handle.createQuery(sql).bind("id", id).mapToBean(User.class).findFirst().orElse(null));
     }
     public boolean updateProfile(User user) {
-        String sql = """
-                    
-                UPDATE user SET full_name = :fullName, email = :email, phone_number = :phone, gender = :gender WHERE id = :id """;
+        String sql = "UPDATE user SET full_name = :fullName, email = :email, phone_number = :phone, gender = :gender WHERE id = :id ";
         try {
             Handle handle = JdbiConnector.getJdbi().open();
             int rows = handle.createUpdate( sql).bind("fullName",user.getFullName())
@@ -43,5 +41,17 @@ public class UserDao {
                 WHERE id = :id
         """;
         return JdbiConnector.getJdbi().withHandle(handle ->handle.createUpdate(sql).bind("avatar",avatar).bind("id",userId).execute())>0;
+    }
+    public boolean isUsernameExists(String username) {
+        String sql = "SELECT COUNT(*) FROM `user` WHERE username = :username";
+        return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("username", username).mapTo(Integer.class).one())>0;
+    }
+    public boolean isEmailExists(String email) {
+        String sql = "SELECT COUNT(*) FROM `user` WHERE email = :email";
+        return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("email", email).mapTo(Integer.class).one())>0;
+    }
+    public boolean isPhoneExists(String phone) {
+        String sql = "SELECT COUNT(*) FROM `user` WHERE phone_number = :phone";
+        return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("phone", phone).mapTo(Integer.class).one())>0;
     }
 }

@@ -6,116 +6,199 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trang cá nhân</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
-        body { background: #f5f6fa; font-family: 'Segoe UI'; }
-        .container { margin-top: 90px; max-width: 1200px; }
-
-        .card {
-            border-radius: 18px;
-            border: none;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        body{
+            background:#f7f3e9;
+            font-family:'Segoe UI',sans-serif;
         }
 
-        .main-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
-
-        .scroll-box { max-height: 300px; overflow-y: auto; }
-        .scroll-box::-webkit-scrollbar { width: 6px; }
-        .scroll-box::-webkit-scrollbar-thumb { background: #e0b680; border-radius: 10px; }
-
-        .orders-header, .order-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr 60px;
-            padding: 10px;
-            align-items: center;
+        .profile-container{
+            margin-top:100px;
+            margin-bottom:50px;
+            max-width:1350px;
         }
 
-        .orders-header {
-            background: #e0b680;
-            color: white;
-            border-radius: 10px 10px 0 0;
+        .card-box{
+            background:#fff;
+            border-radius:20px;
+            box-shadow:0 8px 25px rgba(0,0,0,.06);
+            padding:22px;
         }
 
-        .favorite-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px,1fr));
-            gap: 10px;
+        .main-grid{
+            display:grid;
+            grid-template-columns:360px 1fr;
+            gap:20px;
         }
 
-        .favorite-item {
-            background: #fff;
-            padding: 10px;
-            border-radius: 10px;
-            position: relative;
-            text-align: center;
+        .bottom-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:20px;
+            margin-top:20px;
         }
 
-        .remove-fav {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: red;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+        @media(max-width:992px){
+            .main-grid,.bottom-grid{
+                grid-template-columns:1fr;
+            }
         }
 
-        .address-item {
-            border: 1px solid #eee;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 10px;
+        .avatar-box{
+            width:140px;
+            margin:auto;
+            position:relative;
         }
 
-        .address-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 5px;
+        .avatar{
+            width:140px;
+            height:140px;
+            border-radius:50%;
+            object-fit:cover;
+            border:4px solid #d9a45e;
         }
 
-        .icon-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #eee;
-            cursor: pointer;
+        .avatar-upload{
+            position:absolute;
+            right:0;
+            bottom:0;
+            width:38px;
+            height:38px;
+            border-radius:50%;
+            background:#c97b21;
+            color:#fff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
         }
 
-        .icon-btn:hover {
-            background: #e0b680;
-            color: white;
+        .avatar-upload:hover{
+            background:#a96414;
         }
 
-        .avatar-box { position: relative; width: 120px; margin: auto; }
-        .avatar {
-            width: 120px; height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #e0b680;
-        }
-        .avatar-upload {
-            position: absolute;
-            bottom: 0; right: 0;
-            background: #e0b680;
-            border-radius: 50%;
-            padding: 6px;
-            cursor: pointer;
+        .section-title{
+            font-size:20px;
+            font-weight:700;
+            margin-bottom:15px;
         }
 
-        .btn-warning { background: #e0b680; border: none; }
-        .text-muted i { opacity: 0.6; }
+        .scroll-box{
+            max-height:380px;
+            overflow-y:auto;
+            padding-right:4px;
+        }
+
+        .scroll-box::-webkit-scrollbar{
+            width:6px;
+        }
+
+        .scroll-box::-webkit-scrollbar-thumb{
+            background:#d9a45e;
+            border-radius:20px;
+        }
+
+        .orders-header,.order-row{
+            display:grid;
+            grid-template-columns:1.2fr 1fr 1fr 1fr 60px;
+            gap:10px;
+            align-items:center;
+            padding:12px;
+        }
+
+        .orders-header{
+            background:#c97b21;
+            color:#fff;
+            border-radius:10px;
+            font-weight:600;
+        }
+
+        .order-row{
+            border-bottom:1px solid #eee;
+        }
+
+        .favorite-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+            gap:12px;
+        }
+
+        .favorite-item{
+            border:1px solid #eee;
+            border-radius:14px;
+            padding:10px;
+            text-align:center;
+            position:relative;
+        }
+
+        .favorite-item img{
+            width:100%;
+            height:95px;
+            object-fit:cover;
+            border-radius:10px;
+        }
+
+        .remove-fav{
+            position:absolute;
+            top:5px;
+            right:5px;
+            width:24px;
+            height:24px;
+            border-radius:50%;
+            background:#dc3545;
+            color:#fff;
+            font-size:14px;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            cursor:pointer;
+        }
+
+        .address-item{
+            border:1px solid #eee;
+            border-radius:14px;
+            padding:14px;
+            margin-bottom:12px;
+        }
+
+        .icon-btn{
+            width:34px;
+            height:34px;
+            border-radius:50%;
+            border:1px solid #ddd;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+        }
+
+        .icon-btn:hover{
+            background:#c97b21;
+            color:#fff;
+        }
+
+        .btn-main{
+            background: linear-gradient(135deg,#e89b3c,#c46b12);
+            border:none;
+            color:#fff;
+            font-weight:600;
+            border-radius:10px;
+            padding:10px 18px;
+            box-shadow:0 6px 14px rgba(196,107,18,.25);
+            transition:0.25s;
+        }
+
+        .btn-main:hover{
+            background: linear-gradient(135deg,#d98424,#a85a10);
+            transform:translateY(-2px);
+            color:#fff;
+        }
     </style>
 </head>
 
@@ -125,192 +208,233 @@
     <jsp:param name="activePage" value="profile"/>
 </jsp:include>
 
-<div class="container">
+<div class="container profile-container">
 
     <!-- TOP -->
     <div class="main-grid">
 
         <!-- PROFILE -->
-        <div class="card p-3 text-center">
+        <div class="card-box text-center">
+
             <div class="avatar-box">
-                <img src="${pageContext.request.contextPath}/${user.avatar}" class="avatar">
-                <form action="upload-avatar" method="post" enctype="multipart/form-data">
+
+                <form action="${pageContext.request.contextPath}/upload-avatar" method="post" enctype="multipart/form-data">
+                    <c:choose>
+                        <c:when test="${not empty user.avatar}">
+                            <c:choose>
+                                <c:when test="${user.avatar.startsWith('http')}">
+                                    <img src="${sessionScope.user.avatar}" class="avatar">
+                                </c:when>
+                                <c:otherwise>
+                                    <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar">
+                                </c:otherwise>
+                            </c:choose>
+                        </c:when>
+                        <c:otherwise>
+
+                            <c:choose>
+                                <c:when test="${user.gender == 0}">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7imMwm5oKZ8t3qnhAptR3ZzpD-i2AuSiHoQ&s"
+                                         class="avatar">
+                                </c:when>
+                                <c:when test="${user.gender == 1}">
+                                    <img src="https://anhdephd.vn/wp-content/uploads/2022/04/avatar-trang-1.jpg"
+                                         class="avatar">
+                                </c:when>
+                                <c:otherwise>
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrHT9KQ3vag-Gdd9sjA7pi6zl2f_ho4Gh7Vg&s"
+                                         class="avatar">
+                                </c:otherwise>
+                            </c:choose>
+
+                        </c:otherwise>
+                    </c:choose>
+
                     <label class="avatar-upload">
                         <i class="fa fa-camera"></i>
-                        <input type="file" name="avatar" hidden onchange="this.form.submit()">
+                        <input type="file" hidden name="avatar" onchange="this.form.submit()">
                     </label>
+
                 </form>
             </div>
 
-            <h5 class="mt-3">${user.fullName}</h5>
+            <h4 class="mt-3">${user.fullName}</h4>
 
-            <div class="text-start mt-3">
-                <div>Email: ${user.email}</div>
-                <div>
-                    Giới tính:
+            <div class="text-start mt-4">
+                <p><b>Email:</b> ${user.email}</p>
+                <p><b>SĐT:</b> ${user.phoneNumber}</p>
+
+                <p>
+                    <b>Giới tính:</b>
                     <c:choose>
                         <c:when test="${user.gender == 0}">Nam</c:when>
                         <c:when test="${user.gender == 1}">Nữ</c:when>
                         <c:otherwise>Khác</c:otherwise>
                     </c:choose>
-                </div>
-                <div>SĐT: ${user.phoneNumber}</div>
+                </p>
             </div>
 
-            <button class="btn btn-warning mt-3" data-bs-toggle="modal" data-bs-target="#editModal">
-                Chỉnh sửa
+            <button class="btn btn-main w-100"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editModal">
+                Chỉnh sửa thông tin
             </button>
+
         </div>
 
-        <!-- ORDERS -->
-        <div class="card p-3">
-            <div class="card-title">Đơn hàng</div>
+        <!-- ORDER -->
+        <div class="card-box">
+
+            <div class="section-title">Đơn hàng của tôi</div>
 
             <div class="orders-header">
-                <div>Mã</div><div>Ngày</div><div>Tiền</div><div>Trạng thái</div><div></div>
+                <div>Mã đơn</div>
+                <div>Ngày</div>
+                <div>Tổng tiền</div>
+                <div>Trạng thái</div>
+                <div></div>
             </div>
 
             <div class="scroll-box">
 
                 <c:choose>
+
                     <c:when test="${empty orders}">
-                        <div class="text-center p-4 text-muted">
+                        <div class="text-center text-muted p-4">
                             <i class="fa fa-box-open fa-2x mb-2"></i>
-                            <div>Chưa có đơn hàng nào</div>
+                            <div>Chưa có đơn hàng</div>
                         </div>
                     </c:when>
 
                     <c:otherwise>
                         <c:forEach var="o" items="${orders}">
                             <div class="order-row">
+
                                 <div>${o.orderCode}</div>
-                                <div><fmt:formatDate value="${o.orderDate}" pattern="dd/MM/yyyy"/></div>
-                                <div><fmt:formatNumber value="${o.totalAmount}"/>đ</div>
-                                <div>${o.orderStatus}</div>
-                                <div><a href="order-detail?id=${o.id}"><i class="fa fa-eye"></i></a></div>
+
+                                <div>${o.orderDateFormatted}</div>
+                                <div>${o.totalAmountFormatted}</div>
+
+                                <div>
+                                    <c:choose>
+                                        <c:when test="${o.orderStatus == 1}">
+                                            <span class="badge bg-warning">Chờ xác nhận</span>
+                                        </c:when>
+
+                                        <c:when test="${o.orderStatus == 2}">
+                                            <span class="badge bg-info">Đang giao</span>
+                                        </c:when>
+
+                                        <c:when test="${o.orderStatus == 3}">
+                                            <span class="badge bg-success">Hoàn thành</span>
+                                        </c:when>
+
+                                        <c:when test="${o.orderStatus == 4}">
+                                            <span class="badge bg-danger">Đã hủy</span>
+                                        </c:when>
+
+                                        <c:otherwise>
+                                            <span class="badge bg-secondary">Khác</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+
+                                <div>
+                                    <a href="order-detail?id=${o.id}">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                </div>
+
                             </div>
                         </c:forEach>
                     </c:otherwise>
+
                 </c:choose>
 
             </div>
         </div>
-
     </div>
 
     <!-- BOTTOM -->
-    <div class="mt-4" style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div class="bottom-grid">
 
         <!-- FAVORITE -->
-        <div class="card p-3">
-            <div class="card-title">Yêu thích</div>
+        <div class="card-box">
+
+            <div class="section-title">Yêu thích</div>
 
             <div class="scroll-box">
                 <div class="favorite-grid">
 
-                    <c:choose>
-                        <c:when test="${empty favoriteProducts}">
-                            <div class="text-center p-4 text-muted">
-                                <i class="fa fa-heart-broken fa-2x mb-2"></i>
-                                <div>Chưa có sản phẩm yêu thích</div>
-                            </div>
-                        </c:when>
+                    <c:forEach var="p" items="${favoriteProducts}">
+                        <div class="favorite-item">
 
-                        <c:otherwise>
-                            <c:forEach var="p" items="${favoriteProducts}">
-                                <div class="favorite-item">
-                                    <form action="remove-favorite" method="post">
-                                        <input type="hidden" name="id" value="${p.id}">
-                                        <div class="remove-fav" onclick="this.closest('form').submit()">×</div>
-                                    </form>
-                                    <img src="${pageContext.request.contextPath}/${p.image}" style="width:100%;height:80px;object-fit:cover">
-                                    <div>${p.name}</div>
-                                    <b><fmt:formatNumber value="${p.price}"/>đ</b>
-                                </div>
-                            </c:forEach>
-                        </c:otherwise>
-                    </c:choose>
+                            <form action="remove-favorite" method="post">
+                                <input type="hidden" name="id" value="${p.id}">
+                                <div class="remove-fav" onclick="this.closest('form').submit()">×</div>
+                            </form>
+
+                            <img src="${pageContext.request.contextPath}/${p.image}">
+                            <div class="mt-2">${p.name}</div>
+
+                            <b>
+                                <fmt:formatNumber value="${p.price}" type="number"/> đ
+                            </b>
+
+                        </div>
+                    </c:forEach>
 
                 </div>
             </div>
         </div>
 
         <!-- VOUCHER -->
-        <div class="card p-3">
-            <div class="card-title">Voucher</div>
+        <div class="card-box">
+
+            <div class="section-title">Voucher</div>
 
             <div class="scroll-box">
 
-                <c:choose>
-                    <c:when test="${empty vouchers}">
-                        <div class="text-center p-4 text-muted">
-                            <i class="fa fa-ticket fa-2x mb-2"></i>
-                            <div>Chưa có voucher nào</div>
-                        </div>
-                    </c:when>
-
-                    <c:otherwise>
-                        <c:forEach var="v" items="${vouchers}">
-                            <div class="alert alert-warning">${v.code}</div>
-                        </c:forEach>
-                    </c:otherwise>
-                </c:choose>
+                <c:forEach var="v" items="${vouchers}">
+                    <div class="alert alert-warning">
+                            ${v.code}
+                    </div>
+                </c:forEach>
 
             </div>
         </div>
 
         <!-- ADDRESS -->
-        <div class="card p-3" style="grid-column: span 2;">
-            <div class="card-title d-flex justify-content-between">
-                <span>Địa chỉ</span>
-                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#addressModal">+ Thêm</button>
+        <div class="card-box" style="grid-column:span 2;">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="section-title m-0">Địa chỉ giao hàng</div>
+
+                <button class="btn btn-main btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addressModal">
+                    + Thêm địa chỉ
+                </button>
             </div>
 
             <div class="scroll-box">
 
-                <c:choose>
+                <c:forEach var="a" items="${addresses}">
+                    <div class="address-item">
 
-                    <c:when test="${empty addresses}">
-                        <div class="text-center p-4 text-muted">
-                            <i class="fa fa-map-location-dot fa-2x mb-2"></i>
-                            <div>Chưa có địa chỉ nào</div>
+                        <b>${a.addressDetail}</b>
 
-                            <button class="btn btn-warning btn-sm mt-2"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#addressModal">
-                                + Thêm địa chỉ
-                            </button>
+                        <div class="text-muted">
+                                ${a.ward}, ${a.district}, ${a.province}
                         </div>
-                    </c:when>
 
-                    <c:otherwise>
-                        <c:forEach var="a" items="${addresses}">
-                            <div class="address-item">
+                        <div class="d-flex gap-2 mt-2">
+                            <div class="icon-btn"><i class="fa fa-pen"></i></div>
+                            <div class="icon-btn"><i class="fa fa-trash"></i></div>
+                        </div>
 
-                                <div><b>${a.addressDetail}</b></div>
-
-                                <div class="text-muted">
-                                        ${a.ward}, ${a.district}, ${a.province}
-
-                                    <c:if test="${a.is_default == 1}">
-                                        <span class="badge bg-success ms-2">Mặc định</span>
-                                    </c:if>
-                                </div>
-
-                                <div class="address-actions">
-                                    <div class="icon-btn"><i class="fa fa-pen"></i></div>
-                                    <div class="icon-btn"><i class="fa fa-trash"></i></div>
-
-                                    <c:if test="${a.is_default == 0}">
-                                        <div class="icon-btn"><i class="fa fa-check"></i></div>
-                                    </c:if>
-                                </div>
-
-                            </div>
-                        </c:forEach>
-                    </c:otherwise>
-
-                </c:choose>
+                    </div>
+                </c:forEach>
 
             </div>
         </div>
@@ -318,71 +442,104 @@
     </div>
 
     <!-- ACTION -->
-    <div class="d-flex justify-content-center gap-3 mt-4">
-        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#passwordModal">
+    <div class="text-center mt-4">
+
+        <button class="btn btn-main"
+                data-bs-toggle="modal"
+                data-bs-target="#passwordModal">
             Đổi mật khẩu
         </button>
-        <form action="/logout" method="post">
-            <button type="submit" class="btn btn-danger">Đăng xuất</button>
-        </form>
+
+        <a href="logout" class="btn btn-danger ms-2">
+            Đăng xuất
+        </a>
+
     </div>
 
 </div>
 
-<!-- MODALS -->
+<!-- EDIT PROFILE -->
 <div class="modal fade" id="editModal">
     <div class="modal-dialog">
         <form action="profile" method="post" class="modal-content">
-            <div class="modal-header"><h5>Chỉnh sửa thông tin</h5></div>
+
+            <div class="modal-header">
+                <h5>Chỉnh sửa thông tin</h5>
+            </div>
+
             <div class="modal-body">
-                <input name="fullName" value="${user.fullName}" class="form-control mb-2">
-                <select name="gender" class="form-control mb-2">
-                    <option value="0" ${user.gender==0?'selected':''}>Nam</option>
-                    <option value="1" ${user.gender==1?'selected':''}>Nữ</option>
-                    <option value="2">Khác</option>
+
+                <input class="form-control mb-2" name="fullName" value="${user.fullName}">
+                <input class="form-control mb-2" name="email" value="${user.email}">
+                <input class="form-control mb-2" name="phoneNumber" value="${user.phoneNumber}">
+
+                <select class="form-control" name="gender">
+                    <option value="0" ${user.gender == 0 ? "selected" : ""}>Nam</option>
+                    <option value="1" ${user.gender == 1 ? "selected" : ""}>Nữ</option>
+                    <option value="2" ${user.gender == 2 ? "selected" : ""}>Khác</option>
                 </select>
-                <input name="email" value="${user.email}" class="form-control mb-2">
-                <input name="phoneNumber" value="${user.phoneNumber}" class="form-control">
+
             </div>
+
             <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button class="btn btn-warning">Lưu</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button class="btn btn-main">Lưu</button>
             </div>
+
         </form>
     </div>
 </div>
 
+<!-- ADDRESS -->
 <div class="modal fade" id="addressModal">
     <div class="modal-dialog">
         <form action="address" method="post" class="modal-content">
-            <div class="modal-header"><h5>Thêm địa chỉ</h5></div>
+
+            <div class="modal-header">
+                <h5>Thêm địa chỉ</h5>
+            </div>
+
             <div class="modal-body">
-                <input name="addressDetail" class="form-control mb-2">
-                <input name="ward" class="form-control mb-2">
-                <input name="district" class="form-control mb-2">
-                <input name="province" class="form-control mb-2">
+
+                <input class="form-control mb-2" name="addressDetail" placeholder="Số nhà, tên đường">
+
+                <select class="form-control mb-2" id="province" name="province"></select>
+                <select class="form-control mb-2" id="district" name="district"></select>
+                <select class="form-control" id="ward" name="ward"></select>
+
             </div>
+
             <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button class="btn btn-warning">Lưu</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button class="btn btn-main">Lưu</button>
             </div>
+
         </form>
     </div>
 </div>
 
+<!-- PASSWORD -->
 <div class="modal fade" id="passwordModal">
     <div class="modal-dialog">
         <form action="change-password" method="post" class="modal-content">
-            <div class="modal-header"><h5>Đổi mật khẩu</h5></div>
+
+            <div class="modal-header">
+                <h5>Đổi mật khẩu</h5>
+            </div>
+
             <div class="modal-body">
-                <input type="password" name="oldPassword" class="form-control mb-2">
-                <input type="password" name="newPassword" class="form-control mb-2">
-                <input type="password" name="confirmPassword" class="form-control">
+
+                <input type="password" class="form-control mb-2" name="oldPassword" placeholder="Mật khẩu cũ">
+                <input type="password" class="form-control mb-2" name="newPassword" placeholder="Mật khẩu mới">
+                <input type="password" class="form-control" name="confirmPassword" placeholder="Nhập lại mật khẩu">
+
             </div>
+
             <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button class="btn btn-warning">Xác nhận</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button class="btn btn-main">Xác nhận</button>
             </div>
+
         </form>
     </div>
 </div>
@@ -390,6 +547,47 @@
 <jsp:include page="/components/footer.jsp"/>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const province = document.getElementById("province");
+    const district = document.getElementById("district");
+    const ward = document.getElementById("ward");
+
+    fetch("https://provinces.open-api.vn/api/p/")
+        .then(res=>res.json())
+        .then(data=>{
+            let html='<option value="">Chọn tỉnh / thành</option>';
+            data.forEach(p=>{
+                html += `<option value="${p.code}">${p.name}</option>`;
+            });
+            province.innerHTML = html;
+        });
+
+    province.onchange = function(){
+        fetch("https://provinces.open-api.vn/api/p/"+this.value+"?depth=2")
+            .then(res=>res.json())
+            .then(data=>{
+                let html='<option value="">Chọn quận / huyện</option>';
+                data.districts.forEach(d=>{
+                    html += `<option value="${d.code}">${d.name}</option>`;
+                });
+                district.innerHTML = html;
+                ward.innerHTML = '<option>Chọn phường / xã</option>';
+            });
+    }
+
+    district.onchange = function(){
+        fetch("https://provinces.open-api.vn/api/d/"+this.value+"?depth=2")
+            .then(res=>res.json())
+            .then(data=>{
+                let html='<option value="">Chọn phường / xã</option>';
+                data.wards.forEach(w=>{
+                    html += `<option value="${w.name}">${w.name}</option>`;
+                });
+                ward.innerHTML = html;
+            });
+    }
+</script>
 
 </body>
 </html>

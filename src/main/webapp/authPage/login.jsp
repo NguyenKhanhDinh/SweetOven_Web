@@ -409,10 +409,10 @@
             </c:if>
 
             <div class="actions">
-                <a href="/forgot-password">Quên mật khẩu?</a>
+                <a href="${pageContext.request.contextPath}/authPage/forgetpassword.jsp">Quên mật khẩu?</a>
             </div>
 
-            <button type="submit" class="login-btn">ĐĂNG NHẬP</button>
+            <button type="submit" class="login-btn">ĐĂNG NHẬP</button> .
         </form>
 
         <div class="divider">

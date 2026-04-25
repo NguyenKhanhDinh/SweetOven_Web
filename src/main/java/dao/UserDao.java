@@ -42,15 +42,15 @@ public class UserDao {
         """;
         return JdbiConnector.getJdbi().withHandle(handle ->handle.createUpdate(sql).bind("avatar",avatar).bind("id",userId).execute())>0;
     }
-    public boolean isUsernameExists(String username) {
+    public static boolean isUsernameExists(String username) {
         String sql = "SELECT COUNT(*) FROM `user` WHERE username = :username";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("username", username).mapTo(Integer.class).one())>0;
     }
-    public boolean isEmailExists(String email) {
+    public static boolean isEmailExists(String email) {
         String sql = "SELECT COUNT(*) FROM `user` WHERE email = :email";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("email", email).mapTo(Integer.class).one())>0;
     }
-    public boolean isPhoneExists(String phone) {
+    public static boolean isPhoneExists(String phone) {
         String sql = "SELECT COUNT(*) FROM `user` WHERE phone_number = :phone";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("phone", phone).mapTo(Integer.class).one())>0;
     }

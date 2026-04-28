@@ -217,6 +217,20 @@
 </jsp:include>
 
 <div class="container profile-container">
+    <c:if test="${not empty sessionScope.successMsg}">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                ${sessionScope.successMsg}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <c:remove var="successMsg" scope="session"/>
+    </c:if>
+    <c:if test="${not empty sessionScope.errorMsg}">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${sessionScope.errorMsg}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <c:remove var="errorMsg" scope="session"/>
+    </c:if>
 
     <!-- TOP -->
     <div class="main-grid">
@@ -417,33 +431,61 @@
 
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div class="section-title m-0">Địa chỉ giao hàng</div>
-
                 <button class="btn btn-main btn-sm"
                         data-bs-toggle="modal"
-                        data-bs-target="#addressModal">
+                        data-bs-target="#addressModal"
+                        onclick="openAddModal()">
                     + Thêm địa chỉ
                 </button>
             </div>
 
             <div class="scroll-box">
-
-                <c:forEach var="a" items="${addresses}">
-                    <div class="address-item">
-
-                        <b>${a.addressDetail}</b>
-
-                        <div class="text-muted">
-                                ${a.ward}, ${a.district}, ${a.province}
+                <c:choose>
+                    <c:when test="${empty addresses}">
+                        <div class="text-center p-4 text-muted">
+                            <i class="fa fa-map-location-dot fa-2x mb-2"></i>
+                            <div>Bạn chưa có địa chỉ giao hàng nào.</div>
                         </div>
-
-                        <div class="d-flex gap-2 mt-2">
-                            <div class="icon-btn"><i class="fa fa-pen"></i></div>
-                            <div class="icon-btn"><i class="fa fa-trash"></i></div>
-                        </div>
-
-                    </div>
-                </c:forEach>
-
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="a" items="${addresses}">
+                            <div class="address-item ${a.isDefault ? 'is-default' : ''}">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <b>${a.addressDetail}</b>
+                                    <c:if test="${a.isDefault}">
+                                        <span class="badge bg-success">Mặc định</span>
+                                    </c:if>
+                                </div>
+                                <div class="text-muted">
+                                        ${a.ward}, ${a.district}, ${a.province}
+                                </div>
+                                <div class="d-flex gap-2 mt-2 align-items-center">
+                                    <div class="icon-btn" title="Sửa" onclick="openEditModal(${a.id},'${a.addressDetail}','${a.province}','${a.district}','${a.ward}')">
+                                        <i class="fa fa-pen"></i>
+                                    </div>
+                                    <form action="address" method="post" style="margin:0;" onsubmit="return confirm('Bạn có chắc muốn xóa địa chỉ này không?')">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="id" value="${a.id}">
+                                        <button type="submit" class="icon-btn border-0 text-danger" title="Xóa"
+                                                style="background:transparent;">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </form>
+                                    <c:if test="${!a.isDefault}">
+                                        <form action="address" method="post" style="margin:0;">
+                                            <input type="hidden" name="action" value="setDefault">
+                                            <input type="hidden" name="id" value="${a.id}">
+                                            <button type="submit" class="btn btn-sm btn-outline-warning" title="Đặt mặc định"
+                                                    style="font-size:12px; padding:4px 10px; border-radius:20px;">
+                                                Đặt mặc định
+                                            </button>
+                                        </form>
+                                    </c:if>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
 
@@ -498,45 +540,6 @@
     </div>
 </div>
 
-<!-- ADDRESS -->
-<div class="card-box" style="grid-column:span 2;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="section-title m-0">Địa chỉ giao hàng</div>
-        <button class="btn btn-main btn-sm" data-bs-toggle="modal" data-bs-target="#addressModal"
-                onclick="openAddModal()">
-            + Thêm địa chỉ
-        </button>
-    </div>
-
-    <div class="scroll-box">
-        <c:choose>
-            <c:when test="${empty addresses}">
-                <div class="text-center p-4 text-muted">
-                    <i class="fa fa-map-location-dot fa-2x mb-2"></i>
-                    <div>Bạn chưa có địa chỉ giao hàng nào.</div>
-                </div>
-            </c:when>
-            <c:otherwise>
-                <c:forEach var="a" items="${addresses}">
-                    <div class="address-item">
-                        <div class="d-flex justify-content-between">
-                            <b>${a.addressDetail}</b>
-                            <c:if test="${a.isDefault}">
-                                <span class="badge bg-success">Mặc định</span>
-                            </c:if>
-                        </div>
-                        <div class="text-muted">
-                                ${a.ward}, ${a.district}, ${a.province}
-                        </div>
-                        <div class="d-flex gap-2 mt-2">
-                            <div class="icon-btn" title="Sửa"><i class="fa fa-pen"></i></div>
-                            <div class="icon-btn text-danger" title="Xóa"><i class="fa fa-trash"></i></div>
-                        </div>
-                    </div>
-                </c:forEach>
-            </c:otherwise>
-        </c:choose>
-    </div>
 </div>
 <div class="modal fade" id="addressModal" tabindex="-1">
     <div class="modal-dialog">

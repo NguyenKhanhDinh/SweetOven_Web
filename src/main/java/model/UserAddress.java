@@ -1,8 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class UserAddress {
+public class UserAddress implements Serializable {
     private int id;
     private int userId;
     private String addressDetail;
@@ -61,10 +62,10 @@ public class UserAddress {
     public void setProvince(String province) {
         this.province = province;
     }
-    public boolean isDefault() {
+    public boolean getIsDefault() {
         return isDefault;
     }
-    public void setDefault(boolean aDefault) {
+    public void setIsDefault(boolean aDefault) {
         isDefault = aDefault;
     }
     public LocalDateTime getCreatedAt() {

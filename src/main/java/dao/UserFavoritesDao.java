@@ -13,4 +13,12 @@ public List<UserFavorites> getUserFavoritesByUserId(Integer userid) {
             """;
     return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("userId",userid).mapToBean(UserFavorites.class).list());
 }
+public boolean removeUserFavorites(int productId , int userId) {
+    String sql = """
+            DELETE FROM user_favorites WHERE product_id = :productId AND user_id = :userId
+            """;
+    return JdbiConnector.getJdbi().withHandle(handle ->handle.createUpdate(sql).bind("productId",productId).bind("userId",userId).execute())>0;
+
+
+}
 }

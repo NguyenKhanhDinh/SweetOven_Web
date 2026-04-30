@@ -44,5 +44,8 @@ public class ProductService {
         int limit = 8;
         return productDao.getRelatedProducts(categoryId, currentProductId, limit);
     }
+    public List<Product> getFavoriteProducts(List<Integer> productIds) {
+       return productDao.getFavoriteProducts(productIds);
+    }
     }
 

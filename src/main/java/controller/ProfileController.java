@@ -1,20 +1,22 @@
 package controller;
 
+import dao.UserFavoritesDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Order;
-import model.User;
-import model.UserAddress;
+import model.*;
 import service.OrderService;
+import service.ProductService;
 import service.UserAddressService;
 import service.UserService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @WebServlet("/profile")
 public class ProfileController extends HttpServlet {
@@ -22,6 +24,8 @@ public class ProfileController extends HttpServlet {
     UserService userService = new UserService();
     OrderService orderService = new OrderService();
     UserAddressService userAddressService = new UserAddressService();
+    UserFavoritesDao  userFavoritesDao = new UserFavoritesDao();
+    ProductService  productService = new ProductService();
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User loginUser = (User) request.getSession().getAttribute("user");
         if (loginUser == null) {
@@ -31,10 +35,21 @@ public class ProfileController extends HttpServlet {
         User user = userService.findById(loginUser.getId());
         List<Order> orders = orderService.getOrdersByUserId(loginUser.getId());
         List<UserAddress> addresses = userAddressService.getUserAddressByUserId(user.getId());
+        List<Product> favoritesProducts = new java.util.ArrayList<>();
+        try{
+            List<UserFavorites> favorites = userFavoritesDao.getUserFavoritesByUserId(user.getId());
+            List<Integer> favoriteProductIds = favorites.stream().map(UserFavorites::getProductId).collect(Collectors.toList());
+            if(!favoriteProductIds.isEmpty()){
+                favoritesProducts = productService.getFavoriteProducts(favoriteProductIds);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
         request.setAttribute("user", user);
         request.setAttribute("orders", orders);
         request.setAttribute("addresses", addresses);
+        request.setAttribute("favoriteProducts", favoritesProducts);
         request.getRequestDispatcher("/WEB-INF/user.jsp").forward(request, response);
     }
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

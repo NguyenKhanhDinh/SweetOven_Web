@@ -122,26 +122,57 @@
         .order-row{
             border-bottom:1px solid #eee;
         }
-
-        .favorite-grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+        .card-box .favorite-grid{
+            display:flex;
             gap:12px;
+            overflow-x:auto;
+            overflow-y:hidden;
+            padding-bottom:6px;
+        }
+        .card-box .favorite-grid::-webkit-scrollbar{
+            height:6px;
         }
 
-        .favorite-item{
-            border:1px solid #eee;
-            border-radius:14px;
-            padding:10px;
-            text-align:center;
-            position:relative;
+        .card-box .favorite-grid::-webkit-scrollbar-thumb{
+            background:#d9a45e;
+            border-radius:20px;
+        }
+        .favorite-item {
+            border: 1px solid #eee;
+            border-radius: 14px;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+            width: 150px;          /* dùng width cố định thay min-width */
+            max-width: 150px;
+            flex-shrink: 0;
+            box-sizing: border-box;
         }
 
-        .favorite-item img{
-            width:100%;
-            height:95px;
-            object-fit:cover;
-            border-radius:10px;
+        .favorite-item img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 10px;
+            display: block;
+        }
+
+        .fav-name {
+            font-size: 13px;
+            line-height: 1.3;
+            height: 2.6em;         /* cố định 2 dòng */
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            margin-top: 6px;
+        }
+
+        .fav-price {
+            display: block;
+            margin-top: 4px;
+            color: #c0392b;
+            font-size: 14px;
         }
 
         .remove-fav{
@@ -387,25 +418,23 @@
 
             <div class="scroll-box">
                 <div class="favorite-grid">
-
                     <c:forEach var="p" items="${favoriteProducts}">
                         <div class="favorite-item">
-
                             <form action="remove-favorite" method="post">
                                 <input type="hidden" name="id" value="${p.id}">
                                 <div class="remove-fav" onclick="this.closest('form').submit()">×</div>
                             </form>
 
-                            <img src="${pageContext.request.contextPath}/${p.image}">
-                            <div class="mt-2">${p.name}</div>
-
-                            <b>
-                                <fmt:formatNumber value="${p.price}" type="number"/> đ
-                            </b>
-
+                            <a href="${pageContext.request.contextPath}/product?id=${p.id}" style="text-decoration:none;color:inherit;">
+                                <img src="${p.image}" alt="${p.name}"
+                                     onerror="this.src='${pageContext.request.contextPath}/assets/img/no-image.png'">
+                                <div class="fav-name mt-2">${p.name}</div>
+                                <b class="fav-price">
+                                    <fmt:formatNumber value="${p.displayPrice}" type="number" groupingUsed="true"/> đ
+                                </b>
+                            </a>
                         </div>
                     </c:forEach>
-
                 </div>
             </div>
         </div>
@@ -500,9 +529,11 @@
             Đổi mật khẩu
         </button>
 
-        <a href="logout" class="btn btn-danger ms-2">
-            Đăng xuất
-        </a>
+        <form action="logout" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger ms-2">
+                Đăng xuất
+            </button>
+        </form>
 
     </div>
 

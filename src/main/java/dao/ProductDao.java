@@ -5,6 +5,7 @@ import utils.JdbiConnector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProductDao {
     // featured products for homepage
@@ -212,5 +213,14 @@ public class ProductDao {
             return query.mapToBean(Product.class).list();
         });
     }
-
+    public List<Product> getFavoriteProducts(List<Integer> productIds) {
+        if (productIds == null || productIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        String placeholders = productIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+        String sql = "SELECT p.*, pi.image_url as image FROM product p " +
+                "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
+                "WHERE p.id IN (" + placeholders + ") AND p.status = 1";
+        return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).mapToBean(Product.class).list());
+    }
 }

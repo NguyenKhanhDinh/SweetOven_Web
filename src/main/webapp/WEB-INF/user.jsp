@@ -42,6 +42,11 @@
             grid-template-columns:1fr 1fr;
             gap:20px;
             margin-top:20px;
+            min-width: 0;
+        }
+        .bottom-grid > .card-box {
+            min-width: 0;
+            overflow: hidden;
         }
 
         @media(max-width:992px){
@@ -122,20 +127,31 @@
         .order-row{
             border-bottom:1px solid #eee;
         }
-        .card-box .favorite-grid{
-            display:flex;
-            gap:12px;
-            overflow-x:auto;
-            overflow-y:hidden;
-            padding-bottom:6px;
-        }
-        .card-box .favorite-grid::-webkit-scrollbar{
-            height:6px;
+
+        .card-box .favorite-grid {
+            display: grid;
+            grid-template-columns:repeat(4, 1fr);
+            gap: 12px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 8px;
+            white-space: nowrap;
         }
 
-        .card-box .favorite-grid::-webkit-scrollbar-thumb{
-            background:#d9a45e;
-            border-radius:20px;
+        .favorite-scroll-wrapper {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 8px;
+            min-width: 0;
+        }
+        .favorite-scroll-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        .card-box .favorite-grid {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 12px;
+            width: max-content;
         }
         .favorite-item {
             border: 1px solid #eee;
@@ -143,7 +159,8 @@
             padding: 10px;
             text-align: center;
             position: relative;
-            width: 150px;          /* dùng width cố định thay min-width */
+            width: 150px;
+            min-width: 150px;
             max-width: 150px;
             flex-shrink: 0;
             box-sizing: border-box;
@@ -160,7 +177,7 @@
         .fav-name {
             font-size: 13px;
             line-height: 1.3;
-            height: 2.6em;         /* cố định 2 dòng */
+            height: 2.6em;
             overflow: hidden;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -413,10 +430,9 @@
 
         <!-- FAVORITE -->
         <div class="card-box">
-
             <div class="section-title">Yêu thích</div>
 
-            <div class="scroll-box">
+            <div class="favorite-scroll-wrapper">
                 <div class="favorite-grid">
                     <c:forEach var="p" items="${favoriteProducts}">
                         <div class="favorite-item">
@@ -424,13 +440,13 @@
                                 <input type="hidden" name="id" value="${p.id}">
                                 <div class="remove-fav" onclick="this.closest('form').submit()">×</div>
                             </form>
-
-                            <a href="${pageContext.request.contextPath}/product?id=${p.id}" style="text-decoration:none;color:inherit;">
+                            <a href="${pageContext.request.contextPath}/product?id=${p.id}"
+                               style="text-decoration:none;color:inherit;">
                                 <img src="${p.image}" alt="${p.name}"
                                      onerror="this.src='${pageContext.request.contextPath}/assets/img/no-image.png'">
-                                <div class="fav-name mt-2">${p.name}</div>
+                                <div class="fav-name">${p.name}</div>
                                 <b class="fav-price">
-                                    <fmt:formatNumber value="${p.displayPrice}" type="number" groupingUsed="true"/> đ
+                                    <fmt:formatNumber value="${p.displayPrice}" type="number" groupingUsed="true"/> VNĐ
                                 </b>
                             </a>
                         </div>

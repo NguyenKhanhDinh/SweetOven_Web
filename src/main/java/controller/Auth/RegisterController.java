@@ -26,4 +26,42 @@ public class RegisterController extends HttpServlet {
         }
         request.getRequestDispatcher("/authPage/register.jsp").forward(request, response);
     }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        String fullName = request.getParameter("fullName");
+        String username = request.getParameter("username");
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
+        String password = request.getParameter("password");
+
+        UserService.RegisterResult result = userService.register(fullName, username, email, phone, password);
+        switch (result) {
+            case SUCCESS -> {
+                response.sendRedirect(request.getContextPath() + "/login?register=success");
+            }
+            case USERNAME_EXISTS ->
+                    forwardWithError(request, response, "Tên đăng nhập đã tồn tại", fullName, username, email, phone);
+            case EMAIL_EXISTS ->
+                    forwardWithError(request, response, "Email đã tồn tại", fullName, username, email, phone);
+            case PHONE_EXISTS ->
+                    forwardWithError(request, response, "Số điện thoại đã tồn tại", fullName, username, email, phone);
+            case INVALID_INPUT ->
+                    forwardWithError(request, response, "Dư liệu không hợp lệ", fullName, username, email, phone);
+            default ->
+                    forwardWithError(request, response, "Lỗi hệ thống, hãy thử lại sau", fullName, username, email, phone);
+
+        }
+
+    }
+
+    private void forwardWithError(HttpServletRequest request, HttpServletResponse response, String errorMsg, String fullName, String username, String email, String phone) throws ServletException, IOException {
+        request.setAttribute("error", errorMsg);
+        request.setAttribute("fullName", fullName);
+        request.setAttribute("username", username);
+        request.setAttribute("email", email);
+        request.setAttribute("phone", phone);
+
+        request.getRequestDispatcher("/authPage/register.jsp").forward(request, response);
+    }
 }

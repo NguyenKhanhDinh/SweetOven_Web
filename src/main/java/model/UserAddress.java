@@ -62,12 +62,14 @@ public class UserAddress implements Serializable {
     public void setProvince(String province) {
         this.province = province;
     }
-    public boolean getIsDefault() {
+    public boolean isDefault() {
         return isDefault;
     }
-    public void setIsDefault(boolean aDefault) {
-        isDefault = aDefault;
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
     }
+    public boolean getIsDefault() {return isDefault;}
+    public void setIsDefault(boolean isDefault) { this.isDefault = isDefault; }
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }

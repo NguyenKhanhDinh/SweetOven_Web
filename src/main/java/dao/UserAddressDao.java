@@ -18,7 +18,7 @@ public class UserAddressDao {
     public boolean insertUserAddress(UserAddress userAddress) {
         String sql = """
                 INSERT INTO user_address (user_id, address_detail, ward, district, province, is_default) 
-                                     VALUES (:userId, :addressDetail, :ward, :district, :province, :default)
+                                     VALUES (:userId, :addressDetail, :ward, :district, :province, :isDefault)
                 """;
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql).bindBean(userAddress).execute()) > 0;
     }
@@ -39,6 +39,14 @@ public class UserAddressDao {
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql).bind("id", id).bind("userId", userId).execute()) > 0;
     }
 
+    public void clearDefaultUserAddress(int userId) {
+        JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createUpdate("UPDATE user_address SET is_default = false WHERE user_id = :userId")
+                        .bind("userId", userId)
+                        .execute()
+        );
+    }
+
     public boolean setDefaultUserAddress(int id, int userId) {
        return JdbiConnector.getJdbi().withHandle(handle -> {
            handle.createUpdate("UPDATE user_address SET is_default = false WHERE user_id = :userId")
@@ -50,5 +58,6 @@ public class UserAddressDao {
                    .execute()>0;
        });
     }
+
 }
 

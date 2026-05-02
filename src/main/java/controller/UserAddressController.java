@@ -35,14 +35,14 @@ public class UserAddressController extends HttpServlet {
                    String ward = request.getParameter("ward");
 
                    UserAddress userAddress = new UserAddress();
-                   userAddress.setId(user.getId());
+                   userAddress.setUserId(user.getId());
                    userAddress.setAddressDetail(addresssDetail);
                    userAddress.setProvince(province);
                    userAddress.setDistrict(district);
                    userAddress.setWard(ward);
+                   userAddress.setIsDefault(true);
 
-                   List<UserAddress> existing = userAddressService.getUserAddressByUserId(user.getId());
-                   userAddress.setIsDefault(existing== null||existing.isEmpty());
+                   userAddressService.clearDefaultUserAddress(user.getId());
                    userAddressService.addUserAddress(userAddress);
                    break;
                 }
@@ -65,7 +65,16 @@ public class UserAddressController extends HttpServlet {
                 }
                 case "delete": {
                     int id = Integer.parseInt(request.getParameter("id"));
+                    List<UserAddress> existing  = userAddressService.getUserAddressByUserId(user.getId());
+                    UserAddress toDelete = existing.stream().filter(a -> a.getId() == id).findFirst().orElse(null);
                     userAddressService.deleteUserAddress(id,user.getId());
+
+                    if (toDelete != null && toDelete.getIsDefault()) {
+                        List<UserAddress> remaining = userAddressService.getUserAddressByUserId(user.getId());
+                        if (remaining != null && !remaining.isEmpty()) {
+                            userAddressService.setDefaultUserAddress(remaining.get(0).getId(), user.getId());
+                        }
+                    }
                     break;
                 }
                 case "setDefault": {

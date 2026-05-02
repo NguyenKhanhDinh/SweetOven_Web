@@ -23,4 +23,7 @@ public class UserAddressService {
     public boolean setDefaultUserAddress(int id,int userId) {
         return userAddressDao.setDefaultUserAddress(id, userId);
     }
+    public void clearDefaultUserAddress(int userId) {
+        userAddressDao.clearDefaultUserAddress(userId);
+    }
 }

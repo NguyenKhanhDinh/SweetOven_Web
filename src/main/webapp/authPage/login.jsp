@@ -380,7 +380,7 @@
             <h1>Sweet Oven</h1>
             <p>Bánh tươi mỗi ngày, ngọt ngào trọn vị.<br>Cùng khám phá những hương vị tuyệt vời!</p>
             <p style="font-size: 0.95rem; margin-bottom: 15px; opacity: 0.9; font-weight: 400;">Bạn chưa có tài khoản?</p>
-            <a href="${pageContext.request.contextPath}/authPage/register.jsp" class="btn-outline">ĐĂNG KÝ NGAY</a>
+            <a href="${pageContext.request.contextPath}/register" class="btn-outline">ĐĂNG KÝ NGAY</a>
         </div>
     </div>
 

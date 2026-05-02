@@ -104,4 +104,26 @@ public class UserService {
                 && pwd.matches(".*[0-9].*")
                 && pwd.matches(".*[^A-Za-z0-9].*");
     }
+    public enum ChangePasswordResult {
+        SUCCESS,
+        WRONG_OLD_PASSWORD,
+        WEAK_NEW_PASSWORD,
+        CONFIRM_NOT_MATCH,
+        ERROR
+    }
+    public ChangePasswordResult changePassword(int userId,String oldPassword, String newPassword, String confirmPassword) {
+        if(!newPassword.equals(confirmPassword)) {
+            return ChangePasswordResult.CONFIRM_NOT_MATCH;
+        }
+        if(!isStrongPassword(newPassword)) {
+            return  ChangePasswordResult.WEAK_NEW_PASSWORD;
+        }
+        String storeHash = userDao.findPasswordById(userId);
+        if(storeHash == null || !utils.PasswordUtil.verifyPassword(oldPassword, storeHash)) {
+            return ChangePasswordResult.WRONG_OLD_PASSWORD;
+        }
+        String newHash = utils.PasswordUtil.hashPassword(newPassword);
+        boolean ok = userDao.updatePassword(userId, newHash);
+        return ok ? ChangePasswordResult.SUCCESS: ChangePasswordResult.ERROR;
+    }
 }

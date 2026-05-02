@@ -71,4 +71,12 @@ public class UserDao {
                         .execute()
         ) > 0;
     }
+    public String findPasswordById(int id) {
+        String sql = "SELECT password FROM `user` WHERE id = :id";
+        return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("id",id).mapTo(String.class).findFirst().orElse(null));
+    }
+    public boolean updatePassword(int id, String newPassword) {
+        String sql = "UPDATE `user` SET password = :password WHERE id = :id";
+        return JdbiConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql).bind("password",newPassword).bind("id",id).execute())>0;
+    }
 }

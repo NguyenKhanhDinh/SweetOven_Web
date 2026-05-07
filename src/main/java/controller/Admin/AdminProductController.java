@@ -14,7 +14,9 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/admin/products")
 @MultipartConfig
@@ -23,6 +25,21 @@ public class AdminProductController extends HttpServlet {
     private ProductDao productDao;
     private CategoryDao categoryDao;
     private ProductImageDao productImageDao;
+
+    private static final Map<Integer, String> CATEGORY_CODE_MAP = new HashMap<>();
+    static {
+        CATEGORY_CODE_MAP.put(1, "BN");   // Bánh ngọt
+        CATEGORY_CODE_MAP.put(2, "BM");   // Bánh mặn
+        CATEGORY_CODE_MAP.put(3, "DN");   // Đồ nướng
+        CATEGORY_CODE_MAP.put(4, "CB");   // Combo
+    }
+
+    private String generateProductCode(int categoryId) {
+        String prefix = CATEGORY_CODE_MAP.getOrDefault(categoryId, "SP");
+        int maxSeq = productDao.getMaxSequenceByPrefix(prefix);
+        int nextSeq = maxSeq + 1;
+        return String.format("%s-%04d", prefix, nextSeq);
+    }
 
     @Override
     public void init() {
@@ -37,13 +54,11 @@ public class AdminProductController extends HttpServlet {
         String action = req.getParameter("action");
 
         if ("delete".equals(action)) {
-            // Xóa mềm - cập nhật status = 0
             int id = Integer.parseInt(req.getParameter("id"));
             productDao.updateStatus(id, 0);
             req.setAttribute("success", "Đã xóa sản phẩm!");
             listProducts(req, resp);
         } else if ("get-detail".equals(action)) {
-            // Lấy chi tiết sản phẩm (JSON)
             int id = Integer.parseInt(req.getParameter("id"));
             Product p = productDao.findById(id);
             List<ProductImage> images = productImageDao.findByProductId(id);
@@ -84,27 +99,49 @@ public class AdminProductController extends HttpServlet {
     private void listProducts(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         String search = req.getParameter("search");
+        String categoryIdParam = req.getParameter("categoryId");
+        String statusParam = req.getParameter("status");
+        String featuredParam = req.getParameter("featured");
+        String sort = req.getParameter("sort");
         String pageParam = req.getParameter("page");
+
         int page = pageParam == null ? 1 : Integer.parseInt(pageParam);
         int pageSize = 10;
 
-        List<Product> products;
-        int totalProducts;
-
-        if (search != null && !search.isEmpty()) {
-            products = productDao.searchByName(search, page, pageSize);
-            totalProducts = productDao.countSearch(search);
-        } else {
-            products = productDao.findAll(page, pageSize);
-            totalProducts = productDao.countAll();
+        Integer categoryId = null;
+        if (categoryIdParam != null && !categoryIdParam.isEmpty()) {
+            categoryId = Integer.parseInt(categoryIdParam);
         }
+
+        Integer status = null;
+        if (statusParam != null && !statusParam.isEmpty()) {
+            status = Integer.parseInt(statusParam);
+        }
+
+        Boolean featured = null;
+        if (featuredParam != null && !featuredParam.isEmpty()) {
+            featured = Boolean.parseBoolean(featuredParam);
+        }
+
+        int totalProducts = productDao.countWithFilters(search, categoryId, status, featured);
+        int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+
+        if (page < 1) page = 1;
+        if (page > totalPages && totalPages > 0) page = totalPages;
+
+        List<Product> products = productDao.findAllWithFilters(search, categoryId, status, featured, sort, page, pageSize);
 
         req.setAttribute("products", products);
         req.setAttribute("categories", categoryDao.findAll());
         req.setAttribute("totalProducts", totalProducts);
-        req.setAttribute("totalPages", (int) Math.ceil((double) totalProducts / pageSize));
+        req.setAttribute("totalPages", totalPages);
         req.setAttribute("currentPage", page);
+        req.setAttribute("pageSize", pageSize);
         req.setAttribute("searchKeyword", search);
+        req.setAttribute("filterCategoryId", categoryIdParam);
+        req.setAttribute("filterStatus", statusParam);
+        req.setAttribute("filterFeatured", featuredParam);
+        req.setAttribute("sortOrder", sort);
 
         req.getRequestDispatcher("/admin/products.jsp").forward(req, resp);
     }
@@ -112,9 +149,10 @@ public class AdminProductController extends HttpServlet {
     private void addProduct(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
-            String productCode = req.getParameter("productCode");
-            String name = req.getParameter("name");
+            // SỬA LỖI: Khai báo categoryId TRƯỚC khi dùng
             int categoryId = Integer.parseInt(req.getParameter("categoryId"));
+            String productCode = generateProductCode(categoryId);
+            String name = req.getParameter("name");
             BigDecimal originalPrice = new BigDecimal(req.getParameter("originalPrice"));
             String discountPriceStr = req.getParameter("discountPrice");
             BigDecimal discountPrice = discountPriceStr.isEmpty() ? null : new BigDecimal(discountPriceStr);
@@ -139,7 +177,6 @@ public class AdminProductController extends HttpServlet {
 
             int id = productDao.addProduct(p);
 
-            // Upload ảnh chính
             Part imagePart = req.getPart("imageFile");
             if (imagePart != null && imagePart.getSize() > 0) {
                 String fileName = saveFile(imagePart, "products");
@@ -186,7 +223,6 @@ public class AdminProductController extends HttpServlet {
 
             productDao.update(p);
 
-            // Upload ảnh mới nếu có
             Part imagePart = req.getPart("imageFile");
             if (imagePart != null && imagePart.getSize() > 0) {
                 String fileName = saveFile(imagePart, "products");

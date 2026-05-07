@@ -354,17 +354,11 @@ public class ProductDao {
      */
     public Product getById(int id) {
         String sql = "SELECT * FROM product WHERE id = :id";
-        return JdbiConnector.getJdbi().withHandle(handle ->
-                handle.createQuery(sql)
-                        .bind("id", id)
-                        .mapToBean(Product.class)
-                        .findOne()
-                        .orElse(null)
-        );
+        return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("id", id).mapToBean(Product.class).findOne().orElse(null));
     }
 
     /**
-     * Lấy số thứ tự lớn nhất theo prefix (cho mã SP tự động)
+     * Lấy số thứ tự lớn nhất theo prefix
      */
     public int getMaxSequenceByPrefix(String prefix) {
         String sql = "SELECT MAX(CAST(SUBSTRING(product_code, LENGTH(:prefix) + 2) AS UNSIGNED)) " +
@@ -376,5 +370,100 @@ public class ProductDao {
                         .one()
         );
         return maxSeq != null ? maxSeq : 0;
+    }
+    /**
+     * Lấy sản phẩm với đầy đủ bộ lọc
+     */
+    public List<Product> findAllWithFilters(String search, Integer categoryId, Integer status,
+                                            Boolean featured, String sort, int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        StringBuilder sql = new StringBuilder("""
+        SELECT p.*, pi.image_url as image
+        FROM product p
+        LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1
+        WHERE 1=1
+    """);
+
+        List<Object> params = new ArrayList<>();
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND (p.name LIKE ? OR p.product_code LIKE ?)");
+            params.add("%" + search + "%");
+            params.add("%" + search + "%");
+        }
+        if (categoryId != null) {
+            sql.append(" AND p.category_id = ?");
+            params.add(categoryId);
+        }
+        if (status != null) {
+            sql.append(" AND p.status = ?");
+            params.add(status);
+        }
+        if (featured != null) {
+            sql.append(" AND p.is_featured = ?");
+            params.add(featured ? 1 : 0);
+        }
+
+        // Xử lý sắp xếp
+        String orderBy = "p.stockQuantity ASC"; // mặc định tồn kho tăng dần
+        if (sort != null) {
+            switch (sort) {
+                case "stock_asc": orderBy = "p.stockQuantity ASC"; break;
+                case "stock_desc": orderBy = "p.stockQuantity DESC"; break;
+                case "price_asc": orderBy = "COALESCE(NULLIF(p.discount_price, 0), p.original_price) ASC"; break;
+                case "price_desc": orderBy = "COALESCE(NULLIF(p.discount_price, 0), p.original_price) DESC"; break;
+                case "name_asc": orderBy = "p.name ASC"; break;
+                case "name_desc": orderBy = "p.name DESC"; break;
+                default: orderBy = "p.stockQuantity ASC";
+            }
+        }
+        sql.append(" ORDER BY ").append(orderBy);
+        sql.append(" LIMIT ? OFFSET ?");
+        params.add(pageSize);
+        params.add(offset);
+
+        final String finalSql = sql.toString();
+        return JdbiConnector.getJdbi().withHandle(handle -> {
+            var query = handle.createQuery(finalSql);
+            for (int i = 0; i < params.size(); i++) {
+                query.bind(i, params.get(i));
+            }
+            return query.mapToBean(Product.class).list();
+        });
+    }
+
+    /**
+     * Đếm số lượng sản phẩm với bộ lọc
+     */
+    public int countWithFilters(String search, Integer categoryId, Integer status, Boolean featured) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM product p WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND (p.name LIKE ? OR p.product_code LIKE ?)");
+            params.add("%" + search + "%");
+            params.add("%" + search + "%");
+        }
+        if (categoryId != null) {
+            sql.append(" AND p.category_id = ?");
+            params.add(categoryId);
+        }
+        if (status != null) {
+            sql.append(" AND p.status = ?");
+            params.add(status);
+        }
+        if (featured != null) {
+            sql.append(" AND p.is_featured = ?");
+            params.add(featured ? 1 : 0);
+        }
+
+        final String finalSql = sql.toString();
+        return JdbiConnector.getJdbi().withHandle(handle -> {
+            var query = handle.createQuery(finalSql);
+            for (int i = 0; i < params.size(); i++) {
+                query.bind(i, params.get(i));
+            }
+            return query.mapTo(Integer.class).one();
+        });
     }
 }

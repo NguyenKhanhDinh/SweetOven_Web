@@ -30,11 +30,6 @@ public class ProductDao {
         return JdbiConnector.jdbi.withHandle(handle -> handle.createQuery(sql).mapToBean(Product.class).list());
     }
 
-    public int addProduct(Product p) {
-        String sql = "INSERT INTO product (product_code, category_id, name, original_price, discount_price, stock_quantity, status, description, ingredients, is_featured, created_at, updated_at) "
-                + "VALUES (:productCode,:categoryId, :name, :discountPrice, :stockQuantity,:stockQuantity, :status, :description, :ingredients, :isFeatured, now(),now())";
-        return JdbiConnector.jdbi.withHandle(handle -> handle.createUpdate(sql).bindBean(p).executeAndReturnGeneratedKeys("id").mapTo(int.class).one());
-    }
 
     // tìm sản phẩm dựa trên id xài cho xem chi tiết sản phẩm
     public Product findById(int id) {
@@ -79,6 +74,20 @@ public class ProductDao {
                 "ORDER BY p.id DESC\n" +
                 "LIMIT :limit OFFSET :offset";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("offset", offset).bind("limit", limit).mapToBean(Product.class).list());
+    }
+
+    public int addProduct(Product p) {
+        String sql = "INSERT INTO product (product_code, category_id, name, original_price, discount_price, " +
+                "stock_quantity, status, description, ingredients, is_featured, created_at, updated_at) " +
+                "VALUES (:productCode, :categoryId, :name, :originalPrice, :discountPrice, " +
+                ":stockQuantity, :status, :description, :ingredients, :isFeatured, NOW(), NOW())";
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createUpdate(sql)
+                        .bindBean(p)
+                        .executeAndReturnGeneratedKeys("id")
+                        .mapTo(int.class)
+                        .one()
+        );
     }
 
     public List<Product> searchProducts(int offset, int limit, String keyword) {
@@ -222,5 +231,150 @@ public class ProductDao {
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
                 "WHERE p.id IN (" + placeholders + ") AND p.status = 1";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).mapToBean(Product.class).list());
+    }
+
+
+    /**
+     * Lấy tất cả sản phẩm  - dùng cho admin
+     */
+    public List<Product> findAll() {
+        String sql = "SELECT p.*, pi.image_url as image " +
+                "FROM product p " +
+                "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
+                "ORDER BY p.id DESC";
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql).mapToBean(Product.class).list()
+        );
+    }
+
+    /**
+     * Lấy sản phẩm phân trang - dùng cho admin
+     */
+    public List<Product> findAll(int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        String sql = "SELECT p.*, pi.image_url as image " +
+                "FROM product p " +
+                "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
+                "ORDER BY p.id DESC " +
+                "LIMIT :limit OFFSET :offset";
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("limit", pageSize)
+                        .bind("offset", offset)
+                        .mapToBean(Product.class).list()
+        );
+    }
+
+    /**
+     * Đếm tổng số sản phẩm (admin)
+     */
+    public int countAll() {
+        String sql = "SELECT COUNT(*) FROM product";
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql).mapTo(Integer.class).one()
+        );
+    }
+
+    /**
+     * Tìm kiếm sản phẩm theo tên- admin
+     */
+    public List<Product> searchByName(String keyword, int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        String sql = "SELECT p.*, pi.image_url as image " +
+                "FROM product p " +
+                "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
+                "WHERE p.name LIKE :keyword " +
+                "ORDER BY p.id DESC " +
+                "LIMIT :limit OFFSET :offset";
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("keyword", "%" + keyword + "%")
+                        .bind("limit", pageSize)
+                        .bind("offset", offset)
+                        .mapToBean(Product.class).list()
+        );
+    }
+
+    /**
+     * Đếm số lượng sản phẩm tìm kiếm theo tên
+     */
+    public int countSearch(String keyword) {
+        String sql = "SELECT COUNT(*) FROM product WHERE name LIKE :keyword";
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("keyword", "%" + keyword + "%")
+                        .mapTo(Integer.class).one()
+        );
+    }
+
+    /**
+     * Cập nhật sản phẩm
+     */
+    public void update(Product p) {
+        String sql = "UPDATE product SET product_code = :productCode, category_id = :categoryId, " +
+                "name = :name, original_price = :originalPrice, discount_price = :discountPrice, " +
+                "stock_quantity = :stockQuantity, status = :status, description = :description, " +
+                "ingredients = :ingredients, is_featured = :isFeatured, updated_at = :updatedAt " +
+                "WHERE id = :id";
+        JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createUpdate(sql)
+                        .bindBean(p)
+                        .execute()
+        );
+    }
+
+    /**
+     * Cập nhật ảnh đại diện cho sản phẩm
+     */
+    public void updateImage(int productId, String imageUrl) {
+        String sql = "UPDATE product SET image = :imageUrl WHERE id = :id";
+        JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createUpdate(sql)
+                        .bind("imageUrl", imageUrl)
+                        .bind("id", productId)
+                        .execute()
+        );
+    }
+
+    /**
+     * Cập nhật trạng thái sản phẩm
+     */
+    public void updateStatus(int productId, int status) {
+        String sql = "UPDATE product SET status = :status, updated_at = NOW() WHERE id = :id";
+        JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createUpdate(sql)
+                        .bind("status", status)
+                        .bind("id", productId)
+                        .execute()
+        );
+    }
+
+    /**
+     * Lấy sản phẩm theo ID
+     */
+    public Product getById(int id) {
+        String sql = "SELECT * FROM product WHERE id = :id";
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("id", id)
+                        .mapToBean(Product.class)
+                        .findOne()
+                        .orElse(null)
+        );
+    }
+
+    /**
+     * Lấy số thứ tự lớn nhất theo prefix (cho mã SP tự động)
+     */
+    public int getMaxSequenceByPrefix(String prefix) {
+        String sql = "SELECT MAX(CAST(SUBSTRING(product_code, LENGTH(:prefix) + 2) AS UNSIGNED)) " +
+                "FROM product WHERE product_code LIKE CONCAT(:prefix, '-%')";
+        Integer maxSeq = JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("prefix", prefix)
+                        .mapTo(Integer.class)
+                        .one()
+        );
+        return maxSeq != null ? maxSeq : 0;
     }
 }

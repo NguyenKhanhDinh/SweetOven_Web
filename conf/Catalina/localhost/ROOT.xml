@@ -34,5 +34,9 @@
     <PostResources base="C:/Users/anhha/.m2/repository/org/apache/logging/log4j/log4j-slf4j-impl/2.23.1/log4j-slf4j-impl-2.23.1.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/log4j-slf4j-impl-2.23.1.jar"/>
     <PostResources base="C:/Users/anhha/.m2/repository/org/apache/logging/log4j/log4j-api/2.23.1/log4j-api-2.23.1.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/log4j-api-2.23.1.jar"/>
     <PostResources base="C:/Users/anhha/.m2/repository/org/apache/logging/log4j/log4j-core/2.23.1/log4j-core-2.23.1.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/log4j-core-2.23.1.jar"/>
+    <PostResources base="C:/Users/anhha/.m2/repository/com/cloudinary/cloudinary-http44/1.38.0/cloudinary-http44-1.38.0.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/cloudinary-http44-1.38.0.jar"/>
+    <PostResources base="C:/Users/anhha/.m2/repository/com/cloudinary/cloudinary-core/1.38.0/cloudinary-core-1.38.0.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/cloudinary-core-1.38.0.jar"/>
+    <PostResources base="C:/Users/anhha/.m2/repository/org/apache/commons/commons-lang3/3.1/commons-lang3-3.1.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/commons-lang3-3.1.jar"/>
+    <PostResources base="C:/Users/anhha/.m2/repository/org/apache/httpcomponents/httpmime/4.4/httpmime-4.4.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/httpmime-4.4.jar"/>
   </Resources>
 </Context>

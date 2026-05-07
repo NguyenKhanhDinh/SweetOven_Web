@@ -143,7 +143,7 @@ public class AdminProductController extends HttpServlet {
         req.setAttribute("filterFeatured", featuredParam);
         req.setAttribute("sortOrder", sort);
 
-        req.getRequestDispatcher("/admin/products.jsp").forward(req, resp);
+        req.getRequestDispatcher("/adminPage/admin_products.jsp").forward(req, resp);
     }
 
     private void addProduct(HttpServletRequest req, HttpServletResponse resp)

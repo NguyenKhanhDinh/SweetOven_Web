@@ -371,9 +371,6 @@ public class ProductDao {
         );
         return maxSeq != null ? maxSeq : 0;
     }
-    /**
-     * Lấy sản phẩm với đầy đủ bộ lọc
-     */
     public List<Product> findAllWithFilters(String search, Integer categoryId, Integer status,
                                             Boolean featured, String sort, int page, int pageSize) {
         int offset = (page - 1) * pageSize;
@@ -404,17 +401,20 @@ public class ProductDao {
             params.add(featured ? 1 : 0);
         }
 
-        // Xử lý sắp xếp
-        String orderBy = "p.stockQuantity ASC"; // mặc định tồn kho tăng dần
-        if (sort != null) {
+        String orderBy = "p.stock_quantity ASC";
+        if (sort != null && !sort.isEmpty()) {
             switch (sort) {
-                case "stock_asc": orderBy = "p.stockQuantity ASC"; break;
-                case "stock_desc": orderBy = "p.stockQuantity DESC"; break;
-                case "price_asc": orderBy = "COALESCE(NULLIF(p.discount_price, 0), p.original_price) ASC"; break;
-                case "price_desc": orderBy = "COALESCE(NULLIF(p.discount_price, 0), p.original_price) DESC"; break;
+                case "stock_asc": orderBy = "p.stock_quantity ASC"; break;
+                case "stock_desc": orderBy = "p.stock_quantity DESC"; break;
+                case "price_asc":
+                    orderBy = "COALESCE(NULLIF(p.discount_price, 0), p.original_price) ASC";
+                    break;
+                case "price_desc":
+                    orderBy = "COALESCE(NULLIF(p.discount_price, 0), p.original_price) DESC";
+                    break;
                 case "name_asc": orderBy = "p.name ASC"; break;
                 case "name_desc": orderBy = "p.name DESC"; break;
-                default: orderBy = "p.stockQuantity ASC";
+                default: orderBy = "p.stock_quantity ASC";
             }
         }
         sql.append(" ORDER BY ").append(orderBy);

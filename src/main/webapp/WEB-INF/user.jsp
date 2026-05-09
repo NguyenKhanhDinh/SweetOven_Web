@@ -208,6 +208,40 @@
             cursor:pointer;
         }
 
+        .voucher-card {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            border: 1.5px dashed #d9a45e;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            background: #fffaf3;
+            transition: box-shadow .2s, transform .2s;
+        }
+        .voucher-card:hover:not(.voucher-disabled) {
+            box-shadow: 0 6px 18px rgba(196,107,18,.18);
+            transform: translateY(-2px);
+        }
+        .voucher-disabled { opacity: .55; filter: grayscale(.4); }
+        .voucher-left {
+            flex-shrink: 0; width: 58px;
+            background: linear-gradient(135deg,#e89b3c,#c46b12);
+            align-self: stretch; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .voucher-icon { color: #fff; font-size: 22px; writing-mode: vertical-rl; }
+        .voucher-body { flex: 1; padding: 12px 14px; min-width: 0; }
+        .voucher-code {
+            font-size: 15px; font-weight: 700; color: #c46b12;
+            letter-spacing: .5px; font-family: monospace;
+            background: #fff3e0; padding: 2px 8px;
+            border-radius: 6px; border: 1px solid #e89b3c;
+        }
+        .voucher-desc { font-size: 13px; color: #555; margin: 4px 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .voucher-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12px; color: #777; }
+        .voucher-action { flex-shrink: 0; padding: 0 14px; }
+        .btn-use-voucher { white-space: nowrap; font-size: 13px; padding: 7px 12px; }
         .address-item{
             border:1px solid #eee;
             border-radius:14px;
@@ -455,19 +489,47 @@
             </div>
         </div>
 
-        <!-- VOUCHER -->
         <div class="card-box">
-
-            <div class="section-title">Voucher</div>
-
+            <div class="section-title">Voucher của tôi</div>
             <div class="scroll-box">
-
-                <c:forEach var="v" items="${vouchers}">
-                    <div class="alert alert-warning">
-                            ${v.code}
-                    </div>
-                </c:forEach>
-
+                <c:choose>
+                    <c:when test="${empty vouchers}">
+                        <div class="text-center p-4 text-muted">
+                            <i class="fa fa-ticket fa-2x mb-2"></i>
+                            <div>Bạn chưa lưu voucher nào.</div>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="v" items="${vouchers}">
+                            <c:if test="${!v.used && v.valid}">
+                                <div class="voucher-card">
+                                    <div class="voucher-left">
+                                        <div class="voucher-icon"><i class="fa ${v.iconClass}"></i></div>
+                                    </div>
+                                    <div class="voucher-body">
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <span class="voucher-code">${v.code}</span>
+                                            <span class="badge ${v.statusClass}">${v.statusLable}</span>
+                                        </div>
+                                        <div class="voucher-desc">${v.description}</div>
+                                        <div class="voucher-meta">
+                                            <span><i class="fa fa-tag me-1"></i>Giảm <b>${v.displayValue}</b></span>
+                                            <span><i class="fa fa-receipt me-1"></i>Đơn tối thiểu <b>${v.displayMinOrder}</b></span>
+                                            <span><i class="fa fa-clock me-1"></i>HSD: <b>${v.formattedEndDate}</b></span>
+                                        </div>
+                                    </div>
+                                    <div class="voucher-action">
+                                        <button class="btn btn-main btn-sm btn-use-voucher"
+                                                data-code="${v.code}"
+                                                onclick="useVoucher('${v.code}')">
+                                            <i class="fa fa-cart-shopping me-1"></i>Sử dụng
+                                        </button>
+                                    </div>
+                                </div>
+                            </c:if>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
 
@@ -796,6 +858,10 @@
         } else {
             setTimeout(setProvinceAndLoadDistricts, 800);
         }
+    }
+    function useVoucher(code) {
+        sessionStorage.setItem('pendingVoucherCode', code);
+        window.location.href = '${pageContext.request.contextPath}/cart';
     }
 </script>
 </body>

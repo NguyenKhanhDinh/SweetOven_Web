@@ -10,4 +10,7 @@ public class UserDiscountService {
     public List<UserDiscount> getSavedDiscounts(int userId){
         return userDiscountDao.getSavedDiscounts(userId);
     }
+    public boolean saveDiscount(int userId, int discountId){
+        return userDiscountDao.saveDiscount(userId,discountId);
+    }
 }

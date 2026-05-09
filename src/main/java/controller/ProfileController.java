@@ -8,10 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.*;
-import service.OrderService;
-import service.ProductService;
-import service.UserAddressService;
-import service.UserService;
+import service.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +23,7 @@ public class ProfileController extends HttpServlet {
     UserAddressService userAddressService = new UserAddressService();
     UserFavoritesDao  userFavoritesDao = new UserFavoritesDao();
     ProductService  productService = new ProductService();
+    UserDiscountService userDiscountService = new UserDiscountService();
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User loginUser = (User) request.getSession().getAttribute("user");
         if (loginUser == null) {
@@ -45,11 +43,18 @@ public class ProfileController extends HttpServlet {
         }catch(Exception e){
             e.printStackTrace();
         }
+        List<model.UserDiscount> vouchers = new ArrayList<>();
+        try {
+            vouchers = userDiscountService.getSavedDiscounts(user.getId());
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
         request.setAttribute("user", user);
         request.setAttribute("orders", orders);
         request.setAttribute("addresses", addresses);
         request.setAttribute("favoriteProducts", favoritesProducts);
+        request.setAttribute("vouchers", vouchers );
         request.getRequestDispatcher("/WEB-INF/user.jsp").forward(request, response);
     }
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -11,13 +11,14 @@ private int id;
 private int orderId;
 private int productId;
 private String productName;
+private String productImage;
 private BigDecimal buyPrice;
 private int quantity;
 private BigDecimal totalPrice;
 private LocalDateTime createdAt;
 private LocalDateTime updatedAt;
 
-public OrderDetail(int id, int orderId, int productId, String productName, BigDecimal buyPrice, int quantity, BigDecimal totalPrice, LocalDateTime createdAt, LocalDateTime updatedAt) {
+public OrderDetail(int id, int orderId, int productId, String productName,String productImage, BigDecimal buyPrice, int quantity, BigDecimal totalPrice, LocalDateTime createdAt, LocalDateTime updatedAt) {
     this.id = id;
     this.orderId = orderId;
     this.productId = productId;
@@ -28,6 +29,7 @@ public OrderDetail(int id, int orderId, int productId, String productName, BigDe
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
 }
+public OrderDetail() {}
 
 public int getId() {
 return id;
@@ -53,6 +55,8 @@ public String getProductName() {
 public void setProductName(String productName) {
     this.productName = productName;
 }
+public String getProductImage() { return productImage;}
+public void setProductImage(String productImage) {this.productImage = productImage;}
 public BigDecimal getBuyPrice() {
     return buyPrice;
 }

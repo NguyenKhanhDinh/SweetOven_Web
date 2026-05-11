@@ -95,16 +95,13 @@
 <!-- HEADER -->
 <jsp:include page="/components/header.jsp"/>
 
-<div class="order-container">
 
     <!-- HEADER -->
     <div class="card-custom mb-4">
         <div class="order-header">
             <div>
                 <b>Đơn hàng #${order.orderCode}</b><br>
-                <small>
-                    <fmt:formatDate value="${order.orderDate}" pattern="dd/MM/yyyy HH:mm"/>
-                </small>
+                ${order.orderDateFormatted}
             </div>
 
             <div>

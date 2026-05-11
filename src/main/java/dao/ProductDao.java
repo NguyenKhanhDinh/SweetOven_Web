@@ -80,7 +80,7 @@ public class ProductDao {
         String sql = "INSERT INTO product (product_code, category_id, name, original_price, discount_price, " +
                 "stock_quantity, status, description, ingredients, is_featured, created_at, updated_at) " +
                 "VALUES (:productCode, :categoryId, :name, :originalPrice, :discountPrice, " +
-                ":stockQuantity, :status, :description, :ingredients, :isFeatured, NOW(), NOW())";
+                ":stockQuantity, :status, :description, :ingredients, :featured, NOW(), NOW())";
         return JdbiConnector.getJdbi().withHandle(handle ->
                 handle.createUpdate(sql)
                         .bindBean(p)

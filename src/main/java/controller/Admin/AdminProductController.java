@@ -145,11 +145,9 @@ public class AdminProductController extends HttpServlet {
 
         req.getRequestDispatcher("/adminPage/admin_products.jsp").forward(req, resp);
     }
-
     private void addProduct(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
-            // SỬA LỖI: Khai báo categoryId TRƯỚC khi dùng
             int categoryId = Integer.parseInt(req.getParameter("categoryId"));
             String productCode = generateProductCode(categoryId);
             String name = req.getParameter("name");
@@ -177,10 +175,25 @@ public class AdminProductController extends HttpServlet {
 
             int id = productDao.addProduct(p);
 
+            // Upload và lưu ảnh chính vào bảng productimage
             Part imagePart = req.getPart("imageFile");
             if (imagePart != null && imagePart.getSize() > 0) {
                 String fileName = saveFile(imagePart, "products");
-                productDao.updateImage(id, fileName);
+                // Lưu vào bảng productimage, không phải cột image trong product
+                productImageDao.insertImage(id, fileName, true);  // isPrimary = true
+            }
+
+            // Upload ảnh phụ
+            Part subImage1 = req.getPart("imageFileSub1");
+            if (subImage1 != null && subImage1.getSize() > 0) {
+                String fileName = saveFile(subImage1, "products");
+                productImageDao.insertImage(id, fileName, false);
+            }
+
+            Part subImage2 = req.getPart("imageFileSub2");
+            if (subImage2 != null && subImage2.getSize() > 0) {
+                String fileName = saveFile(subImage2, "products");
+                productImageDao.insertImage(id, fileName, false);
             }
 
             req.setAttribute("success", "Thêm sản phẩm thành công!");
@@ -191,7 +204,6 @@ public class AdminProductController extends HttpServlet {
         }
         listProducts(req, resp);
     }
-
     private void editProduct(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
@@ -225,8 +237,15 @@ public class AdminProductController extends HttpServlet {
 
             Part imagePart = req.getPart("imageFile");
             if (imagePart != null && imagePart.getSize() > 0) {
+                List<ProductImage> oldImages = productImageDao.findByProductId(id);
+                for (ProductImage oldImg : oldImages) {
+                    if (oldImg.isPrimary()) {
+                        productImageDao.deleteImage(oldImg.getId());
+                        break;
+                    }
+                }
                 String fileName = saveFile(imagePart, "products");
-                productDao.updateImage(id, fileName);
+                productImageDao.insertImage(id, fileName, true);
             }
 
             req.setAttribute("success", "Cập nhật thành công!");

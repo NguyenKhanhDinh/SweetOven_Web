@@ -105,11 +105,10 @@ public class UserService {
             newUser.setRoleId(2);
             newUser.setStatus(1);
             newUser.setBlocked(false);
-            boolean ok = userDao.insertUser(newUser);
+            return userDao.insertUser(newUser);
         } catch (Exception e) {
             return false;
         }
-        return false;
     }
 
     private boolean isBlank(String s) {

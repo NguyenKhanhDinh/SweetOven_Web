@@ -35,15 +35,20 @@ public class RegisterController extends HttpServlet {
         String phone = request.getParameter("phone");
         String password = request.getParameter("password");
 
-        UserService.RegisterResult result = userService.register(fullName, username, email, phone, password);
+        UserService.ValidateResult result = userService.validate(fullName, username, email, phone, password);
         switch (result) {
-            case SUCCESS -> {
+            case OK -> {
                 String otp = utils.OtpUtil.generateOtp();
-                request.getSession().setAttribute("pending Email", email);
-                request.getSession().setAttribute("pending Otp", otp);
-                request.getSession().setAttribute("otp Expiry", System.currentTimeMillis() + 5 * 60 * 1000);
+                request.getSession().setAttribute("pendingEmail", email);
+                request.getSession().setAttribute("pendingFullName", fullName);
+                request.getSession().setAttribute("pendingUsername", username);
+                request.getSession().setAttribute("pendingPhone", phone);
+                request.getSession().setAttribute("pendingPassword", password);
+                request.getSession().setAttribute("pendingOtp", otp);
+                request.getSession().setAttribute("otpExpiry", System.currentTimeMillis() + 5 * 60 * 1000);
                 try {
                     utils.EmailUtil.sendOtpEmail(email, fullName, otp);
+                    response.sendRedirect(request.getContextPath()+"/verify-email");
                 } catch (Exception e) {
                     forwardWithError(request, response, "Không thể gửi email xác thực, hãy thử lại sau", fullName, username, email, phone);
                 }

@@ -38,7 +38,15 @@ public class RegisterController extends HttpServlet {
         UserService.RegisterResult result = userService.register(fullName, username, email, phone, password);
         switch (result) {
             case SUCCESS -> {
-                response.sendRedirect(request.getContextPath() + "/login?register=success");
+                String otp = utils.OtpUtil.generateOtp();
+                request.getSession().setAttribute("pending Email", email);
+                request.getSession().setAttribute("pending Otp", otp);
+                request.getSession().setAttribute("otp Expiry", System.currentTimeMillis() + 5 * 60 * 1000);
+                try {
+                    utils.EmailUtil.sendOtpEmail(email, fullName, otp);
+                } catch (Exception e) {
+                    forwardWithError(request, response, "Không thể gửi email xác thực, hãy thử lại sau", fullName, username, email, phone);
+                }
             }
             case USERNAME_EXISTS ->
                     forwardWithError(request, response, "Tên đăng nhập đã tồn tại", fullName, username, email, phone);

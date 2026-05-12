@@ -33,12 +33,12 @@ public class VerifyController extends HttpServlet {
 
         if (System.currentTimeMillis() > expiry) {
             request.setAttribute("error", "Mã OTP đã hết hạn, vui lòng đăng ký lại");
-            request.getRequestDispatcher("authPage/verifyemail.jsp").forward(request, response);
+            request.getRequestDispatcher("/authPage/verifyemail.jsp").forward(request, response);
             return;
         }
         if (!correctOtp.equals(inputOtp)) {
             request.setAttribute("error", "Mã OTP không đúng, vui lòng thử lại");
-            request.getRequestDispatcher("authPage/verifyemail.jsp").forward(request, response);
+            request.getRequestDispatcher("/authPage/verifyemail.jsp").forward(request, response);
             return;
         }
         String fullName = (String) session.getAttribute("pendingFullName");
@@ -59,7 +59,7 @@ public class VerifyController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/login?register=true");
         }else{
             request.setAttribute("error", "Đã có lỗi xảy ra khi tạo tài khoản, vui lòng thử lại sau");
-            request.getRequestDispatcher("authPage/verifyemail.jsp").forward(request, response);
+            request.getRequestDispatcher("/authPage/verifyemail.jsp").forward(request, response);
         }
     }
 }

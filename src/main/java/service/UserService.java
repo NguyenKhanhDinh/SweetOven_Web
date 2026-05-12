@@ -5,17 +5,20 @@ import model.User;
 
 public class UserService {
     private UserDao userDao = new UserDao();
+
     //for login
     public User login(String username, String password) {
-        if(username == null || password == null || username.isEmpty() || password.isEmpty()) {
+        if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
             return null;
         }
         return userDao.login(username, password);
     }
+
     // dùng lấy thông tin hiển thị trang profile
     public User findById(int id) {
         return userDao.findById(id);
     }
+
     // dùng cập nhật thông tin trang profile
     public boolean updateProfile(User user) {
 
@@ -42,14 +45,16 @@ public class UserService {
 
         return userDao.updateProfile(user);
     }
+
     public boolean updateAvatar(int userId, String avatarPath) {
         if (avatarPath == null || avatarPath.isBlank()) {
             return false;
         }
         return userDao.updateAvatar(userId, avatarPath);
     }
-    public enum RegisterResult {
-        SUCCESS,
+
+    public enum ValidateResult {
+        OK,
         USERNAME_EXISTS,
         EMAIL_EXISTS,
         WEAK_PASSWORD,
@@ -57,42 +62,55 @@ public class UserService {
         INVALID_INPUT,
         DB_ERROR
     }
-    public RegisterResult register(String fullName, String username, String email, String phone, String password) {
-    if (isBlank(fullName) || isBlank(username) || isBlank(email) || isBlank(phone) || isBlank(password)) {
-        return RegisterResult.INVALID_INPUT;
-    }
-    if (!email.matches("^[\\w.-]+@[\\w.-]+\\.\\w+$")) {
-        return RegisterResult.INVALID_INPUT;
-    }
-    if (!phone.matches("\\d{9,11}")) {
-        return RegisterResult.INVALID_INPUT;}
-    if (!isStrongPassword(password)) {
-        return RegisterResult.WEAK_PASSWORD;}
-    try{
-        if (UserDao.isUsernameExists(username.trim())) {
-            return RegisterResult.USERNAME_EXISTS;
+
+    public ValidateResult validate(String fullName, String username, String email, String phone, String password) {
+        if (isBlank(fullName) || isBlank(username) || isBlank(email) || isBlank(phone) || isBlank(password)) {
+            return ValidateResult.INVALID_INPUT;
         }
-        if (UserDao.isEmailExists(email.trim())) {
-            return RegisterResult.EMAIL_EXISTS;}
-        if (UserDao.isPhoneExists(phone.trim())) {
-            return RegisterResult.PHONE_EXISTS;}
-        String hashed = utils.PasswordUtil.hashPassword(password);
-        User newUser = new User();
-        newUser.setFullName(fullName.trim());
-        newUser.setUserName(username.trim());
-        newUser.setEmail(email.trim());
-        newUser.setPhoneNumber(phone.trim());
-        newUser.setPassword(hashed);
-        newUser.setGender(0);
-        newUser.setRoleId(2);
-        newUser.setStatus(1);
-        newUser.setBlocked(false);
-        boolean ok = userDao.insertUser(newUser);
-        return ok ? RegisterResult.SUCCESS : RegisterResult.DB_ERROR;
-    } catch (Exception e) {
-        return RegisterResult.DB_ERROR;
+        if (!email.matches("^[\\w.-]+@[\\w.-]+\\.\\w+$")) {
+            return ValidateResult.INVALID_INPUT;
+        }
+        if (!phone.matches("\\d{9,11}")) {
+            return ValidateResult.INVALID_INPUT;
+        }
+        if (!isStrongPassword(password)) {
+            return ValidateResult.WEAK_PASSWORD;
+        }
+        try {
+            if (UserDao.isUsernameExists(username.trim())) {
+                return ValidateResult.USERNAME_EXISTS;
+            }
+            if (UserDao.isEmailExists(email.trim())) {
+                return ValidateResult.EMAIL_EXISTS;
+            }
+            if (UserDao.isPhoneExists(phone.trim())) {
+                return ValidateResult.PHONE_EXISTS;
+            }
+            return ValidateResult.OK;
+        } catch (Exception e) {
+            return ValidateResult.DB_ERROR;
+        }
     }
-}
+
+    public boolean createUser(String fullName, String username, String email, String phone, String password) {
+        try {
+            String hashed = utils.PasswordUtil.hashPassword(password);
+            User newUser = new User();
+            newUser.setFullName(fullName.trim());
+            newUser.setUserName(username.trim());
+            newUser.setEmail(email.trim());
+            newUser.setPhoneNumber(phone.trim());
+            newUser.setPassword(hashed);
+            newUser.setGender(0);
+            newUser.setRoleId(2);
+            newUser.setStatus(1);
+            newUser.setBlocked(false);
+            return userDao.insertUser(newUser);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private boolean isBlank(String s) {
         return s == null || s.trim().isEmpty();
     }

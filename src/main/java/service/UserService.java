@@ -11,7 +11,15 @@ public class UserService {
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
             return null;
         }
-        return userDao.login(username, password);
+        User user = userDao.findByUsername(username);
+        if (user == null) {
+            return null;
+        }
+        if (!utils.PasswordUtil.verifyPassword(password, user.getPassword())) {
+            return null;
+        }
+        user.setPassword(null); // Xóa hash khỏi session cho an toàn
+        return user;
     }
 
     // dùng lấy thông tin hiển thị trang profile

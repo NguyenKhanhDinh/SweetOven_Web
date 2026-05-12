@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebServlet("/verify")
+@WebServlet("/verify-email")
 public class VerifyController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -17,7 +17,7 @@ public class VerifyController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/register");
             return;
         }
-        request.getRequestDispatcher("authPage/verify.jsp").forward(request, response);
+        request.getRequestDispatcher("/authPage/verifyemail.jsp").forward(request, response);
     }
 
     @Override
@@ -33,17 +33,33 @@ public class VerifyController extends HttpServlet {
 
         if (System.currentTimeMillis() > expiry) {
             request.setAttribute("error", "Mã OTP đã hết hạn, vui lòng đăng ký lại");
-            request.getRequestDispatcher("authPage/verify.jsp").forward(request, response);
+            request.getRequestDispatcher("authPage/verifyemail.jsp").forward(request, response);
             return;
         }
         if (!correctOtp.equals(inputOtp)) {
             request.setAttribute("error", "Mã OTP không đúng, vui lòng thử lại");
-            request.getRequestDispatcher("authPage/verify.jsp").forward(request, response);
+            request.getRequestDispatcher("authPage/verifyemail.jsp").forward(request, response);
             return;
         }
+        String fullName = (String) session.getAttribute("pendingFullName");
+        String username = (String) session.getAttribute("pendingUsername");
+        String email = (String) session.getAttribute("pendingEmail");
+        String phone = (String) session.getAttribute("pendingPhone");
+        String password = (String) session.getAttribute("pendingPassword");
+
         session.removeAttribute("pendingOtp");
         session.removeAttribute("pendingEmail");
         session.removeAttribute("otpExpiry");
-        response.sendRedirect(request.getContextPath() + "/login?register=true");
+        session.removeAttribute("pendingFullName");
+        session.removeAttribute("pendingUsername");
+        session.removeAttribute("pendingPhone");
+        session.removeAttribute("pendingPassword");
+        boolean created = new service.UserService().createUser(fullName, username, email, phone, password);
+        if (created) {
+            response.sendRedirect(request.getContextPath() + "/login?register=true");
+        }else{
+            request.setAttribute("error", "Đã có lỗi xảy ra khi tạo tài khoản, vui lòng thử lại sau");
+            request.getRequestDispatcher("authPage/verifyemail.jsp").forward(request, response);
+        }
     }
 }

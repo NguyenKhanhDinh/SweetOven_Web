@@ -298,7 +298,7 @@
             Vui lòng nhập địa chỉ email bạn đã sử dụng để đăng ký. Chúng tôi sẽ gửi một liên kết để giúp bạn đặt lại mật khẩu.
         </p>
 
-        <form action="${pageContext.request.contextPath}/forgot-password" method="post">
+        <form action="${pageContext.request.contextPath}/forget-password" method="post">
 
             <div class="input-group">
                 <input type="email" name="email" placeholder="Nhập địa chỉ email của bạn" required autocomplete="email">

@@ -19,9 +19,7 @@ public class CategoryDao {
         String sql = "SELECT * FROM category WHERE id = :id";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("id",categoryId).mapToBean(Category.class).findOne().orElse(null));
     }
-    /**
-     * Lấy tất cả danh mục (kể cả status = 0) - dùng cho admin
-     */
+
     public List<Category> findAll() {
         String sql = "SELECT * FROM category ORDER BY id ASC";
         return JdbiConnector.getJdbi().withHandle(handle ->
@@ -29,9 +27,7 @@ public class CategoryDao {
         );
     }
 
-    /**
-     * Lấy tất cả danh mục có status = 1 (đang hoạt động)
-     */
+
     public List<Category> findActive() {
         String sql = "SELECT * FROM category WHERE status = 1 ORDER BY id ASC";
         return JdbiConnector.getJdbi().withHandle(handle ->
@@ -54,6 +50,7 @@ public class CategoryDao {
         );
     }
 
+
     /**
      * Cập nhật danh mục
      */
@@ -67,9 +64,7 @@ public class CategoryDao {
         );
     }
 
-    /**
-     * Xóa mềm danh mục (cập nhật status = 0)
-     */
+
     public void softDelete(int id) {
         String sql = "UPDATE category SET status = 0, updated_at = NOW() WHERE id = :id";
         JdbiConnector.getJdbi().withHandle(handle ->
@@ -80,7 +75,7 @@ public class CategoryDao {
     }
 
     /**
-     * Xóa cứng danh mục (chỉ dùng khi không có ràng buộc)
+     * Xóa cứng danh mục
      */
     public void hardDelete(int id) {
         String sql = "DELETE FROM category WHERE id = :id";
@@ -143,5 +138,6 @@ public class CategoryDao {
                         .execute()
         );
     }
+
 
 }

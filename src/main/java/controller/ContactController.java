@@ -29,11 +29,14 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
     feedBack.setContent(content);
 
     String message = feedBackService.insertFeedBack(feedBack);
-    if ("SUCCESS".equals(message)) {
-        request.getSession().setAttribute("succesMsg","Gửi thành công!");
+
+
+    response.setContentType("application/json;charset=utf-8");
+    if("SUCCESS".equals(message)){
+        response.getWriter().write("{\"status\":\"success\",\"message\":\"Tin nhắn của bạn đã được gửi thành công!\"}");
     }else{
-        request.getSession().setAttribute("errorMsg",message);
+        String safe = message.replace("\\","\\\\").replace("\"","\\\"");
+        response.getWriter().write("{\"status\":\"error\",\"message\":\""+ safe+"\"}");
     }
-    response.sendRedirect(request.getContextPath()+"/contact");
 }
 }

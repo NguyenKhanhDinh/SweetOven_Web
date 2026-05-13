@@ -1,10 +1,17 @@
 package service;
 
+import dao.PasswordResetTokenDao;
 import dao.UserDao;
+import model.PasswordResetToken;
 import model.User;
+
+import java.awt.*;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class UserService {
     private UserDao userDao = new UserDao();
+    private PasswordResetTokenDao tokenDao = new PasswordResetTokenDao();
 
     //for login
     public User login(String username, String password) {
@@ -18,7 +25,7 @@ public class UserService {
         if (!utils.PasswordUtil.verifyPassword(password, user.getPassword())) {
             return null;
         }
-        user.setPassword(null); // Xóa hash khỏi session cho an toàn
+        user.setPassword(null);
         return user;
     }
 
@@ -130,6 +137,7 @@ public class UserService {
                 && pwd.matches(".*[0-9].*")
                 && pwd.matches(".*[^A-Za-z0-9].*");
     }
+
     public enum ChangePasswordResult {
         SUCCESS,
         WRONG_OLD_PASSWORD,
@@ -137,19 +145,86 @@ public class UserService {
         CONFIRM_NOT_MATCH,
         ERROR
     }
-    public ChangePasswordResult changePassword(int userId,String oldPassword, String newPassword, String confirmPassword) {
-        if(!newPassword.equals(confirmPassword)) {
+
+    public ChangePasswordResult changePassword(int userId, String oldPassword, String newPassword, String confirmPassword) {
+        if (!newPassword.equals(confirmPassword)) {
             return ChangePasswordResult.CONFIRM_NOT_MATCH;
         }
-        if(!isStrongPassword(newPassword)) {
-            return  ChangePasswordResult.WEAK_NEW_PASSWORD;
+        if (!isStrongPassword(newPassword)) {
+            return ChangePasswordResult.WEAK_NEW_PASSWORD;
         }
         String storeHash = userDao.findPasswordById(userId);
-        if(storeHash == null || !utils.PasswordUtil.verifyPassword(oldPassword, storeHash)) {
+        if (storeHash == null || !utils.PasswordUtil.verifyPassword(oldPassword, storeHash)) {
             return ChangePasswordResult.WRONG_OLD_PASSWORD;
         }
         String newHash = utils.PasswordUtil.hashPassword(newPassword);
         boolean ok = userDao.updatePassword(userId, newHash);
-        return ok ? ChangePasswordResult.SUCCESS: ChangePasswordResult.ERROR;
+        return ok ? ChangePasswordResult.SUCCESS : ChangePasswordResult.ERROR;
+    }
+
+    public boolean processForgotPassword(String email, String baseUrl) {
+        try {
+            User user = userDao.findByEmail(email.trim());
+            if (user == null) {
+                return true;
+            }
+            String token = UUID.randomUUID().toString();
+            LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(15);
+            tokenDao.deleteByUserId(user.getId());
+            tokenDao.insertToken(user.getId(), token, expiredAt);
+            String resetLink = baseUrl + "/reset-password?token=" + token;
+            utils.EmailUtil.sendResetPasswordEmail(user.getEmail(), user.getFullName(), resetLink);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public enum ResetPasswordResult {
+        SUCCESS,
+        INVALID_TOKEN,
+        EXPIRED_TOKEN,
+        WEAK_PASSWORD,
+        COMFIRM_NOT_MATCH,
+        ERROR
+    }
+
+    public ResetPasswordResult resetPassword(String token, String newPassword, String confirmPassword) {
+        try {
+            if (!newPassword.equals(confirmPassword)) {
+                return ResetPasswordResult.COMFIRM_NOT_MATCH;
+            }
+            if (!isStrongPassword(newPassword)) {
+                return ResetPasswordResult.WEAK_PASSWORD;
+            }
+            PasswordResetToken prt = tokenDao.findByToken(token);
+            if (prt == null) {
+                return ResetPasswordResult.INVALID_TOKEN;
+            }
+            if (prt.getExpiredAt().isBefore(LocalDateTime.now())) {
+                tokenDao.deleteByToken(token);
+                return ResetPasswordResult.EXPIRED_TOKEN;
+            }
+            String hashed = utils.PasswordUtil.hashPassword(newPassword);
+            boolean ok = userDao.updatePassword(prt.getUserId(), hashed);
+            if (ok) {
+                tokenDao.deleteByToken(token);
+                return ResetPasswordResult.SUCCESS;
+            }
+            return ResetPasswordResult.ERROR;
+        } catch (Exception e) {
+            return ResetPasswordResult.ERROR;
+        }
+    }
+
+    public ResetPasswordResult validateToken(String token) {
+        if (token == null || token.isBlank()) return ResetPasswordResult.INVALID_TOKEN;
+        PasswordResetToken prt = tokenDao.findByToken(token);
+        if (prt == null) return ResetPasswordResult.INVALID_TOKEN;
+        if (prt.getExpiredAt().isBefore(LocalDateTime.now())) {
+            tokenDao.deleteByToken(token);
+            return ResetPasswordResult.EXPIRED_TOKEN;
+        }
+        return ResetPasswordResult.SUCCESS;
     }
 }

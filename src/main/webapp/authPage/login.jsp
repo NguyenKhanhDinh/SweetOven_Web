@@ -356,15 +356,17 @@
             text-decoration: none;
             font-size: 14px;
             font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.3s;
+            display: inline-block;
+            transition: transform 0.3s ease, color 0.3s ease;
         }
 
         .back-home a:hover {
             color: var(--primary);
-            transform: translateX(-5px);
+            transform: scale(1.05);
+        }
+
+        .back-home a:not(:hover) {
+            transform: scale(1);
         }
 
         /* --- RESPONSIVE MOBILE --- */
@@ -494,7 +496,7 @@
 
         <div class="back-home">
             <a href="${pageContext.request.contextPath}/">
-                <i class="fa-solid fa-arrow-left-long"></i> Quay về trang chủ
+                Quay về trang chủ
             </a>
         </div>
     </div>

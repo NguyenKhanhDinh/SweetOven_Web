@@ -14,7 +14,7 @@
 
     <style>
         body{
-            background:#f7f3e9;
+            background:#F9F6F0;
             font-family:'Segoe UI',sans-serif;
         }
 
@@ -289,6 +289,74 @@
         #addressModal .form-control {
             color: #333 !important;
         }
+        #toast-container {
+            position: fixed;
+            top: 76px;
+            right: 16px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .toast-notify {
+            width: 300px;
+            padding: 10px 12px 10px 14px;
+            border-radius: 10px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            box-shadow: 0 4px 16px rgba(0,0,0,.12);
+            border-left: 4px solid #ccc;
+            pointer-events: all;
+            animation: slideInRight .28s cubic-bezier(.22,.68,0,1.2) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toast-notify.success { border-left-color: #2e9e5b; }
+        .toast-notify.error   { border-left-color: #e04040; }
+
+        .toast-notify .toast-icon {
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+        .toast-notify.success .toast-icon { color: #2e9e5b; }
+        .toast-notify.error   .toast-icon { color: #e04040; }
+
+        .toast-notify .toast-msg {
+            flex: 1;
+            font-size: 13px;
+            color: #333;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        .toast-notify .toast-close {
+            background: none;
+            border: none;
+            color: #bbb;
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+            flex-shrink: 0;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: color .15s;
+        }
+        .toast-notify .toast-close:hover { color: #555; }
+
+        .toast-notify .toast-progress {
+            position: absolute;
+            bottom: 0; left: 0;
+            height: 2px;
+            border-radius: 0 0 0 10px;
+            animation: toastProgress 3.5s linear forwards;
+        }
+        .toast-notify.success .toast-progress { background: #2e9e5b; }
+        .toast-notify.error   .toast-progress { background: #e04040; }
     </style>
 </head>
 
@@ -298,21 +366,26 @@
     <jsp:param name="activePage" value="profile"/>
 </jsp:include>
 
-<div class="container profile-container">
+<div id="toast-container">
     <c:if test="${not empty sessionScope.successMsg}">
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                ${sessionScope.successMsg}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="toast-notify success" id="toast-success">
+            <span class="toast-icon"><i class="fa fa-circle-check"></i></span>
+            <span class="toast-msg">${sessionScope.successMsg}</span>
+            <button class="toast-close" onclick="closeToast('toast-success')">&#x2715;</button>
+            <div class="toast-progress"></div>
         </div>
         <c:remove var="successMsg" scope="session"/>
     </c:if>
     <c:if test="${not empty sessionScope.errorMsg}">
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                ${sessionScope.errorMsg}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="toast-notify error" id="toast-error">
+            <span class="toast-icon"><i class="fa fa-circle-xmark"></i></span>
+            <span class="toast-msg">${sessionScope.errorMsg}</span>
+            <button class="toast-close" onclick="closeToast('toast-error')">&#x2715;</button>
+            <div class="toast-progress"></div>
         </div>
         <c:remove var="errorMsg" scope="session"/>
     </c:if>
+</div>
 
     <!-- TOP -->
     <div class="main-grid">
@@ -863,6 +936,22 @@
         sessionStorage.setItem('pendingVoucherCode', code);
         window.location.href = '${pageContext.request.contextPath}/cart';
     }
+
+    function closeToast(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.animation = 'slideOutRight .3s ease forwards';
+        setTimeout(() => el.remove(), 300);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        ['toast-success', 'toast-error'].forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el) {
+                setTimeout(() => closeToast(id), 3500);
+            }
+        });
+    });
 </script>
 </body>
 </html>

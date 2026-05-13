@@ -96,6 +96,68 @@
                 grid-template-columns:1fr;
             }
         }
+        /* ── Toast ── */
+        #toast-container {
+            position: fixed;
+            top: 76px;
+            right: 16px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toast-notify {
+            width: 300px;
+            padding: 10px 12px 10px 14px;
+            border-radius: 10px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            box-shadow: 0 4px 16px rgba(0,0,0,.12);
+            border-left: 4px solid #ccc;
+            pointer-events: all;
+            animation: slideInRight .28s cubic-bezier(.22,.68,0,1.2) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+        .toast-notify.success { border-left-color: #2e9e5b; }
+        .toast-notify.error   { border-left-color: #e04040; }
+        .toast-notify .toast-icon { font-size: 15px; flex-shrink: 0; }
+        .toast-notify.success .toast-icon { color: #2e9e5b; }
+        .toast-notify.error   .toast-icon { color: #e04040; }
+        .toast-notify .toast-msg {
+            flex: 1;
+            font-size: 13px;
+            color: #333;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+        .toast-notify .toast-close {
+            background: none;
+            border: none;
+            color: #bbb;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: color .15s;
+        }
+        .toast-notify .toast-close:hover { color: #555; }
+        .toast-notify .toast-progress {
+            position: absolute;
+            bottom: 0; left: 0;
+            height: 2px;
+            border-radius: 0 0 0 10px;
+            animation: toastProgress 3.5s linear forwards;
+        }
+        .toast-notify.success .toast-progress { background: #2e9e5b; }
+        .toast-notify.error   .toast-progress { background: #e04040; }
+        .contact-page button:disabled {
+            opacity: .65;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -133,33 +195,12 @@
             <!-- RIGHT -->
             <div class="card">
                 <h3>Gửi tin nhắn</h3>
-
-                <!-- THÔNG BÁO -->
-                <c:if test="${not empty sessionScope.successMsg}">
-                    <div class="alert alert-success">
-                            ${sessionScope.successMsg}
-                    </div>
-                    <c:remove var="successMsg" scope="session"/>
-                </c:if>
-
-                <c:if test="${not empty sessionScope.errorMsg}">
-                    <div class="alert alert-danger">
-                            ${sessionScope.errorMsg}
-                    </div>
-                    <c:remove var="errorMsg" scope="session"/>
-                </c:if>
-
-                <form action="${pageContext.request.contextPath}/contact" method="post">
-
-                    <input type="text" name="fullName" placeholder="Họ và tên" required>
-
-                    <input type="email" name="email" placeholder="Email" required>
-
-                    <input type="text" name="phoneNumber" placeholder="Số điện thoại">
-
-                    <textarea name="content" placeholder="Nội dung" required></textarea>
-
-                    <button type="submit">Gửi liên hệ</button>
+                <form id="contactForm" action="${pageContext.request.contextPath}/contact" method="post">
+                    <input type="text"  id="fullName"    name="fullName"    placeholder="Họ và tên" required>
+                    <input type="email" id="email"       name="email"       placeholder="Email" required>
+                    <input type="text"  id="phoneNumber" name="phoneNumber" placeholder="Số điện thoại">
+                    <textarea           id="content"     name="content"     placeholder="Nội dung" required></textarea>
+                    <button type="submit" id="submitBtn">Gửi liên hệ</button>
                 </form>
 
             </div>
@@ -170,8 +211,72 @@
 </div>
 
 <jsp:include page="/components/footer.jsp"/>
+<div id="toast-container"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let toastCount = 0;
+    function showToast(type, msg) {
+        const id = 'toast-' + (++toastCount);
+        const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-xmark';
+        const el = document.createElement('div');
+        el.className = 'toast-notify ' + type;
+        el.id = id;
+        el.innerHTML =
+            '<span class="toast-icon"><i class="fa ' + icon + '"></i></span>' +
+            '<span class="toast-msg">' + msg + '</span>' +
+            '<button class="toast-close" onclick="closeToast(\''+id+'\')">&#x2715;</button>' +
+            '<div class="toast-progress"></div>';
+        document.getElementById('toast-container').appendChild(el);
+        setTimeout(() => closeToast(id), 3500);
+    }
+    function closeToast(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.animation = 'slideOutRight .3s ease forwards';
+        setTimeout(() => el.remove(), 300);
+    }
 
+    /* ── AJAX gửi form ── */
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.textContent = 'Đang gửi...';
+
+        const body = new URLSearchParams({
+            fullName:    document.getElementById('fullName').value,
+            email:       document.getElementById('email').value,
+            phoneNumber: document.getElementById('phoneNumber').value,
+            content:     document.getElementById('content').value
+        });
+
+        fetch('${pageContext.request.contextPath}/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: body.toString()
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showToast('success', data.message);
+                    document.getElementById('contactForm').reset();
+                } else {
+                    showToast('error', data.message || 'Có lỗi xảy ra, vui lòng thử lại.');
+                }
+            })
+            .catch(() => {
+                showToast('error', 'Không thể kết nối đến máy chủ.');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = 'Gửi liên hệ';
+            });
+    });
+</script>
 </body>
 </html>

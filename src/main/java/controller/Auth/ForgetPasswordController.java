@@ -38,7 +38,7 @@ public class ForgetPasswordController extends HttpServlet {
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         boolean sent = userService.processForgotPassword(email, baseUrl);
         if (sent) {
-            request.setAttribute("success", "Nếu email tồn tại trong hệ thống, một liên kết đặt lại mật khẩu đã được gửi đến email của bạn");
+            request.setAttribute("message", "Nếu email tồn tại trong hệ thống, một liên kết đặt lại mật khẩu đã được gửi đến email của bạn");
         } else {
             request.setAttribute("error", "Không thể gửi email đặt lại mật khẩu, hãy thử lại sau");
         }

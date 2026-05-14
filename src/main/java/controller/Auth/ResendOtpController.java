@@ -20,7 +20,7 @@ public class ResendOtpController extends HttpServlet {
             return;
         }
         String email = (String) session.getAttribute("pendingEmail");
-        String fullName = email;
+        String fullName = (String) session.getAttribute("pendingFullName");
         String newOtp = utils.OtpUtil.generateOtp();
         session.setAttribute("pendingOtp", newOtp);
         session.setAttribute("otpExpiry", System.currentTimeMillis() + 5 * 60 * 1000);

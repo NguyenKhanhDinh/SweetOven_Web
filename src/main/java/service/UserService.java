@@ -67,7 +67,20 @@ public class UserService {
         }
         return userDao.updateAvatar(userId, avatarPath);
     }
+    public User findOrCreateGoogleUser(String email, String fullName) {
+        User existing = userDao.findByEmail(email);
+        if (existing != null) {
+            return existing;
+        }
+        User newUser = new User();
+        newUser.setFullName(fullName);
+        newUser.setEmail(email);
+        newUser.setRoleId(2);
+        newUser.setStatus(1);
+        newUser.setBlocked(false);
+        return userDao.insertGoogleUser(newUser);
 
+    }
     public enum ValidateResult {
         OK,
         USERNAME_EXISTS,

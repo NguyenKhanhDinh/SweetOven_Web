@@ -95,6 +95,20 @@ body {
 #cart-badge {
     background: var(--primary-color) !important;
     color: white !important;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    line-height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+
+#cart-badge:empty,
+#cart-badge[data-count="0"] {
+    display: none !important;
 }
 
 .user-avatar {

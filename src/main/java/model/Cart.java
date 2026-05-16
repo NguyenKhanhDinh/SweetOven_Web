@@ -97,4 +97,8 @@ public class Cart implements Serializable {
             cartItem.setQuantity(cartItem.getQuantity()-1);
         }
    }
+
+    public Map<Integer, CartItem> getData() {
+        return data;
+    }
 }

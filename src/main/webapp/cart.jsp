@@ -406,12 +406,10 @@
                     </td>
 
                     <td style="text-align:center">
-                        <form action="${pageContext.request.contextPath}/del-item" method="post" onsubmit="return confirm('Xóa sản phẩm này?')">
-                            <input type="hidden" name="productId" value="${item.product.id}">
-                            <button type="submit" class="btn btn-link text-danger" title="Xóa sản phẩm">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </form>
+                        <button class="btn btn-link text-danger" title="Xóa sản phẩm"
+                                onclick="removeItem(${item.product.id})">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                     </td>
                 </tr>
             </c:forEach>
@@ -558,6 +556,25 @@
             });
         });
     })();
+        function removeItem(productId) {
+        if (!confirm('Xóa sản phẩm này?')) return;
+
+        fetch('${pageContext.request.contextPath}/del-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'productId=' + productId
+    })
+        .then(res => res.json())
+        .then(data => {
+        if (data.success) {
+        location.reload(); // Reload lại trang để cập nhật giỏ hàng
+    } else {
+        alert(data.message);
+    }
+    })
+        .catch(err => console.error('Lỗi xóa sản phẩm:', err));
+    }
+
 </script>
 </body>
 

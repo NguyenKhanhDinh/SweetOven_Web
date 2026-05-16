@@ -25,7 +25,7 @@ public class Product implements Serializable {
     private LocalDateTime updatedAt;
     private List<ProductImage> listImages = new ArrayList<>();
 
-    public  Product(int id, String productCode, int categoryId, String name, BigDecimal originalPrice,BigDecimal discountPrice , int stock_quantity,
+    public  Product(int id, String productCode, int categoryId, String name, BigDecimal originalPrice,BigDecimal discountPrice , int stockQuantity,
                     int status, String description, String ingredients) {
         this.id = id;
         this.productCode = productCode;
@@ -33,7 +33,7 @@ public class Product implements Serializable {
         this.name = name;
         this.originalPrice = originalPrice ;
         this.discountPrice = discountPrice;
-        this.stockQuantity = stock_quantity;
+        this.stockQuantity = stockQuantity;
         this.status = status;
         this.description = description;
         this.ingredients = ingredients;
@@ -89,8 +89,8 @@ public class Product implements Serializable {
     public int getStockQuantity() {
         return stockQuantity;
     }
-    public void setStockQuantity(int stock_quantity) {
-        this.stockQuantity = stock_quantity;
+    public void setStockQuantity(int stockQuantity) {
+        this.stockQuantity = stockQuantity;
     }
     public int getStatus() {
         return status;

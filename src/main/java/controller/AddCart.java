@@ -33,7 +33,7 @@ public class AddCart extends HttpServlet {
            return;
        }
        String returnUrl = request.getParameter("returnUrl");
-       if (returnUrl == null && returnUrl.isEmpty()) {
+       if (returnUrl == null || returnUrl.isEmpty()) {
            returnUrl = request.getContextPath() + "/menu";
        }
      Cart cart = (Cart) session.getAttribute("cart");

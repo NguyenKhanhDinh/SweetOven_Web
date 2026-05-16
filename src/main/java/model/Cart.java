@@ -27,7 +27,7 @@ public class Cart implements Serializable {
          if(data.containsKey(product.getId())){
              currentQuantity = data.get(product.getId()).getQuantity();
          }
-         int newQuantity =currentQuantity = quantity;
+         int newQuantity =currentQuantity + quantity;
          if(newQuantity > availbleStock){
              newQuantity = availbleStock;
          }
@@ -84,7 +84,7 @@ public class Cart implements Serializable {
    }
    public void increase(int productId){
         CartItem cartItem = data.get(productId);
-        if(cartItem == null){
+        if(cartItem != null){
             int availbleStock = cartItem.getProduct().getStockQuantity();
             if(cartItem.getQuantity() < availbleStock){
                 cartItem.setQuantity(cartItem.getQuantity()+1);

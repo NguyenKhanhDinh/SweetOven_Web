@@ -1,5 +1,6 @@
 package controller;
 
+import com.google.gson.JsonObject;
 import dao.CartDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,9 +11,11 @@ import jakarta.servlet.http.HttpSession;
 import model.Cart;
 import model.Product;
 import model.User;
+import org.cloudinary.json.JSONObject;
 import service.ProductService;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @WebServlet("/add-cart")
 public class AddCart extends HttpServlet {
@@ -76,7 +79,58 @@ public class AddCart extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-     doGet(request, response);
+     HttpSession session = request.getSession();
+
+     int productId;
+     int quantity;
+     try {
+         productId = Integer.parseInt(request.getParameter("productId"));
+         String qtyParam = request.getParameter("quantity");
+         quantity = (qtyParam != null && !qtyParam.isEmpty()) ? Integer.parseInt(qtyParam) : 1;
+     }catch (NumberFormatException e){
+         sendJsonResponse(response,false,"Tham số không hợp lệ!",0);
+         return;
+     }
+     Cart cart = (Cart) session.getAttribute("cart");
+     if (cart == null) {
+         cart = new Cart();
+         session.setAttribute("cart", cart);
+     }
+     ProductService productService = new ProductService();
+     Product product = productService.findById(productId);
+     if(product == null){
+         sendJsonResponse(response,false,"Sản phẩm không tồn tại!",cart.getTotalQuantity());
+         return;
+     }
+     int currentQtyInCart = (cart.get(productId)!= null)? cart.get(productId).getQuantity(): 0;
+     if (currentQtyInCart + quantity > product.getStockQuantity()) {
+         String message = "Số lượng tồn kho không đủ! Còn" + (product.getStockQuantity()-currentQtyInCart) + "sản phẩm";
+         sendJsonResponse(response,false,message,cart.getTotalQuantity());
+         return;
+     }
+     cart.addItem(product, quantity);
+     session.setAttribute("cart", cart);
+
+     User user = (User) session.getAttribute("user");
+     if(user != null){
+         syncCartToDB(user.getId(), cart);
+     }
+     sendJsonResponse(response,true,"Đã thêm\""+ product.getName()+"\" vào giỏ hàng!",cart.getTotalQuantity());
+
+    }
+
+    private void sendJsonResponse(HttpServletResponse response, boolean success, String message, int totalQuantity)  throws IOException {
+     response.setContentType("application/json");
+     response.setCharacterEncoding("UTF-8");
+
+     JsonObject json = new JsonObject();
+     json.addProperty("success", success);
+     json.addProperty("message", message);
+     json.addProperty("cartTotalQuantity", totalQuantity);
+
+        PrintWriter out = response.getWriter();
+        out.print(json.toString());
+        out.flush();
     }
 
 

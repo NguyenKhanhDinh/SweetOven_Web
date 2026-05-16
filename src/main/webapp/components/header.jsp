@@ -61,11 +61,13 @@
 
                     <a href="${contextPath}my-cart" class="btn icon-action position-relative me-3" title="Giỏ hàng">
                         <i class="fas fa-shopping-cart"></i>
-                        <span id="cart-badge"
-                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
-                              data-count="${sessionScope.cart.totalItems}">
-                            <c:if test="${sessionScope.cart.totalItems > 0}">${sessionScope.cart.totalItems}</c:if>
-                        </span>
+                        <c:if test="${sessionScope.cart.totalQuantity > 0}">
+                            <span id="cart-badge"
+                                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
+                                  style="display: inline-block;">
+                                    ${sessionScope.cart.totalQuantity}
+                            </span>
+                        </c:if>
                     </a>
 
                     <!-- Icon Thành viên / Avatar -->

@@ -25,7 +25,7 @@ function addToCartAsync(productId, quantity, buttonElement) {
     .then(data => {
         if (data.success) {
             buttonElement.innerHTML = '<i class="fas fa-check"></i> Đã thêm!';
-            updateCartBadge(data.cartTotalItems);
+            updateCartBadge(data.cartTotalQuantity);
             setTimeout(() => {
                 buttonElement.innerHTML = originalText;
                 buttonElement.disabled = false;
@@ -48,11 +48,11 @@ function addToCartAsync(productId, quantity, buttonElement) {
     });
 }
 
-function updateCartBadge(totalItems) {
+function updateCartBadge(totalQuantity) {
     const cartBadge = document.getElementById('cart-badge');
     if (cartBadge) {
-        if (totalItems > 0) {
-            cartBadge.textContent = totalItems;
+        if (totalQuantity > 0) {
+            cartBadge.textContent = totalQuantity;
             cartBadge.style.display = 'inline-block';
         } else {
             cartBadge.style.display = 'none';
@@ -198,29 +198,29 @@ document.addEventListener('DOMContentLoaded', function() {
     initBackToTop();
     initCopyCode();
     initCarousel();
-        initSmoothScroll();
-        highlightActiveNavLink();
-        initUserDropdown();
-        initScrollEffects();
-        initProductCardEffects();
-        setupSearchForm();
+    initSmoothScroll();
+    highlightActiveNavLink();
+    initUserDropdown();
+    initScrollEffects();
+    initProductCardEffects();
+    setupSearchForm();
 
-        console.log('Sweet Oven Bakery - Website loaded successfully');
-    });
+    console.log('Sweet Oven Bakery - Website loaded successfully');
+});
 
-    window.addEventListener('load', function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const message = urlParams.get('message');
-        if (message) {
-            console.log('Notification:', message);
-        }
-    });
-
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = {
-            goToProductDetail,
-            addToCartAsync,
-            updateCartBadge
-        };
+window.addEventListener('load', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('message');
+    if (message) {
+        console.log('Notification:', message);
     }
 });
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        goToProductDetail,
+        addToCartAsync,
+        updateCartBadge
+    };
+
+};

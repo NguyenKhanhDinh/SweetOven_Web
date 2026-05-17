@@ -1,132 +1,143 @@
-    function previewImage(input, previewId) {
-        const preview = document.getElementById(previewId);
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.innerHTML = '<img src="' + e.target.result + '" class="image-preview" alt="Preview">';
-            };
-            reader.readAsDataURL(input.files[0]);
+function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.innerHTML = `<img src="${e.target.result}" class="image-preview mt-2" style="max-height: 120px; border-radius: 8px;" alt="Preview">`;
+        };
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.innerHTML = '';
+    }
+}
+
+document.querySelectorAll('.btn-edit').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const id = this.getAttribute('data-id');
+        const name = this.getAttribute('data-name');
+        const description = this.getAttribute('data-description');
+        const status = this.getAttribute('data-status');
+        let thumbnail = this.getAttribute('data-thumbnail');
+
+        document.getElementById('edit-id').value = id;
+        document.getElementById('edit-name').value = name;
+        document.getElementById('edit-description').value = description || '';
+        document.getElementById('edit-status').value = status;
+
+        const imageContainer = document.getElementById('current-image-container');
+        const imagePreview = document.getElementById('current-thumbnail-preview');
+
+        if (thumbnail && thumbnail !== 'null' && thumbnail.trim() !== '') {
+            const contextPath = window.location.pathname.substring(0, window.location.pathname.indexOf('/admin'));
+            imagePreview.src = (thumbnail.startsWith('http') || thumbnail.startsWith('/')) ? thumbnail : `${contextPath}/${thumbnail}`;
+            imageContainer.style.display = 'block';
         } else {
-            preview.innerHTML = '';
+            imageContainer.style.display = 'none';
         }
-    }
+        document.getElementById('edit-thumbnail').value = '';
+        document.getElementById('edit-image-preview').innerHTML = '';
+    });
+});
 
-    document.querySelectorAll('.btn-edit').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const id = this.getAttribute('data-id');
-            const name = this.getAttribute('data-name');
-            const description = this.getAttribute('data-description');
-            let thumbnail = this.getAttribute('data-thumbnail');
-            const status = this.getAttribute('data-status');
+document.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const id = this.getAttribute('data-id');
+        const name = this.getAttribute('data-name');
+        const productCount = parseInt(this.getAttribute('data-product-count')) || 0;
 
-            document.getElementById('edit-id').value = id;
-            document.getElementById('edit-name').value = name;
-            document.getElementById('edit-description').value = description || '';
-            document.getElementById('edit-status').value = status;
+        let warningText = `Bạn có chắc chắn muốn xóa danh mục "${name}" không?`;
+        let iconType = 'question';
 
-            const imgPreview = document.getElementById('current-thumbnail-preview');
-            if (thumbnail && thumbnail !== 'null' && thumbnail.trim() !== '') {
-                if (!thumbnail.startsWith('http') && !thumbnail.startsWith('/')) {
-                    thumbnail = '${pageContext.request.contextPath}/' + thumbnail;
+        if (productCount > 0) {
+            warningText = `Danh mục "${name}" đang có chứa ${productCount} sản phẩm! Hệ thống sẽ thực hiện xóa danh mục này.`;
+            iconType = 'warning';
+        }
+
+        Swal.fire({
+            title: 'Xác nhận xóa danh mục?',
+            text: warningText,
+            icon: iconType,
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '<i class="fas fa-trash-alt me-1"></i> Đồng ý xóa',
+            cancelButtonText: 'Hủy bỏ',
+            background: '#ffffff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const currentPath = window.location.pathname;
+                if (productCount > 0) {
+                    window.location.href = `${currentPath}?action=delete&id=${id}&force=true`;
+                } else {
+                    window.location.href = `${currentPath}?action=delete&id=${id}`;
                 }
-                imgPreview.src = thumbnail;
-                imgPreview.style.display = 'block';
-                document.getElementById('current-image-container').style.display = 'block';
-            } else {
-                imgPreview.style.display = 'none';
-                document.getElementById('current-image-container').style.display = 'none';
             }
-
-            document.getElementById('edit-image-preview').innerHTML = '';
-            document.getElementById('edit-thumbnail').value = '';
         });
     });
+});
 
-    document.querySelectorAll('.btn-delete').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const id = this.getAttribute('data-id');
-            const name = this.getAttribute('data-name');
-            const hasProducts = this.getAttribute('data-has-products') === 'true';
-            const productCount = this.getAttribute('data-product-count');
+function filterAll() {
+    document.querySelectorAll('#categoryTable tbody tr').forEach(row => row.style.display = '');
+}
 
-            const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
-            const messageEl = document.getElementById('delete-message');
-            const warningEl = document.getElementById('delete-warning');
-            const confirmBtn = document.getElementById('confirm-delete-btn');
+function filterActive() {
+    document.querySelectorAll('#categoryTable tbody tr').forEach(row => {
+        row.style.display = row.dataset.status === 'active' ? '' : 'none';
+    });
+}
 
-            if (hasProducts) {
-                messageEl.innerHTML = `Bạn có chắc chắn muốn xóa danh mục "<strong>${name}</strong>"?`;
-                warningEl.style.display = 'block';
-                warningEl.innerHTML = `<i class="fas fa-info-circle me-2"></i>Danh mục này đang có <strong>${productCount}</strong> sản phẩm. Xóa danh mục sẽ xóa toàn bộ sản phẩm thuộc danh mục này!`;
-                confirmBtn.href = `${pageContext.request.contextPath}/admin/categories?action=delete&id=${id}&force=true`;
-            } else {
-                messageEl.innerHTML = `Bạn có chắc chắn muốn xóa danh mục "<strong>${name}</strong>"?`;
-                warningEl.style.display = 'none';
-                confirmBtn.href = `${pageContext.request.contextPath}/admin/categories?action=delete&id=${id}`;
-            }
+function filterInactive() {
+    document.querySelectorAll('#categoryTable tbody tr').forEach(row => {
+        row.style.display = row.dataset.status === 'inactive' ? '' : 'none';
+    });
+}
 
-            deleteModal.show();
-        });
+document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    const error = urlParams.get('error');
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
     });
 
-    function filterAll() {
-        const rows = document.querySelectorAll('#categoryTable tbody tr');
-        rows.forEach(row => row.style.display = '');
+    if (success) {
+        let msg = 'Thao tác thực hiện thành công!';
+        if (success === 'added') msg = 'Thêm danh mục mới thành công! 🎉';
+        if (success === 'updated') msg = 'Cập nhật danh mục thành công! ✨';
+        if (success === 'deleted') msg = 'Xóa dữ liệu danh mục thành công! 🗑️';
+
+        Toast.fire({ icon: 'success', title: msg });
     }
 
-    function filterActive() {
-        const rows = document.querySelectorAll('#categoryTable tbody tr');
-        rows.forEach(row => {
-            const status = row.getAttribute('data-status');
-            row.style.display = status === 'active' ? '' : 'none';
+    if (error) {
+        let errMsg = 'Đã có lỗi xảy ra trong quá trình xử lý';
+        if (error === 'has_products') errMsg = 'Danh mục đang có chứa sản phẩm, không thể xóa!';
+        if (error === 'not_found') errMsg = 'Không tồn tại hoặc không tìm thấy danh mục yêu cầu!';
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Thao tác thất bại',
+            text: errMsg,
+            confirmButtonColor: '#8B4513'
         });
     }
+});
 
-    function filterInactive() {
-        const rows = document.querySelectorAll('#categoryTable tbody tr');
-        rows.forEach(row => {
-            const status = row.getAttribute('data-status');
-            row.style.display = status === 'inactive' ? '' : 'none';
-        });
+document.getElementById('addCategoryForm')?.addEventListener('submit', function (e) {
+    if (!document.getElementById('add-name').value.trim()) {
+        e.preventDefault();
+        Swal.fire({ icon: 'error', title: 'Thiếu dữ liệu', text: 'Tên danh mục bắt buộc không được bỏ trống!' });
     }
+});
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const success = urlParams.get('success');
-        const error = urlParams.get('error');
-
-        if (success) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Thành công!',
-                text: success === 'added' ? 'Thêm danh mục thành công!' :
-                      success === 'updated' ? 'Cập nhật danh mục thành công!' :
-                      success === 'deleted' ? 'Xóa danh mục thành công!' : 'Thao tác thành công!',
-                confirmButtonColor: '#8B4513'
-            });
-        } else if (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi!',
-                text: error === 'has_products' ? 'Không thể xóa danh mục đang có sản phẩm!' :
-                      error === 'not_found' ? 'Không tìm thấy danh mục!' : 'Có lỗi xảy ra!',
-                confirmButtonColor: '#dc3545'
-            });
-        }
-    });
-
-    document.getElementById('addCategoryForm')?.addEventListener('submit', function(e) {
-        const name = document.getElementById('add-name').value.trim();
-        if (!name) {
-            e.preventDefault();
-            Swal.fire('Lỗi', 'Vui lòng nhập tên danh mục!', 'error');
-        }
-    });
-
-    document.getElementById('editCategoryForm')?.addEventListener('submit', function(e) {
-        const name = document.getElementById('edit-name').value.trim();
-        if (!name) {
-            e.preventDefault();
-            Swal.fire('Lỗi', 'Vui lòng nhập tên danh mục!', 'error');
-        }
-    });
+document.getElementById('editCategoryForm')?.addEventListener('submit', function (e) {
+    if (!document.getElementById('edit-name').value.trim()) {
+        e.preventDefault();
+        Swal.fire({ icon: 'error', title: 'Thiếu dữ liệu', text: 'Tên danh mục bắt buộc không được bỏ trống!' });
+    }
+});

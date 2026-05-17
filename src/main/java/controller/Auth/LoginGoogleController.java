@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.User;
+import service.UserService;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -37,13 +38,15 @@ public class LoginGoogleController extends HttpServlet {
                 return;
             }
             GoogleIdToken.Payload payload = idToken.getPayload();
-            User userGoogle = new User();
-            userGoogle.setEmail(payload.getEmail());
-            userGoogle.setFullName((String) payload.get("name"));
-            userGoogle.setRoleId(1);
-            userGoogle.setStatus(1);
-
-            request.getSession().setAttribute("user", userGoogle);
+            String email = payload.getEmail();
+            String fullName = (String) payload.get("name");
+            UserService userService = new UserService();
+            User user = userService.findOrCreateGoogleUser(email, fullName);
+            if (user == null||user.isBlocked()||user.getStatus()!=1) {
+                response.sendRedirect(request.getContextPath() + "/login.jsp?error=AccountBlocked");
+                return;
+            }
+            request.getSession().setAttribute("user", user);
             response.sendRedirect(request.getContextPath() + "/");
 
         } catch (Exception e) {

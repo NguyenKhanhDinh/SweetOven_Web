@@ -90,6 +90,28 @@ public class UserDao {
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql).bind("password", newPassword).bind("id", id).execute()) > 0;
     }
 
+    public User findByEmailAny(String email) {
+        String sql = "SELECT u.id, u.avatar, u.full_name AS fullName, u.username,u.gender, u.email, u.phone_number AS phoneNumber, u.password,u.status, u.is_blocked AS blocked, u.role_id AS roleId FROM `user` u WHERE u.email = :email LIMIT 1";
+        return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("email", email).mapToBean(User.class).findFirst().orElse(null));
+    }
+
+    public User insertGoogleUser(User user) {
+        String sql = "INSERT INTO `user` (full_name, email, avatar, gender, role_id, status, is_blocked) VALUES (:fullName, :email, :avatar, 0, :roleId, :status, 0)";
+        return JdbiConnector.getJdbi().withHandle(handle -> {
+            int generatedId = handle.createUpdate(sql)
+                    .bind("fullName", user.getFullName())
+                    .bind("email", user.getEmail())
+                    .bind("avatar", user.getAvatar())
+                    .bind("roleId", user.getRoleId())
+                    .bind("status", user.getStatus())
+                    .executeAndReturnGeneratedKeys("id")
+                    .mapTo(Integer.class)
+                    .one();
+            user.setId(generatedId);
+            return user;
+        });
+    }
+
     public User findByEmail(String email) {
         String sql = "SELECT u.id, u.avatar, u.full_name AS fullName, u.username, " +
                 "u.gender, u.email, u.phone_number AS phoneNumber, u.password, " +

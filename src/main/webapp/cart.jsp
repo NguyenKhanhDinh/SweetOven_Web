@@ -146,83 +146,163 @@
         .qty-control {
             display: inline-flex;
             align-items: center;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            gap: 0;
+            border: 1.5px solid #e0d5cc;
+            border-radius: 8px;
             overflow: hidden;
+            background: #fff;
+            transition: border-color 0.2s;
+        }
+
+        .qty-control:focus-within {
+            border-color: var(--primary);
         }
 
         .qty-control button {
-            background: linear-gradient(135deg, var(--primary), #A0522D);
-            color: #fff;
+            background: transparent;
+            color: var(--primary);
             border: none;
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             cursor: pointer;
-            font-size: 18px;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
-
-        .qty-control button:hover {
-            background: linear-gradient(135deg, var(--secondary), #E6B17E);
-        }
-
-        .qty-control input {
-            width: 50px;
-            height: 32px;
-            border: none;
-            text-align: center;
             font-size: 16px;
+            font-weight: 400;
+            line-height: 1;
+            transition: background 0.15s, color 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .qty-control button:hover:not(:disabled) {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .qty-control button:disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .qty-control input.qty-input {
+            width: 44px;
+            height: 34px;
+            border: none;
+            border-left: 1px solid #eee;
+            border-right: 1px solid #eee;
+            text-align: center;
+            font-size: 14px;
             font-weight: 600;
             color: var(--brand);
-            background: #fffdfb;
-            line-height: 32px;
-            appearance: textfield;
+            background: #fafafa;
+            outline: none;
+            -moz-appearance: textfield;
         }
 
-        .qty-control input::-webkit-inner-spin-button,
-        .qty-control input::-webkit-outer-spin-button {
+        .qty-control input.qty-input::-webkit-inner-spin-button,
+        .qty-control input.qty-input::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
 
-        .checkout-actions {
+        .qty-control input.qty-input:focus {
+            background: #fff;
+        }
+        .cart-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 24px;
+            margin-top: 24px;
+            padding: 20px 28px;
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 16px rgba(92, 44, 22, 0.06);
+        }
+
+        .cart-summary {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            margin-top: 20px;
+            gap: 2px;
+        }
+
+        .cart-summary .label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .cart-summary .amount {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        .divider-v {
+            width: 1px;
+            height: 44px;
+            background: var(--border);
+            flex-shrink: 0;
         }
 
         .btn-checkout {
-            width: 250px;
+            height: 48px;
+            padding: 0 32px;
             background: linear-gradient(135deg, var(--primary), #A0522D);
             color: white;
-            padding: 15px;
             border: none;
             border-radius: 10px;
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 700;
+            letter-spacing: 0.8px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.25s;
             text-transform: uppercase;
+            white-space: nowrap;
         }
 
         .btn-checkout:hover:not(:disabled) {
-            background: linear-gradient(135deg, var(--secondary), #E6B17E);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(92, 26, 11, 0.2);
+            background: linear-gradient(135deg, #A0522D, var(--secondary));
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(139, 69, 19, 0.25);
         }
 
         .btn-checkout:disabled {
-            background: #ccc;
+            background: #e0d5cc;
+            color: #a89080;
             cursor: not-allowed;
-            color: #666;
         }
 
-        @media (max-width: 768px) {
-            body {
-                padding-top: 80px;
+        .stock-warning-footer {
+            font-size: 12px;
+            color: #c0392b;
+            text-align: right;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 576px) {
+            .cart-footer {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+                padding: 16px;
             }
+            .cart-summary {
+                align-items: flex-start;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .divider-v { display: none; }
+            .btn-checkout { width: 100%; }
+        }
+
 
             .content th,
             .content td {
@@ -243,7 +323,7 @@
             .btn-checkout {
                 width: 100%;
             }
-        }
+
     </style>
 </head>
 
@@ -302,59 +382,76 @@
                     </td>
 
                     <td>
-                        <div class="qty-control">
-                            <!-- Giảm -->
-                            <form action="${pageContext.request.contextPath}/update-cart" method="post" style="display:inline">
-                                <input type="hidden" name="productId" value="${item.product.id}">
-                                <input type="hidden" name="action" value="decrease">
-                                <button type="submit">−</button>
-                            </form>
+                        <div class="qty-control" data-product-id="${item.product.id}">
+                            <button type="button" class="btn-decrease" title="Giảm">
+                                <i class="fas fa-minus" style="font-size:11px;"></i>
+                            </button>
 
-                            <input type="number" value="${item.quantity}" readonly>
+                            <input type="number"
+                                   class="qty-input"
+                                   value="${item.quantity}"
+                                   min="1"
+                                   max="${item.product.stockQuantity}"
+                                   data-original="${item.quantity}">
 
-                            <!-- Tăng -->
-                            <form action="${pageContext.request.contextPath}/update-cart" method="post" style="display:inline">
-                                <input type="hidden" name="productId" value="${item.product.id}">
-                                <input type="hidden" name="action" value="increase">
-                                <button type="submit">+</button>
-                            </form>
+                            <button type="button" class="btn-increase" title="Tăng">
+                                <i class="fas fa-plus" style="font-size:11px;"></i>
+                            </button>
                         </div>
                     </td>
 
-                    <td>
+                    <!-- Ô tổng tiền từng dòng — thêm class để JS cập nhật được -->
+                    <td class="item-total-${item.product.id}">
                         <fmt:formatNumber value="${item.product.displayPrice * item.quantity}" type="number" /> VNĐ
                     </td>
 
                     <td style="text-align:center">
-                        <form action="${pageContext.request.contextPath}/del-item" method="post" onsubmit="return confirm('Xóa sản phẩm này?')">
-                            <input type="hidden" name="productId" value="${item.product.id}">
-                            <button type="submit" class="btn btn-link text-danger" title="Xóa sản phẩm">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </form>
+                        <button class="btn btn-link text-danger" title="Xóa sản phẩm"
+                                onclick="removeItem(${item.product.id})">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                     </td>
                 </tr>
             </c:forEach>
             </tbody>
         </table>
 
-        <!-- Bấm nút Thanh toán -->
         <c:if test="${not empty cart.items}">
-            <div class="checkout-actions">
+            <div class="cart-footer">
+
+                <div class="cart-summary">
+                    <span class="label">Tạm tính</span>
+                    <span class="amount" id="cart-total">
+                <fmt:formatNumber value="${cart.totalPrice}" type="number" /> VNĐ
+            </span>
+                </div>
+
+                <div class="divider-v"></div>
+
                 <c:choose>
                     <c:when test="${anyOutOfStock}">
-                        <button class="btn-checkout" type="button" disabled title="Vui lòng xóa sản phẩm hết hàng trước khi thanh toán">
-                            Thanh toán
+                        <button class="btn-checkout" type="button" disabled
+                                title="Vui lòng xóa sản phẩm hết hàng trước khi thanh toán">
+                            <i class="fas fa-lock me-2" style="font-size:13px;"></i>Thanh toán
                         </button>
-                        <p class="stock-warning mt-2 text-end">Vui lòng xóa sản phẩm <strong>Hết hàng</strong> để tiếp tục.</p>
                     </c:when>
                     <c:otherwise>
-                        <form action="${pageContext.request.contextPath}/checkout" method="POST">
-                            <button type="submit" class="btn-checkout">Thanh toán</button>
+                        <form action="${pageContext.request.contextPath}/checkout" method="POST" style="margin:0">
+                            <button type="submit" class="btn-checkout">
+                                Thanh toán <i class="fas fa-arrow-right ms-2" style="font-size:13px;"></i>
+                            </button>
                         </form>
                     </c:otherwise>
                 </c:choose>
+
             </div>
+
+            <c:if test="${anyOutOfStock}">
+                <p class="stock-warning-footer">
+                    <i class="fas fa-exclamation-circle me-1"></i>
+                    Vui lòng xóa sản phẩm <strong>Hết hàng</strong> trước khi thanh toán.
+                </p>
+            </c:if>
         </c:if>
 
     </div>
@@ -364,6 +461,121 @@
 <jsp:include page="components/footer.jsp" />
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function () {
+        var ctx = '${pageContext.request.contextPath}';
+
+        // Format số kiểu VN: 150000 → "150.000"
+        function formatVND(num) {
+            return Math.round(num).toLocaleString('vi-VN');
+        }
+
+        function sendUpdate(productId, action, quantity, qtyInput, max) {
+            var body = 'productId=' + productId + '&action=' + action;
+            if (action === 'set') body += '&quantity=' + quantity;
+
+            // Disable cả 3 nút trong lúc gửi
+            var control = qtyInput.closest('.qty-control');
+            control.querySelectorAll('button, input').forEach(function(el){ el.disabled = true; });
+
+            fetch(ctx + '/update-cart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body
+            })
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (!data.success) {
+                        alert(data.message);
+                        return;
+                    }
+
+                    // Cập nhật ô số lượng
+                    qtyInput.value = data.newQty;
+                    qtyInput.dataset.original = data.newQty;
+
+                    // Cập nhật tổng tiền từng dòng
+                    var itemTotalEl = document.querySelector('.item-total-' + productId);
+                    if (itemTotalEl) itemTotalEl.textContent = formatVND(data.itemTotal) + ' VNĐ';
+
+                    // Cập nhật tổng giỏ hàng
+                    var cartTotalEl = document.getElementById('cart-total');
+                    if (cartTotalEl) cartTotalEl.textContent = formatVND(data.cartTotal) + ' VNĐ';
+
+                    // Cập nhật badge số lượng trên icon giỏ hàng (nếu có)
+                    var badge = document.getElementById('cart-badge');
+                    if (badge) badge.textContent = data.totalQuantity;
+
+                    if (data.warning) alert(data.warning);
+                })
+                .catch(function(err) {
+                    console.error('Lỗi cập nhật giỏ hàng:', err);
+                    alert('Có lỗi xảy ra, vui lòng thử lại.');
+                })
+                .finally(function() {
+                    control.querySelectorAll('button, input').forEach(function(el){ el.disabled = false; });
+                });
+        }
+
+        document.querySelectorAll('.qty-control').forEach(function(control) {
+            var productId = control.dataset.productId;
+            var qtyInput  = control.querySelector('.qty-input');
+            var max       = parseInt(qtyInput.getAttribute('max'));
+
+            // Nút −
+            control.querySelector('.btn-decrease').addEventListener('click', function() {
+                if (parseInt(qtyInput.value) <= 1) return;
+                sendUpdate(productId, 'decrease', null, qtyInput, max);
+            });
+
+            // Nút +
+            control.querySelector('.btn-increase').addEventListener('click', function() {
+                if (parseInt(qtyInput.value) >= max) {
+                    alert('Chỉ còn ' + max + ' sản phẩm trong kho!');
+                    return;
+                }
+                sendUpdate(productId, 'increase', null, qtyInput, max);
+            });
+
+            // Nhập tay — Enter hoặc blur
+            qtyInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.blur();
+                }
+                if (!/[\d]/.test(e.key) && !['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) {
+                    e.preventDefault();
+                }
+            });
+
+            qtyInput.addEventListener('blur', function() {
+                var val = parseInt(this.value);
+                if (isNaN(val) || val < 1) { this.value = this.dataset.original; return; }
+                if (val === parseInt(this.dataset.original)) return; // không đổi thì thôi
+                sendUpdate(productId, 'set', val, qtyInput, max);
+            });
+        });
+    })();
+        function removeItem(productId) {
+        if (!confirm('Xóa sản phẩm này?')) return;
+
+        fetch('${pageContext.request.contextPath}/del-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'productId=' + productId
+    })
+        .then(res => res.json())
+        .then(data => {
+        if (data.success) {
+        location.reload(); // Reload lại trang để cập nhật giỏ hàng
+    } else {
+        alert(data.message);
+    }
+    })
+        .catch(err => console.error('Lỗi xóa sản phẩm:', err));
+    }
+
+</script>
 </body>
 
 </html>

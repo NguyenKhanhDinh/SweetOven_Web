@@ -180,6 +180,7 @@ public class AdminCategoryController extends HttpServlet {
         category.setName(name.trim());
         category.setDescription(description != null ? description.trim() : "");
         category.setStatus(statusParam != null ? Integer.parseInt(statusParam) : 1);
+        category.setCreatedAt(existingCategory.getCreatedAt()); // Giữ nguyên ngày tạo gốc
         category.setUpdatedAt(LocalDateTime.now());
 
         Part filePart = request.getPart("thumbnail");
@@ -206,7 +207,6 @@ public class AdminCategoryController extends HttpServlet {
             throws ServletException, IOException {
 
         String idParam = request.getParameter("id");
-        String forceParam = request.getParameter("force");
 
         if (idParam == null || idParam.trim().isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/admin/categories?error=invalid_id");
@@ -221,20 +221,8 @@ public class AdminCategoryController extends HttpServlet {
             return;
         }
 
-        boolean hasProducts = categoryDao.hasProducts(id);
-
-        if (hasProducts && !"true".equals(forceParam)) {
-            response.sendRedirect(request.getContextPath() + "/admin/categories?error=has_products");
-            return;
-        }
-
         try {
-            categoryDao.hardDelete(id);
-
-            if (category.getThumbnail() != null && !category.getThumbnail().isEmpty()) {
-                UploadUtils.deleteFile(request.getServletContext(), category.getThumbnail());
-            }
-
+            categoryDao.softDelete(id);
             response.sendRedirect(request.getContextPath() + "/admin/categories?success=deleted");
         } catch (Exception e) {
             e.printStackTrace();

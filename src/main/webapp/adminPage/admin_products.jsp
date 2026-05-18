@@ -10,26 +10,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sweet Oven - Quản lý sản phẩm</title>
     <link rel="icon" href="${pageContext.request.contextPath}/assets/picture/logo.png">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin_product.css">
-
+    <script>
+        const CONTEXT_PATH = '${pageContext.request.contextPath}';
+    </script>
 </head>
 
 <body>
     <div class="container-fluid p-0">
         <div class="row g-0">
-            <!-- Sidebar -->
-        <div class="sidebar">
+            <div class="sidebar">
                 <div class="d-flex flex-column h-100 p-3">
                     <div class="sidebar-header text-center mb-4 mt-3">
                         <h3 class="text-white fw-bold mb-0">SWEET OVEN</h3>
                         <p class="text-white-50 small mt-2">Quản trị hệ thống</p>
                     </div>
-
                     <ul class="nav nav-pills flex-column mb-auto">
                         <li class="nav-item">
                             <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link ${pageContext.request.requestURI.contains('dashboard') ? 'active' : ''}">
@@ -72,7 +71,6 @@
                             </a>
                         </li>
                     </ul>
-
                     <div class="dropdown mt-auto pt-3 border-top border-secondary">
                         <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user-circle fa-2x me-2"></i>
@@ -85,7 +83,6 @@
                 </div>
             </div>
 
-            <!-- Main Content -->
             <div class="col main-content">
                 <div class="admin-header d-flex justify-content-between align-items-center flex-wrap">
                     <div>
@@ -97,7 +94,6 @@
                     </button>
                 </div>
 
-                <!-- Filter Card -->
                 <div class="filter-card">
                     <div class="row align-items-end">
                         <div class="col-md-3 mb-3">
@@ -132,12 +128,12 @@
                         <div class="col-md-3 mb-3">
                             <label class="form-label fw-semibold"><i class="fas fa-sort me-1"></i>Sắp xếp</label>
                             <select id="sortOrder" class="form-select">
-                                <option value="stock_asc" ${sortOrder == 'stock_asc' ? 'selected' : ''}>📦 Tồn kho (Thấp → Cao)</option>
-                                <option value="stock_desc" ${sortOrder == 'stock_desc' ? 'selected' : ''}>📦 Tồn kho (Cao → Thấp)</option>
-                                <option value="price_asc" ${sortOrder == 'price_asc' ? 'selected' : ''}>💰 Giá (Thấp → Cao)</option>
-                                <option value="price_desc" ${sortOrder == 'price_desc' ? 'selected' : ''}>💰 Giá (Cao → Thấp)</option>
-                                <option value="name_asc" ${sortOrder == 'name_asc' ? 'selected' : ''}>🔤 Tên (A → Z)</option>
-                                <option value="name_desc" ${sortOrder == 'name_desc' ? 'selected' : ''}>🔤 Tên (Z → A)</option>
+                                <option value="stock_asc" ${sortOrder == 'stock_asc' ? 'selected' : ''}>Tồn kho (Thấp → Cao)</option>
+                                <option value="stock_desc" ${sortOrder == 'stock_desc' ? 'selected' : ''}>Tồn kho (Cao → Thấp)</option>
+                                <option value="price_asc" ${sortOrder == 'price_asc' ? 'selected' : ''}>Giá (Thấp → Cao)</option>
+                                <option value="price_desc" ${sortOrder == 'price_desc' ? 'selected' : ''}>Giá (Cao → Thấp)</option>
+                                <option value="name_asc" ${sortOrder == 'name_asc' ? 'selected' : ''}>Tên (A → Z)</option>
+                                <option value="name_desc" ${sortOrder == 'name_desc' ? 'selected' : ''}>Tên (Z → A)</option>
                             </select>
                         </div>
                     </div>
@@ -153,7 +149,6 @@
                     </div>
                 </div>
 
-                <!-- Alert Messages -->
                 <c:if test="${not empty error}">
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="fas fa-exclamation-circle me-2"></i> ${error}
@@ -167,7 +162,6 @@
                     </div>
                 </c:if>
 
-                <!-- Products Table -->
                 <div class="table-container">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
@@ -194,7 +188,6 @@
                                         </td>
                                     </tr>
                                 </c:if>
-
                                 <c:forEach items="${products}" var="p">
                                     <c:set var="stockClass" value="" />
                                     <c:if test="${p.stockQuantity <= 5 && p.stockQuantity > 0}">
@@ -216,15 +209,13 @@
                                             <c:if test="${p.featured}">
                                                 <span class="badge-featured"><i class="fas fa-star me-1"></i>Nổi bật</span>
                                             </c:if>
-                                         </td>
+                                        </td>
                                         <td>
-                                            <c:choose>
-                                                <c:when test="${p.categoryId == 1}">🍰 Bánh ngọt</c:when>
-                                                <c:when test="${p.categoryId == 2}">🥨 Bánh mặn</c:when>
-                                                <c:when test="${p.categoryId == 3}">🔥 Đồ nướng</c:when>
-                                                <c:when test="${p.categoryId == 4}">📦 Combo</c:when>
-                                                <c:otherwise>📁 Khác</c:otherwise>
-                                            </c:choose>
+                                            <c:forEach items="${categories}" var="cat">
+                                                <c:if test="${cat.id == p.categoryId}">
+                                                    ${cat.name}
+                                                </c:if>
+                                            </c:forEach>
                                         </td>
                                         <td>
                                             <fmt:formatNumber value="${p.originalPrice}" type="number" groupingUsed="true" />đ
@@ -234,7 +225,7 @@
                                                 <c:when test="${p.discountPrice != null && p.discountPrice > 0}">
                                                     <span class="discount-price"><fmt:formatNumber value="${p.discountPrice}" type="number" groupingUsed="true" />đ</span>
                                                     <c:set var="discountPercent" value="${((p.originalPrice - p.discountPrice) / p.originalPrice) * 100}" />
-                                                    <small class="text-danger d-block">-${Math.round(discountPercent)}%</small>
+                                                    <small class="text-danger d-block">-<fmt:formatNumber value="${discountPercent}" maxFractionDigits="0" />%</small>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <span class="text-muted">--</span>
@@ -271,7 +262,6 @@
                         </table>
                     </div>
 
-                    <!-- Pagination -->
                     <div class="d-flex justify-content-between align-items-center p-3 border-top">
                         <div class="text-muted small">
                             <c:choose>
@@ -312,7 +302,6 @@
         </div>
     </div>
 
-    <!-- Add Product Modal -->
     <div class="modal fade" id="addProductModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -327,9 +316,9 @@
                             <h6 class="form-section-title"><i class="fas fa-info-circle me-2"></i>Thông tin cơ bản</h6>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label required">Mã sản phẩm (SKU)</label>
-                                    <input type="text" class="form-control" name="productCode" id="addProductCode" readonly style="background:#f5f5f5;">
-                                    <small class="text-muted">Mã sẽ tự động sinh theo danh mục</small>
+                                    <label class="form-label required">Mã sản phẩm</label>
+                                    <input type="text" class="form-control" name="productCode" id="addProductCode" readonly style="background:#f5f5f5;" value="(sẽ tự động sinh khi lưu)">
+                                    <small class="text-muted">Mã sẽ tự động sinh khi lưu</small>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label required">Tên sản phẩm</label>
@@ -339,10 +328,10 @@
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label required">Danh mục</label>
-                                    <select class="form-select" name="categoryId" id="addCategoryId" required onchange="generateProductCode()">
+                                    <select class="form-select" name="categoryId" id="addCategoryId" required>
                                         <option value="" selected disabled>-- Chọn danh mục --</option>
                                         <c:forEach items="${categories}" var="c">
-                                            <option value="${c.id}" data-code="${c.name}">${c.name}</option>
+                                            <option value="${c.id}">${c.name}</option>
                                         </c:forEach>
                                     </select>
                                 </div>
@@ -370,7 +359,7 @@
                                 <div class="col-md-4 mb-3 d-flex align-items-center">
                                     <div class="form-check form-switch mt-4">
                                         <input class="form-check-input" type="checkbox" name="featured" id="addFeatured" value="true">
-                                        <label class="form-check-label fw-bold" for="addFeatured">⭐ Sản phẩm nổi bật</label>
+                                        <label class="form-check-label fw-bold" for="addFeatured">Sản phẩm nổi bật</label>
                                     </div>
                                 </div>
                             </div>
@@ -417,7 +406,6 @@
         </div>
     </div>
 
-    <!-- Edit Product Modal -->
     <div class="modal fade" id="editProductModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -474,7 +462,7 @@
                                 <div class="col-md-4 mb-3 d-flex align-items-center">
                                     <div class="form-check form-switch mt-4">
                                         <input class="form-check-input" type="checkbox" name="featured" id="editFeatured" value="true">
-                                        <label class="form-check-label fw-bold" for="editFeatured">⭐ Sản phẩm nổi bật</label>
+                                        <label class="form-check-label fw-bold" for="editFeatured">Sản phẩm nổi bật</label>
                                     </div>
                                 </div>
                             </div>
@@ -527,7 +515,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="${pageContext.request.contextPath}/assets/js/admin_product.js"></script>
-
 
 </body>
 

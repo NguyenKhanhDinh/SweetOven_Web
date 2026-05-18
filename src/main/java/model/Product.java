@@ -10,7 +10,6 @@ import java.util.List;
 public class Product implements Serializable {
     private int id;
     private String productCode;
-    private String productName;
     private int categoryId;
     private String name;
     private BigDecimal originalPrice;   // giá gốc
@@ -52,12 +51,6 @@ public class Product implements Serializable {
     }
     public void setProductCode(String productCode) {
         this.productCode = productCode;
-    }
-    public String getProductName() {
-        return productName;
-    }
-    public void setProductName(String productName) {
-        this.productName = productName;
     }
     public int getCategoryId() {
         return categoryId;

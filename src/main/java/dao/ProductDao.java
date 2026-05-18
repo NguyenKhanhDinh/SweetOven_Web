@@ -75,6 +75,12 @@ public class ProductDao {
                 "LIMIT :limit OFFSET :offset";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("offset", offset).bind("limit", limit).mapToBean(Product.class).list());
     }
+    public void deleteById(int id) {
+        String sql = "DELETE FROM product WHERE id = :id";
+        JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createUpdate(sql).bind("id", id).execute()
+        );
+    }
 
     public int addProduct(Product p) {
         String sql = "INSERT INTO product (product_code, category_id, name, original_price, discount_price, " +
@@ -371,50 +377,85 @@ public class ProductDao {
         );
         return maxSeq != null ? maxSeq : 0;
     }
+    public int getNextProductSequence() {
+        String sql = "SELECT MAX(CAST(SUBSTRING(product_code, 3) AS UNSIGNED)) FROM product";
+        Integer maxSeq = JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql).mapTo(Integer.class).one()
+        );
+        return (maxSeq != null ? maxSeq : 0) + 1;
+    }
+    public boolean isProductCodeExists(String productCode) {
+        String sql = "SELECT COUNT(*) FROM product WHERE product_code = :productCode";
+        int count = JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql).bind("productCode", productCode).mapTo(Integer.class).one()
+        );
+        return count > 0;
+    }
+
     public List<Product> findAllWithFilters(String search, Integer categoryId, Integer status,
                                             Boolean featured, String sort, int page, int pageSize) {
         int offset = (page - 1) * pageSize;
         StringBuilder sql = new StringBuilder("""
-        SELECT p.*, pi.image_url as image
-        FROM product p
-        LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1
-        WHERE 1=1
-    """);
+            SELECT p.*, pi.image_url as image
+            FROM product p
+            LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1
+            WHERE 1=1
+        """);
 
         List<Object> params = new ArrayList<>();
 
+        // Tìm kiếm theo tên hoặc mã sản phẩm
         if (search != null && !search.trim().isEmpty()) {
             sql.append(" AND (p.name LIKE ? OR p.product_code LIKE ?)");
             params.add("%" + search + "%");
             params.add("%" + search + "%");
         }
-        if (categoryId != null) {
+
+        // Lọc theo danh mục
+        if (categoryId != null && categoryId > 0) {
             sql.append(" AND p.category_id = ?");
             params.add(categoryId);
         }
+
+        // Lọc theo trạng thái (còn hàng/hết hàng)
         if (status != null) {
-            sql.append(" AND p.status = ?");
-            params.add(status);
+            if (status == 1) {
+                sql.append(" AND p.status = 1 AND p.stock_quantity > 0");
+            } else if (status == 0) {
+                sql.append(" AND (p.status = 0 OR p.stock_quantity = 0)");
+            }
         }
+
+        // Lọc theo nổi bật
         if (featured != null) {
             sql.append(" AND p.is_featured = ?");
             params.add(featured ? 1 : 0);
         }
 
-        String orderBy = "p.stock_quantity ASC";
+        // Sắp xếp
+        String orderBy = "p.id DESC";
         if (sort != null && !sort.isEmpty()) {
             switch (sort) {
-                case "stock_asc": orderBy = "p.stock_quantity ASC"; break;
-                case "stock_desc": orderBy = "p.stock_quantity DESC"; break;
+                case "stock_asc":
+                    orderBy = "p.stock_quantity ASC";
+                    break;
+                case "stock_desc":
+                    orderBy = "p.stock_quantity DESC";
+                    break;
                 case "price_asc":
-                    orderBy = "COALESCE(NULLIF(p.discount_price, 0), p.original_price) ASC";
+                    orderBy = "CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.original_price END ASC";
                     break;
                 case "price_desc":
-                    orderBy = "COALESCE(NULLIF(p.discount_price, 0), p.original_price) DESC";
+                    orderBy = "CASE WHEN p.discount_price IS NOT NULL AND p.discount_price > 0 THEN p.discount_price ELSE p.original_price END DESC";
                     break;
-                case "name_asc": orderBy = "p.name ASC"; break;
-                case "name_desc": orderBy = "p.name DESC"; break;
-                default: orderBy = "p.stock_quantity ASC";
+                case "name_asc":
+                    orderBy = "p.name ASC";
+                    break;
+                case "name_desc":
+                    orderBy = "p.name DESC";
+                    break;
+                default:
+                    orderBy = "p.id DESC";
             }
         }
         sql.append(" ORDER BY ").append(orderBy);
@@ -432,6 +473,7 @@ public class ProductDao {
         });
     }
 
+
     /**
      * Đếm số lượng sản phẩm với bộ lọc
      */
@@ -444,13 +486,16 @@ public class ProductDao {
             params.add("%" + search + "%");
             params.add("%" + search + "%");
         }
-        if (categoryId != null) {
+        if (categoryId != null && categoryId > 0) {
             sql.append(" AND p.category_id = ?");
             params.add(categoryId);
         }
         if (status != null) {
-            sql.append(" AND p.status = ?");
-            params.add(status);
+            if (status == 1) {
+                sql.append(" AND p.status = 1 AND p.stock_quantity > 0");
+            } else if (status == 0) {
+                sql.append(" AND (p.status = 0 OR p.stock_quantity = 0)");
+            }
         }
         if (featured != null) {
             sql.append(" AND p.is_featured = ?");

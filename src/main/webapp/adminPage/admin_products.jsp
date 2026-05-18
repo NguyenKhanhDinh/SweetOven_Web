@@ -328,7 +328,7 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label required">Mã sản phẩm (SKU)</label>
-                                    <input type="text" class="form-control" name="productCode" id="addProductCode" readonly style="background:#f5f5f5;">
+                                    <input type="text" class="form-control" name="productCode" id="addProductCode" readonly style="background:#f5f5f5;" value="(sẽ tự động sinh khi lưu)">
                                     <small class="text-muted">Mã sẽ tự động sinh theo danh mục</small>
                                 </div>
                                 <div class="col-md-6 mb-3">

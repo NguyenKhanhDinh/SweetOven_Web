@@ -1,23 +1,3 @@
-// Category code mapping
-const categoryCodeMap = {
-    1: 'BN',   // Bánh ngọt
-    2: 'BM',   // Bánh mặn
-    3: 'DN',   // Đồ nướng
-    4: 'CB'    // Combo
-};
-
-// Auto-generate product code based on category
-function generateProductCode() {
-    const categoryId = document.getElementById('addCategoryId').value;
-    if (categoryId && categoryCodeMap[categoryId]) {
-        const prefix = categoryCodeMap[categoryId];
-        const timestamp = Date.now().toString().slice(-4);
-        const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-        document.getElementById('addProductCode').value = `${prefix}-${timestamp}${random}`;
-    }
-}
-
-// Apply filters
 function applyFilters() {
     const search = document.getElementById('searchKeyword').value;
     const categoryId = document.getElementById('filterCategory').value;
@@ -76,13 +56,6 @@ function openEditModal(productId) {
             if (data.image) {
                 imagesHtml += `<div class="text-center"><img src="${resolveImageUrl(data.image)}" height="80" class="border rounded mb-1"><br><small class="text-primary">Ảnh chính</small></div>`;
             }
-            if (data.listImages && data.listImages.length > 0) {
-                data.listImages.forEach(img => {
-                    if (!img.primary) {
-                        imagesHtml += `<div class="text-center"><img src="${resolveImageUrl(img.imageUrl)}" height="80" class="border rounded mb-1"><br><small>Ảnh phụ</small></div>`;
-                    }
-                });
-            }
             if (!imagesHtml) imagesHtml = '<span class="text-muted">Chưa có ảnh</span>';
             document.getElementById('currentImagesContainer').innerHTML = imagesHtml;
 
@@ -94,11 +67,11 @@ function openEditModal(productId) {
         });
 }
 
-// Confirm delete with SweetAlert2
+// Confirm delete - SỬA THÔNG BÁO CHO ĐÚNG (xóa vĩnh viễn)
 function confirmDelete(productId, productName) {
     Swal.fire({
         title: 'Xác nhận xóa?',
-        html: `Bạn có chắc chắn muốn xóa sản phẩm <strong>${productName}</strong>?<br><span class="text-warning">Sản phẩm sẽ bị ẩn khỏi hệ thống (xóa mềm)</span>`,
+        html: `Bạn có chắc chắn muốn xóa sản phẩm <strong>${productName}</strong>?<br><span class="text-danger">Hành động này sẽ xóa vĩnh viễn sản phẩm khỏi hệ thống!</span>`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -112,11 +85,12 @@ function confirmDelete(productId, productName) {
     });
 }
 
-// Auto show add modal if error occurred
-<c:if test="${not empty error and param.showAdd == 'true'}">
-    var addModal = new bootstrap.Modal(document.getElementById('addProductModal'));
-    addModal.show();
-</c:if>
+// Khi mở modal thêm sản phẩm, xóa nội dung cũ và để trống mã (backend sẽ tự sinh)
+document.getElementById('addProductModal')?.addEventListener('show.bs.modal', function() {
+    document.getElementById('addProductForm').reset();
+    document.getElementById('addProductCode').value = '(sẽ tự động sinh khi lưu)';
+    document.getElementById('addProductCode').style.color = '#999';
+});
 
 // Validate discount price <= original price
 document.getElementById('addProductForm')?.addEventListener('submit', function(e) {

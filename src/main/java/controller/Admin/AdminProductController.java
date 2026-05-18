@@ -14,9 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @WebServlet("/admin/products")
 @MultipartConfig
@@ -26,26 +24,17 @@ public class AdminProductController extends HttpServlet {
     private CategoryDao categoryDao;
     private ProductImageDao productImageDao;
 
-    private static final Map<Integer, String> CATEGORY_CODE_MAP = new HashMap<>();
-    static {
-        CATEGORY_CODE_MAP.put(1, "BN");   // Bánh ngọt
-        CATEGORY_CODE_MAP.put(2, "BM");   // Bánh mặn
-        CATEGORY_CODE_MAP.put(3, "DN");   // Đồ nướng
-        CATEGORY_CODE_MAP.put(4, "CB");   // Combo
-    }
-
-    private String generateProductCode(int categoryId) {
-        String prefix = CATEGORY_CODE_MAP.getOrDefault(categoryId, "SP");
-        int maxSeq = productDao.getMaxSequenceByPrefix(prefix);
-        int nextSeq = maxSeq + 1;
-        return String.format("%s-%04d", prefix, nextSeq);
-    }
-
     @Override
     public void init() {
         productDao = new ProductDao();
         categoryDao = new CategoryDao();
         productImageDao = new ProductImageDao();
+    }
+
+    // SINH MÃ SẢN PHẨM TỰ ĐỘNG - SP000001, SP000002,...
+    private String generateProductCode() {
+        int nextSeq = productDao.getNextProductSequence();
+        return String.format("SP%06d", nextSeq);
     }
 
     @Override
@@ -55,31 +44,82 @@ public class AdminProductController extends HttpServlet {
 
         if ("delete".equals(action)) {
             int id = Integer.parseInt(req.getParameter("id"));
-            productDao.updateStatus(id, 0);
-            req.setAttribute("success", "Đã xóa sản phẩm!");
-            listProducts(req, resp);
+            deleteProductPermanently(id, req, resp);
         } else if ("get-detail".equals(action)) {
             int id = Integer.parseInt(req.getParameter("id"));
-            Product p = productDao.findById(id);
-            List<ProductImage> images = productImageDao.findByProductId(id);
-
-            resp.setContentType("application/json");
-            resp.getWriter().write("{\"id\":" + p.getId() +
-                    ",\"productCode\":\"" + p.getProductCode() + "\"" +
-                    ",\"name\":\"" + p.getName() + "\"" +
-                    ",\"categoryId\":" + p.getCategoryId() +
-                    ",\"originalPrice\":" + p.getOriginalPrice() +
-                    ",\"discountPrice\":" + (p.getDiscountPrice() == null ? "null" : p.getDiscountPrice()) +
-                    ",\"stockQuantity\":" + p.getStockQuantity() +
-                    ",\"status\":" + p.getStatus() +
-                    ",\"featured\":" + p.isFeatured() +
-                    ",\"description\":\"" + (p.getDescription() == null ? "" : p.getDescription().replace("\"", "\\\"")) + "\"" +
-                    ",\"ingredients\":\"" + (p.getIngredients() == null ? "" : p.getIngredients().replace("\"", "\\\"")) + "\"" +
-                    ",\"image\":\"" + (p.getImage() == null ? "" : p.getImage()) + "\"" +
-                    "}");
+            getProductDetailJson(id, resp);
         } else {
             listProducts(req, resp);
         }
+    }
+
+    private void deleteProductPermanently(int id, HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        try {
+            Product p = productDao.findById(id);
+            if (p != null) {
+                String realPath = getServletContext().getRealPath("/");
+
+                // Xóa ảnh đại diện
+                if (p.getImage() != null && !p.getImage().isEmpty()) {
+                    File imgFile = new File(realPath + p.getImage());
+                    if (imgFile.exists()) imgFile.delete();
+                }
+
+                // Xóa ảnh phụ
+                List<ProductImage> images = productImageDao.findByProductId(id);
+                for (ProductImage img : images) {
+                    if (img.getImageUrl() != null && !img.getImageUrl().isEmpty()) {
+                        File imgFile = new File(realPath + img.getImageUrl());
+                        if (imgFile.exists()) imgFile.delete();
+                    }
+                }
+
+                // Xóa trong database
+                productImageDao.deleteByProductId(id);
+                productDao.deleteById(id);
+
+                req.setAttribute("success", "Đã xóa sản phẩm thành công!");
+            } else {
+                req.setAttribute("error", "Không tìm thấy sản phẩm!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            req.setAttribute("error", "Lỗi khi xóa: " + e.getMessage());
+        }
+        listProducts(req, resp);
+    }
+
+    private void getProductDetailJson(int id, HttpServletResponse resp) throws IOException {
+        Product p = productDao.findById(id);
+        List<ProductImage> images = productImageDao.findByProductId(id);
+
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"id\":").append(p.getId()).append(",");
+        json.append("\"productCode\":\"").append(escapeJson(p.getProductCode())).append("\",");
+        json.append("\"name\":\"").append(escapeJson(p.getName())).append("\",");
+        json.append("\"categoryId\":").append(p.getCategoryId()).append(",");
+        json.append("\"originalPrice\":").append(p.getOriginalPrice()).append(",");
+        json.append("\"discountPrice\":").append(p.getDiscountPrice() == null ? "null" : p.getDiscountPrice()).append(",");
+        json.append("\"stockQuantity\":").append(p.getStockQuantity()).append(",");
+        json.append("\"status\":").append(p.getStatus()).append(",");
+        json.append("\"featured\":").append(p.isFeatured()).append(",");
+        json.append("\"description\":\"").append(escapeJson(p.getDescription() == null ? "" : p.getDescription())).append("\",");
+        json.append("\"ingredients\":\"").append(escapeJson(p.getIngredients() == null ? "" : p.getIngredients())).append("\",");
+        json.append("\"image\":\"").append(escapeJson(p.getImage() == null ? "" : p.getImage())).append("\"");
+        json.append("}");
+
+        resp.setContentType("application/json");
+        resp.getWriter().write(json.toString());
+    }
+
+    private String escapeJson(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r");
     }
 
     @Override
@@ -130,14 +170,15 @@ public class AdminProductController extends HttpServlet {
         if (page > totalPages && totalPages > 0) page = totalPages;
 
         List<Product> products = productDao.findAllWithFilters(search, categoryId, status, featured, sort, page, pageSize);
+        List<Category> categories = categoryDao.findAll();
 
         req.setAttribute("products", products);
-        req.setAttribute("categories", categoryDao.findAll());
+        req.setAttribute("categories", categories);
         req.setAttribute("totalProducts", totalProducts);
         req.setAttribute("totalPages", totalPages);
         req.setAttribute("currentPage", page);
         req.setAttribute("pageSize", pageSize);
-        req.setAttribute("searchKeyword", search);
+        req.setAttribute("searchKeyword", search == null ? "" : search);
         req.setAttribute("filterCategoryId", categoryIdParam);
         req.setAttribute("filterStatus", statusParam);
         req.setAttribute("filterFeatured", featuredParam);
@@ -145,15 +186,18 @@ public class AdminProductController extends HttpServlet {
 
         req.getRequestDispatcher("/adminPage/admin_products.jsp").forward(req, resp);
     }
+
     private void addProduct(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
+            // Tự động sinh mã sản phẩm
+            String productCode = generateProductCode();
+
             int categoryId = Integer.parseInt(req.getParameter("categoryId"));
-            String productCode = generateProductCode(categoryId);
             String name = req.getParameter("name");
             BigDecimal originalPrice = new BigDecimal(req.getParameter("originalPrice"));
             String discountPriceStr = req.getParameter("discountPrice");
-            BigDecimal discountPrice = discountPriceStr.isEmpty() ? null : new BigDecimal(discountPriceStr);
+            BigDecimal discountPrice = (discountPriceStr == null || discountPriceStr.isEmpty()) ? null : new BigDecimal(discountPriceStr);
             int stock = Integer.parseInt(req.getParameter("stockQuantity"));
             int status = Integer.parseInt(req.getParameter("status"));
             boolean featured = "true".equals(req.getParameter("featured"));
@@ -175,15 +219,13 @@ public class AdminProductController extends HttpServlet {
 
             int id = productDao.addProduct(p);
 
-            // Upload và lưu ảnh chính vào bảng productimage
+            // Upload ảnh
             Part imagePart = req.getPart("imageFile");
             if (imagePart != null && imagePart.getSize() > 0) {
                 String fileName = saveFile(imagePart, "products");
-                // Lưu vào bảng productimage, không phải cột image trong product
-                productImageDao.insertImage(id, fileName, true);  // isPrimary = true
+                productImageDao.insertImage(id, fileName, true);
             }
 
-            // Upload ảnh phụ
             Part subImage1 = req.getPart("imageFileSub1");
             if (subImage1 != null && subImage1.getSize() > 0) {
                 String fileName = saveFile(subImage1, "products");
@@ -196,7 +238,7 @@ public class AdminProductController extends HttpServlet {
                 productImageDao.insertImage(id, fileName, false);
             }
 
-            req.setAttribute("success", "Thêm sản phẩm thành công!");
+            req.setAttribute("success", "Thêm sản phẩm thành công! Mã SP: " + productCode);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -204,6 +246,7 @@ public class AdminProductController extends HttpServlet {
         }
         listProducts(req, resp);
     }
+
     private void editProduct(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
@@ -213,7 +256,7 @@ public class AdminProductController extends HttpServlet {
             int categoryId = Integer.parseInt(req.getParameter("categoryId"));
             BigDecimal originalPrice = new BigDecimal(req.getParameter("originalPrice"));
             String discountPriceStr = req.getParameter("discountPrice");
-            BigDecimal discountPrice = discountPriceStr.isEmpty() ? null : new BigDecimal(discountPriceStr);
+            BigDecimal discountPrice = (discountPriceStr == null || discountPriceStr.isEmpty()) ? null : new BigDecimal(discountPriceStr);
             int stock = Integer.parseInt(req.getParameter("stockQuantity"));
             int status = Integer.parseInt(req.getParameter("status"));
             boolean featured = "true".equals(req.getParameter("featured"));
@@ -221,6 +264,12 @@ public class AdminProductController extends HttpServlet {
             String ingredients = req.getParameter("ingredients");
 
             Product p = productDao.findById(id);
+            if (p == null) {
+                req.setAttribute("error", "Không tìm thấy sản phẩm!");
+                listProducts(req, resp);
+                return;
+            }
+
             p.setProductCode(productCode);
             p.setName(name);
             p.setCategoryId(categoryId);
@@ -235,20 +284,26 @@ public class AdminProductController extends HttpServlet {
 
             productDao.update(p);
 
+            // Xử lý upload ảnh mới nếu có
             Part imagePart = req.getPart("imageFile");
             if (imagePart != null && imagePart.getSize() > 0) {
+                // Xóa ảnh cũ
                 List<ProductImage> oldImages = productImageDao.findByProductId(id);
                 for (ProductImage oldImg : oldImages) {
                     if (oldImg.isPrimary()) {
+                        String realPath = getServletContext().getRealPath("/");
+                        File oldFile = new File(realPath + oldImg.getImageUrl());
+                        if (oldFile.exists()) oldFile.delete();
                         productImageDao.deleteImage(oldImg.getId());
                         break;
                     }
                 }
+                // Thêm ảnh mới
                 String fileName = saveFile(imagePart, "products");
                 productImageDao.insertImage(id, fileName, true);
             }
 
-            req.setAttribute("success", "Cập nhật thành công!");
+            req.setAttribute("success", "Cập nhật sản phẩm thành công!");
 
         } catch (Exception e) {
             e.printStackTrace();

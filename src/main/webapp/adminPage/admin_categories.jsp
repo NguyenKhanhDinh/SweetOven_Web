@@ -91,37 +91,54 @@
                     <i class="fas fa-plus me-2"></i>Thêm danh mục mới
                 </button>
             </div>
-            <div class="row mb-4">
-                <div class="col-xl-3 col-md-6 mb-3">
-                    <div class="stat-card">
-                        <div>
-                            <p class="text-muted mb-1 small">Tổng danh mục</p>
-                            <h3 class="mb-0 text-primary fw-bold">${totalCategories != null ? totalCategories : 0}</h3>
-                        </div>
+            <div class="stats-grid mb-4">
+                <div class="stats-card total-card">
+                    <div class="stats-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+
+                    <div class="stats-content">
+                        <p>Tổng danh mục</p>
+                        <h3>${totalCategories != null ? totalCategories : 0}</h3>
+                        <span>danh mục</span>
+                    </div>
+
+                </div>
+
+                <div class="stats-card active-card">
+                    <div class="stats-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+
+                    <div class="stats-content">
+                        <p>Đang hoạt động</p>
+                        <h3>${activeCategories != null ? activeCategories : 0}</h3>
+                        <span>danh mục</span>
+                    </div>
+
+                </div>
+
+                <div class="stats-card inactive-card">
+                    <div class="stats-icon">
+                        <i class="fas fa-pause"></i>
+                    </div>
+
+                    <div class="stats-content">
+                        <p>Ngừng hoạt động</p>
+                        <h3>${inactiveCategories != null ? inactiveCategories : 0}</h3>
+                        <span>danh mục</span>
                     </div>
                 </div>
-                <div class="col-xl-3 col-md-6 mb-3">
-                    <div class="stat-card">
-                        <div>
-                            <p class="text-muted mb-1 small">Đang hoạt động</p>
-                            <h3 class="mb-0 text-success fw-bold">${activeCategories != null ? activeCategories : 0}</h3>
-                        </div>
+
+                <div class="stats-card product-card-stat">
+                    <div class="stats-icon">
+                        <i class="fas fa-bag-shopping"></i>
                     </div>
-                </div>
-                <div class="col-xl-3 col-md-6 mb-3">
-                    <div class="stat-card">
-                        <div>
-                            <p class="text-muted mb-1 small">Ngừng hoạt động</p>
-                            <h3 class="mb-0 text-danger fw-bold">${inactiveCategories != null ? inactiveCategories : 0}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6 mb-3">
-                    <div class="stat-card">
-                        <div>
-                            <p class="text-muted mb-1 small">Tổng sản phẩm</p>
-                            <h3 class="mb-0 text-warning fw-bold">${totalProducts != null ? totalProducts : 0}</h3>
-                        </div>
+
+                    <div class="stats-content">
+                        <p>Tổng sản phẩm</p>
+                        <h3>${totalProducts != null ? totalProducts : 0}</h3>
+                        <span>sản phẩm</span>
                     </div>
                 </div>
             </div>

@@ -1,105 +1,135 @@
 
 :root {
-    --primary: #8B4513;
-    --primary-light: #A05A2B;
+    --primary: #3C2F27;
+    --primary-light: #5A463A;
     --secondary: #D4A76A;
-    --secondary-light: #E0B878;
+    --secondary-light: #E7C79B;
     --accent: #C19A6B;
+
     --light: #FFF9F0;
-    --dark: #333333;
+    --bg-body: #F9F6F0;
+    --dark: #2F2F2F;
+
     --success: #28a745;
     --danger: #dc3545;
     --warning: #ffc107;
     --info: #17a2b8;
+
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     --transition: all 0.3s ease;
 }
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    font-family: 'Quicksand', sans-serif;
-    background-color: #f8f9fa;
+    font-family: "Quicksand", sans-serif;
+    background: var(--bg-body);
     color: var(--dark);
     overflow-x: hidden;
 }
 
-/* Sidebar Styles */
+/* SIDEBAR */
 .sidebar {
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    width: 260px;
     min-height: 100vh;
-    box-shadow: var(--shadow);
     position: fixed;
-    z-index: 100;
     left: 0;
     top: 0;
-    width: 260px;
-    transition: var(--transition);
+    z-index: 100;
+    background: linear-gradient(180deg, var(--primary), var(--primary-light));
+    box-shadow: var(--shadow);
 }
 
 .sidebar .nav-link {
-    color: rgba(255, 255, 255, 0.85);
-    padding: 12px 20px;
-    margin: 4px 12px;
-    border-radius: 12px;
+    color: rgba(255,255,255,0.82);
+    padding: 13px 20px;
+    margin: 5px 14px;
+    border-radius: 14px;
     font-size: 0.95rem;
     transition: var(--transition);
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .sidebar .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255,255,255,0.14);
     color: white;
     transform: translateX(5px);
 }
 
 .sidebar .nav-link.active {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255,255,255,0.18);
     color: white;
-    font-weight: 600;
 }
 
 .sidebar .nav-link i {
-    width: 28px;
+    width: 26px;
+    margin-right: 10px;
     text-align: center;
-    margin-right: 12px;
 }
 
-/* Main Content */
+/* MAIN */
 .main-content {
     margin-left: 260px;
-    padding: 25px;
+    padding: 28px;
     min-height: 100vh;
 }
 
-/* Header */
+/* HEADER */
 .admin-header {
     background: white;
-    border-radius: 20px;
+    border-radius: 24px;
+    padding: 24px 28px;
+    margin-bottom: 28px;
     box-shadow: var(--shadow);
-    padding: 20px 30px;
-    margin-bottom: 25px;
 }
 
-/* Filter Card */
+/* FILTER */
 .filter-card {
     background: white;
-    border-radius: 20px;
+    border-radius: 24px;
     box-shadow: var(--shadow);
-    padding: 20px;
-    margin-bottom: 25px;
-    border: none;
+    padding: 24px;
+    margin-bottom: 28px;
 }
 
 .filter-title {
-    font-weight: 600;
     color: var(--primary);
-    margin-bottom: 15px;
-    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
 }
 
-/* Table */
+/* SEARCH */
+.search-box {
+    position: relative;
+}
+
+.search-box i {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    color: #999;
+}
+
+.search-box .form-control {
+    height: 52px;
+    padding-left: 50px;
+    border-radius: 16px;
+    border: 2px solid #ececec;
+}
+
+.search-box .form-control:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 0.2rem rgba(212,167,106,0.18);
+}
+
+/* TABLE */
 .table-container {
     background: white;
-    border-radius: 20px;
+    border-radius: 24px;
     box-shadow: var(--shadow);
     overflow: hidden;
 }
@@ -108,8 +138,8 @@ body {
     background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: white;
     border: none;
-    padding: 15px;
-    font-weight: 600;
+    padding: 16px;
+    font-weight: 700;
     white-space: nowrap;
 }
 
@@ -118,24 +148,26 @@ body {
 }
 
 .table tbody tr:hover {
-    background-color: rgba(212, 167, 106, 0.1);
+    background-color: rgba(212,167,106,0.08);
 }
 
 .table tbody td {
-    padding: 15px;
+    padding: 16px;
     vertical-align: middle;
+    border-bottom: 1px solid #f4f1ec;
 }
 
-/* Product Image */
+/* IMAGE */
 .product-img {
-    width: 60px;
-    height: 60px;
+    width: 64px;
+    height: 64px;
     object-fit: cover;
-    border-radius: 12px;
+    border-radius: 14px;
     border: 2px solid var(--secondary-light);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* Price Display */
+/* PRICE */
 .original-price {
     text-decoration: line-through;
     color: #999;
@@ -153,76 +185,132 @@ body {
     font-weight: 700;
 }
 
-/* Stock Warning */
+/* STOCK */
 .stock-low {
-    background-color: #fff3cd;
+    background: #fff3cd;
     color: #856404;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .stock-critical {
-    background-color: #f8d7da;
+    background: #f8d7da;
     color: #721c24;
     font-weight: 700;
 }
 
-/* Badges */
+/* BADGES */
+.badge-available,
+.badge-unavailable,
+.badge-featured {
+    padding: 6px 13px;
+    border-radius: 20px;
+    font-size: 0.76rem;
+    font-weight: 700;
+}
+
 .badge-available {
     background: linear-gradient(135deg, var(--success), #218838);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
+    color: white;
 }
 
 .badge-unavailable {
     background: linear-gradient(135deg, var(--danger), #c82333);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
+    color: white;
 }
 
 .badge-featured {
-    background: linear-gradient(135deg, #ffc107, #e0a800);
-    color: #333;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.7rem;
+    background: linear-gradient(135deg, #ffd45a, #f0b92b);
+    color: #3d2d1f;
 }
 
-/* Buttons */
+/* BUTTON */
 .btn-primary-custom {
     background: linear-gradient(135deg, var(--primary), var(--primary-light));
     border: none;
     color: white;
-    padding: 10px 24px;
-    border-radius: 12px;
+    padding: 11px 24px;
+    border-radius: 14px;
+    font-weight: 700;
     transition: var(--transition);
 }
 
 .btn-primary-custom:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+    box-shadow: 0 10px 20px rgba(60,47,39,0.25);
     color: white;
 }
 
-/* Sort Button */
+.btn-outline-primary-custom {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    background: white;
+    border-radius: 14px;
+    font-weight: 700;
+    padding: 10px 18px;
+    transition: var(--transition);
+}
+
+.btn-outline-primary-custom:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* SORT BUTTON */
 .sort-btn {
     background: none;
     border: none;
     color: white;
     margin-left: 5px;
     cursor: pointer;
+    transition: var(--transition);
 }
 
 .sort-btn:hover {
     opacity: 0.8;
 }
 
-/* Modal */
+/* ACTION */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.action-buttons .btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: var(--transition);
+}
+
+.btn-edit {
+    background: rgba(60,47,39,0.1);
+    color: var(--primary);
+}
+
+.btn-edit:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-delete {
+    background: rgba(220,53,69,0.1);
+    color: var(--danger);
+}
+
+.btn-delete:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* MODAL */
 .modal-header {
     background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: white;
-    border-radius: 15px 15px 0 0;
+    border-radius: 16px 16px 0 0;
 }
 
 .modal-header .btn-close {
@@ -230,16 +318,15 @@ body {
 }
 
 .form-section {
-    border-left: 3px solid var(--secondary);
+    border-left: 4px solid var(--secondary);
     padding-left: 20px;
-    margin-bottom: 25px;
+    margin-bottom: 24px;
 }
 
 .form-section-title {
-    font-weight: 600;
     color: var(--primary);
-    margin-bottom: 15px;
-    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 14px;
 }
 
 .required::after {
@@ -247,7 +334,7 @@ body {
     color: var(--danger);
 }
 
-/* Responsive */
+/* RESPONSIVE */
 @media (max-width: 768px) {
     .sidebar {
         width: 100%;
@@ -255,6 +342,7 @@ body {
         position: relative;
         min-height: auto;
     }
+
     .main-content {
         margin-left: 0;
     }

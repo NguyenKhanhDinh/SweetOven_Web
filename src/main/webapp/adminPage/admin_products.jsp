@@ -23,8 +23,8 @@
     <div class="container-fluid p-0">
         <div class="row g-0">
             <!-- Sidebar -->
-            <div class="col-auto sidebar p-0">
-                <div class="d-flex flex-column p-3">
+        <div class="sidebar">
+                <div class="d-flex flex-column h-100 p-3">
                     <div class="sidebar-header text-center mb-4 mt-3">
                         <h3 class="text-white fw-bold mb-0">SWEET OVEN</h3>
                         <p class="text-white-50 small mt-2">Quản trị hệ thống</p>
@@ -32,48 +32,53 @@
 
                     <ul class="nav nav-pills flex-column mb-auto">
                         <li class="nav-item">
-                            <a href="${pageContext.request.contextPath}/admin/products" class="nav-link active">
+                            <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link ${pageContext.request.requestURI.contains('dashboard') ? 'active' : ''}">
+                                <i class="fas fa-chart-line"></i> <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="${pageContext.request.contextPath}/admin/products" class="nav-link ${pageContext.request.requestURI.contains('products') ? 'active' : ''}">
                                 <i class="fas fa-box"></i> <span>Sản phẩm</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="${pageContext.request.contextPath}/admin/categories" class="nav-link">
+                            <a href="${pageContext.request.contextPath}/admin/categories" class="nav-link ${pageContext.request.requestURI.contains('categories') ? 'active' : ''}">
                                 <i class="fas fa-list"></i> <span>Danh mục</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="${pageContext.request.contextPath}/admin/users" class="nav-link">
+                            <a href="${pageContext.request.contextPath}/admin/users" class="nav-link ${pageContext.request.requestURI.contains('users') ? 'active' : ''}">
                                 <i class="fas fa-users"></i> <span>Người dùng</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="${pageContext.request.contextPath}/admin/orders" class="nav-link">
+                            <a href="${pageContext.request.contextPath}/admin/orders" class="nav-link ${pageContext.request.requestURI.contains('orders') ? 'active' : ''}">
                                 <i class="fas fa-shopping-cart"></i> <span>Đơn hàng</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="${pageContext.request.contextPath}/admin/promotions" class="nav-link">
+                            <a href="${pageContext.request.contextPath}/admin/promotions" class="nav-link ${pageContext.request.requestURI.contains('promotions') ? 'active' : ''}">
                                 <i class="fas fa-tag"></i> <span>Khuyến mãi</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="${pageContext.request.contextPath}/admin/banners" class="nav-link">
+                            <a href="${pageContext.request.contextPath}/admin/banners" class="nav-link ${pageContext.request.requestURI.contains('banners') ? 'active' : ''}">
                                 <i class="fas fa-images"></i> <span>Banner</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="${pageContext.request.contextPath}/admin/feedback" class="nav-link">
+                            <a href="${pageContext.request.contextPath}/admin/feedback" class="nav-link ${pageContext.request.requestURI.contains('feedback') ? 'active' : ''}">
                                 <i class="fas fa-envelope"></i> <span>Phản hồi</span>
                             </a>
                         </li>
                     </ul>
 
-                    <div class="dropdown mt-auto pt-3">
-                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown">
+                    <div class="dropdown mt-auto pt-3 border-top border-secondary">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user-circle fa-2x me-2"></i>
                             <strong>Quản trị viên</strong>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-dark">
+                        <ul class="dropdown-menu dropdown-menu-dark shadow" aria-labelledby="dropdownUser">
                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
                         </ul>
                     </div>

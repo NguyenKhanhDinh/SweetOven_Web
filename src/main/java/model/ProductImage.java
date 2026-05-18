@@ -12,7 +12,7 @@ public class ProductImage implements Serializable {
         this.id = id;
         this.productId = productId;
         this.imageUrl = imageUrl;
-        this.isPrimary = false;
+        this.isPrimary = isPrimary;
     }
     public ProductImage(){}
 

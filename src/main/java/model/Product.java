@@ -10,10 +10,10 @@ import java.util.List;
 public class Product implements Serializable {
     private int id;
     private String productCode;
-    private String productName;
     private int categoryId;
     private String name;
-    private BigDecimal price;
+    private BigDecimal originalPrice;   // giá gốc
+    private BigDecimal discountPrice;   // giá sau giảm
     private int stockQuantity;
     private int status;
     private String description;
@@ -24,14 +24,15 @@ public class Product implements Serializable {
     private LocalDateTime updatedAt;
     private List<ProductImage> listImages = new ArrayList<>();
 
-    public  Product(int id, String productCode, int categoryId, String name, double price, int stock_quantity,
+    public  Product(int id, String productCode, int categoryId, String name, BigDecimal originalPrice,BigDecimal discountPrice , int stockQuantity,
                     int status, String description, String ingredients) {
         this.id = id;
         this.productCode = productCode;
         this.categoryId = categoryId;
         this.name = name;
-        this.price = new BigDecimal(price);
-        this.stockQuantity = stock_quantity;
+        this.originalPrice = originalPrice ;
+        this.discountPrice = discountPrice;
+        this.stockQuantity = stockQuantity;
         this.status = status;
         this.description = description;
         this.ingredients = ingredients;
@@ -51,12 +52,6 @@ public class Product implements Serializable {
     public void setProductCode(String productCode) {
         this.productCode = productCode;
     }
-    public String getProductName() {
-        return productName;
-    }
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
     public int getCategoryId() {
         return categoryId;
     }
@@ -69,17 +64,26 @@ public class Product implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    public BigDecimal getPrice() {
-        return price;
+    public BigDecimal getOriginalPrice() {
+        return originalPrice;
     }
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+
+    public void setOriginalPrice(BigDecimal originalPrice) {
+        this.originalPrice = originalPrice;
+    }
+
+    public BigDecimal getDiscountPrice() {
+        return discountPrice;
+    }
+
+    public void setDiscountPrice(BigDecimal discountPrice) {
+        this.discountPrice = discountPrice;
     }
     public int getStockQuantity() {
         return stockQuantity;
     }
-    public void setStockQuantity(int stock_quantity) {
-        this.stockQuantity = stock_quantity;
+    public void setStockQuantity(int stockQuantity) {
+        this.stockQuantity = stockQuantity;
     }
     public int getStatus() {
         return status;
@@ -128,6 +132,17 @@ public class Product implements Serializable {
     }
     public void setListImages(List<ProductImage> listImages) {
         this.listImages = listImages;
+    }
+    public BigDecimal getDisplayPrice() {
+        if (discountPrice != null && discountPrice.compareTo(BigDecimal.ZERO) > 0) {
+            return discountPrice;
+        }
+
+        if (originalPrice != null) {
+            return originalPrice;
+        }
+
+        return BigDecimal.ZERO;
     }
 }
 

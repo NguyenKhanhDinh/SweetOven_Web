@@ -16,7 +16,7 @@ public class JdbiConnector {
     public static void  connect(){
         MysqlDataSource ds = new MysqlDataSource();
         //jdbc:mysql://localhost:3306/ltweb
-        ds.setURL("jdbc:mysql://"+ Property.HOST+":"+Property.PORT+"/"+Property.DBNAME);
+        ds.setURL("jdbc:mysql://"+ Property.HOST+":"+Property.PORT+"/"+Property.DBNAME+ "?zeroDateTimeBehavior=convertToNull");
         ds.setUser(Property.USERNAME);
         ds.setPassword(Property.PASSWORD);
         try {

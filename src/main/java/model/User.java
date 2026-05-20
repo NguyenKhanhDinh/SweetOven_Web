@@ -8,7 +8,7 @@ public class User implements Serializable {
     private String fullName;
     private String userName;
     private int gender;
-    private String eamil;
+    private String email;
     private String phoneNumber;
     private String password;
     private int status;
@@ -17,13 +17,13 @@ public class User implements Serializable {
     private LocalDateTime createdAt;
     private  LocalDateTime updatedAt;
 
-    public User(int id, String avatar, String fullName, String userName, int gender, String eamil,String phoneNumber,String password,int status,boolean isBlocked,int roleId,LocalDateTime createdAt,LocalDateTime updatedAt) {
+    public User(int id, String avatar, String fullName, String userName, int gender, String email,String phoneNumber,String password,int status,boolean isBlocked,int roleId,LocalDateTime createdAt,LocalDateTime updatedAt) {
         this.id = id;
         this.avatar = avatar;
         this.fullName = fullName;
         this.userName = userName;
         this.gender = gender;
-        this.eamil = eamil;
+        this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.status = status;
@@ -64,11 +64,11 @@ public class User implements Serializable {
     public void setGender(int gender) {
         this.gender = gender;
     }
-    public String getEamil() {
-        return eamil;
+    public String getEmail() {
+        return email;
     }
-    public void setEamil(String eamil) {
-        this.eamil = eamil;
+    public void setEmail(String email) {
+        this.email = email;
     }
     public String getPhoneNumber() {
         return phoneNumber;
@@ -112,4 +112,6 @@ public class User implements Serializable {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+
 }

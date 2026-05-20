@@ -1,8 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class UserAddress {
+public class UserAddress implements Serializable {
     private int id;
     private int userId;
     private String addressDetail;
@@ -64,9 +65,11 @@ public class UserAddress {
     public boolean isDefault() {
         return isDefault;
     }
-    public void setDefault(boolean aDefault) {
-        isDefault = aDefault;
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
     }
+    public boolean getIsDefault() {return isDefault;}
+    public void setIsDefault(boolean isDefault) { this.isDefault = isDefault; }
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }

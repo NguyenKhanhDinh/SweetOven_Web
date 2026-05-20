@@ -84,6 +84,16 @@
             border-top: 1px solid var(--border);
             vertical-align: middle;
         }
+        .th-check, .td-check {
+            width: 52px; text-align: center !important;
+            padding-left: 16px !important; padding-right: 8px !important;
+        }
+        .cart-checkbox {
+            width: 20px; height: 20px;
+            cursor: pointer; accent-color: var(--primary);
+        }
+        tr.row-selected > td { background: #fdf5ee; }
+        tr.row-out-of-stock .cart-checkbox { opacity: 0.35; cursor: not-allowed; }
 
         .san-pham {
             display: flex;
@@ -339,6 +349,9 @@
         <table class="content" aria-label="Giỏ hàng">
             <thead>
             <tr>
+                <th class="th-check">
+                    <input type="checkbox" id="select-all" class="cart-checkbox" title="Chọn tất cả">
+                </th>
                 <th>Thông tin chi tiết sản phẩm</th>
                 <th>Đơn giá</th>
                 <th>Số lượng</th>
@@ -361,7 +374,18 @@
                 <c:if test="${item.product.stockQuantity <= 0}">
                     <c:set var="anyOutOfStock" value="true" />
                 </c:if>
-                <tr>
+                <tr class="cart-row ${item.product.stockQuantity <= 0 ? 'row-out-of-stock' : ''}"
+                    data-product-id="${item.product.id}">
+
+                    <td class="td-check">
+                        <input type="checkbox"
+                               class="cart-checkbox item-checkbox"
+                               data-product-id="${item.product.id}"
+                               data-unit-price="${item.product.displayPrice}"
+                            ${item.product.stockQuantity <= 0 ? 'disabled' : ''}
+                               title="${item.product.stockQuantity <= 0 ? 'Sản phẩm hết hàng' : 'Chọn sản phẩm này'}">
+                    </td>
+
                     <td class="san-pham">
                         <div class="img-container">
                             <img src="${item.imageUrl}" alt="${item.product.name}">
@@ -386,21 +410,18 @@
                             <button type="button" class="btn-decrease" title="Giảm">
                                 <i class="fas fa-minus" style="font-size:11px;"></i>
                             </button>
-
                             <input type="number"
                                    class="qty-input"
                                    value="${item.quantity}"
                                    min="1"
                                    max="${item.product.stockQuantity}"
                                    data-original="${item.quantity}">
-
                             <button type="button" class="btn-increase" title="Tăng">
                                 <i class="fas fa-plus" style="font-size:11px;"></i>
                             </button>
                         </div>
                     </td>
 
-                    <!-- Ô tổng tiền từng dòng — thêm class để JS cập nhật được -->
                     <td class="item-total-${item.product.id}">
                         <fmt:formatNumber value="${item.product.displayPrice * item.quantity}" type="number" /> VNĐ
                     </td>
@@ -418,38 +439,33 @@
 
         <c:if test="${not empty cart.items}">
             <div class="cart-footer">
-
-                <div class="cart-summary">
-                    <span class="label">Tạm tính</span>
-                    <span class="amount" id="cart-total">
-                <fmt:formatNumber value="${cart.totalPrice}" type="number" /> VNĐ
-            </span>
+                <div class="footer-left">
+                    <span class="select-count-badge">
+                        Đã chọn: <strong id="selected-count">0</strong> sản phẩm
+                    </span>
                 </div>
-
-                <div class="divider-v"></div>
-
-                <c:choose>
-                    <c:when test="${anyOutOfStock}">
-                        <button class="btn-checkout" type="button" disabled
-                                title="Vui lòng xóa sản phẩm hết hàng trước khi thanh toán">
-                            <i class="fas fa-lock me-2" style="font-size:13px;"></i>Thanh toán
+                <div class="footer-right">
+                    <div class="cart-summary">
+                        <span class="label">Tạm tính (đã chọn)</span>
+                        <span class="amount" id="cart-total">0 VNĐ</span>
+                    </div>
+                    <div class="divider-v"></div>
+                    <form id="checkout-form"
+                          action="${pageContext.request.contextPath}/checkout"
+                          method="POST"
+                          style="margin:0">
+                        <input type="hidden" name="selectedProductIds" id="selected-ids-input" value="">
+                        <button type="submit" id="btn-checkout" class="btn-checkout" disabled
+                                title="Vui lòng chọn ít nhất một sản phẩm để thanh toán">
+                            Thanh toán <i class="fas fa-arrow-right ms-2" style="font-size:13px;"></i>
                         </button>
-                    </c:when>
-                    <c:otherwise>
-                        <form action="${pageContext.request.contextPath}/checkout" method="POST" style="margin:0">
-                            <button type="submit" class="btn-checkout">
-                                Thanh toán <i class="fas fa-arrow-right ms-2" style="font-size:13px;"></i>
-                            </button>
-                        </form>
-                    </c:otherwise>
-                </c:choose>
-
+                    </form>
+                </div>
             </div>
-
             <c:if test="${anyOutOfStock}">
                 <p class="stock-warning-footer">
                     <i class="fas fa-exclamation-circle me-1"></i>
-                    Vui lòng xóa sản phẩm <strong>Hết hàng</strong> trước khi thanh toán.
+                    Sản phẩm <strong>Hết hàng</strong> không thể chọn để thanh toán.
                 </p>
             </c:if>
         </c:if>
@@ -465,10 +481,84 @@
     (function () {
         var ctx = '${pageContext.request.contextPath}';
 
-        // Format số kiểu VN: 150000 → "150.000"
         function formatVND(num) {
             return Math.round(num).toLocaleString('vi-VN');
         }
+
+        // Tính lại tổng tiền từ những sản phẩm ĐƯỢC CHỌN
+        function recalcSelectedTotal() {
+            var total = 0;
+            var count = 0;
+
+            document.querySelectorAll('.item-checkbox:checked').forEach(function (cb) {
+                var productId = cb.dataset.productId;
+                var unitPrice = parseFloat(cb.dataset.unitPrice) || 0;
+                var qtyInput  = document.querySelector(
+                    '.qty-control[data-product-id="' + productId + '"] .qty-input');
+                var qty = qtyInput ? (parseInt(qtyInput.value) || 0) : 0;
+                total += unitPrice * qty;
+                count++;
+            });
+
+            document.getElementById('cart-total').textContent     = formatVND(total) + ' VNĐ';
+            document.getElementById('selected-count').textContent  = count;
+
+            var btn = document.getElementById('btn-checkout');
+            btn.disabled = (count === 0);
+            btn.title    = count === 0 ? 'Vui lòng chọn ít nhất một sản phẩm để thanh toán' : '';
+
+            // Đồng bộ trạng thái "select-all"
+            var allCheckable = document.querySelectorAll('.item-checkbox:not(:disabled)');
+            var allChecked   = document.querySelectorAll('.item-checkbox:not(:disabled):checked');
+            var selectAll    = document.getElementById('select-all');
+            if (allCheckable.length === 0) {
+                selectAll.checked = false;
+            } else if (allChecked.length === allCheckable.length) {
+                selectAll.checked = true; selectAll.indeterminate = false;
+            } else if (allChecked.length === 0) {
+                selectAll.checked = false; selectAll.indeterminate = false;
+            } else {
+                selectAll.checked = false; selectAll.indeterminate = true;
+            }
+        }
+
+        // Checkbox từng sản phẩm
+        document.querySelectorAll('.item-checkbox').forEach(function (cb) {
+            cb.addEventListener('change', function () {
+                var row = document.querySelector(
+                    'tr.cart-row[data-product-id="' + cb.dataset.productId + '"]');
+                if (row) row.classList.toggle('row-selected', cb.checked);
+                recalcSelectedTotal();
+            });
+        });
+
+        // Checkbox "Chọn tất cả"
+        document.getElementById('select-all').addEventListener('change', function () {
+            var checked = this.checked;
+            document.querySelectorAll('.item-checkbox:not(:disabled)').forEach(function (cb) {
+                cb.checked = checked;
+                var row = document.querySelector(
+                    'tr.cart-row[data-product-id="' + cb.dataset.productId + '"]');
+                if (row) row.classList.toggle('row-selected', checked);
+            });
+            recalcSelectedTotal();
+        });
+
+        // Form: gắn selectedProductIds trước khi submit
+        document.getElementById('checkout-form').addEventListener('submit', function (e) {
+            var selectedIds = Array.from(
+                document.querySelectorAll('.item-checkbox:checked'))
+                .map(function (cb) { return cb.dataset.productId; });
+
+            if (selectedIds.length === 0) {
+                e.preventDefault();
+                alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+                return;
+            }
+            document.getElementById('selected-ids-input').value = selectedIds.join(',');
+        });
+
+
 
         function sendUpdate(productId, action, quantity, qtyInput, max) {
             var body = 'productId=' + productId + '&action=' + action;
@@ -505,6 +595,8 @@
                     // Cập nhật badge số lượng trên icon giỏ hàng (nếu có)
                     var badge = document.getElementById('cart-badge');
                     if (badge) badge.textContent = data.totalQuantity;
+
+                    recalcSelectedTotal();
 
                     if (data.warning) alert(data.warning);
                 })
@@ -567,14 +659,14 @@
         .then(res => res.json())
         .then(data => {
         if (data.success) {
-        location.reload(); // Reload lại trang để cập nhật giỏ hàng
+        location.reload();
     } else {
         alert(data.message);
     }
     })
         .catch(err => console.error('Lỗi xóa sản phẩm:', err));
     }
-
+    recalcSelectedTotal();
 </script>
 </body>
 

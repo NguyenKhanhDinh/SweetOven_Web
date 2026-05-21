@@ -43,6 +43,30 @@ public class AdminProductController extends HttpServlet {
 
         String action = req.getParameter("action");
 
+        if ("api".equals(action)) {
+            String idParam = req.getParameter("id");
+            if (idParam != null && !idParam.isEmpty()) {
+                try {
+                    int id = Integer.parseInt(idParam);
+                    Product product = productDao.findById(id);
+                    resp.setContentType("application/json");
+                    resp.setCharacterEncoding("UTF-8");
+                    if (product != null) {
+                        resp.getWriter().write(convertProductToJson(product));
+                    } else {
+                        resp.getWriter().write("{\"error\":\"Product not found\"}");
+                    }
+                } catch (NumberFormatException e) {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.getWriter().write("{\"error\":\"Invalid product ID\"}");
+                }
+            } else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("{\"error\":\"Missing product ID\"}");
+            }
+            return;
+        }
+
         if ("delete".equals(action)) {
             int id = Integer.parseInt(req.getParameter("id"));
             deleteProduct(id, req, resp);
@@ -373,4 +397,43 @@ public class AdminProductController extends HttpServlet {
 
         return "/uploads/" + folder + "/" + fileName;
     }
+    private String convertProductToJson(Product p) {
+        if (p == null) {
+            return "{\"error\":\"Product not found\"}";
+        }
+
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"id\":").append(p.getId()).append(",");
+        json.append("\"productCode\":\"").append(escapeJson(p.getProductCode())).append("\",");
+        json.append("\"name\":\"").append(escapeJson(p.getName())).append("\",");
+        json.append("\"categoryId\":").append(p.getCategoryId()).append(",");
+        json.append("\"originalPrice\":").append(p.getOriginalPrice().intValue()).append(",");
+
+        if (p.getDiscountPrice() != null) {
+            json.append("\"discountPrice\":").append(p.getDiscountPrice().intValue()).append(",");
+        } else {
+            json.append("\"discountPrice\":null,");
+        }
+
+        json.append("\"stockQuantity\":").append(p.getStockQuantity()).append(",");
+        json.append("\"status\":").append(p.getStatus()).append(",");
+        json.append("\"featured\":").append(p.isFeatured()).append(",");
+        json.append("\"description\":\"").append(escapeJson(p.getDescription())).append("\",");
+        json.append("\"ingredients\":\"").append(escapeJson(p.getIngredients())).append("\",");
+        json.append("\"image\":\"").append(p.getImage() != null ? escapeJson(p.getImage()) : "").append("\"");
+        json.append("}");
+
+        return json.toString();
+    }
+
+    private String escapeJson(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+    }
+
 }

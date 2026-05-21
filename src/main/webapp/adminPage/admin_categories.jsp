@@ -84,7 +84,7 @@
     <div class="main-content">
             <div class="admin-header d-flex justify-content-between align-items-end">
                 <div>
-                    <h1 class="h3 mb-1 text-primary fw-bold">📁 Quản lý danh mục</h1>
+                    <h1 class="h3 mb-1 text-primary fw-bold">Quản lý danh mục</h1>
                     <p class="text-muted mb-0 small">Quản lý và tổ chức danh mục sản phẩm cửa hàng</p>
                 </div>
                 <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#addCategoryModal">

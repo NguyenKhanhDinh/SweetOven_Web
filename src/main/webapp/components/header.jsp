@@ -106,8 +106,16 @@
 
         <div id="search-dropdown" class="search-dropdown">
             <div class="container py-3">
-                <form action="${contextPath}/search.jsp" method="get" class="search-form-full">
-                    <input type="text" name="keyword" id="search-input" class="form-control" placeholder="Bạn muốn tìm bánh gì hôm nay?..." autocomplete="off">
+                <form action="${contextPath}/menu" method="get" class="search-form-full">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search search-input-icon"></i>
+                        <input type="text" name="keyword" id="search-input"
+                               class="form-control search-input-field"
+                               placeholder="Bạn muốn tìm bánh gì hôm nay?..."
+                               autocomplete="off">
+                        <%-- Dropdown gợi ý hiện ra bên dưới ô input --%>
+                        <div id="search-suggestions" class="search-suggestions-box"></div>
+                    </div>
                     <button type="submit" class="btn-submit-search">
                         <i class="fas fa-search me-2"></i> TÌM KIẾM
                     </button>
@@ -119,59 +127,116 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchWrapper = document.getElementById('search-wrapper');
-        const searchDropdown = document.getElementById('search-dropdown');
-        const searchInput = document.getElementById('search-input');
-        const searchToggle = document.getElementById('search-toggle');
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchWrapper   = document.getElementById('search-wrapper');
+        const searchDropdown  = document.getElementById('search-dropdown');
+        const searchInput     = document.getElementById('search-input');
+        const searchToggle    = document.getElementById('search-toggle');
+        const suggestionsBox  = document.getElementById('search-suggestions');
+        const contextPath     = '${contextPath}';
 
-        let timeout;
-        let isPinned = false; // Biến kiểm tra xem có đang bấm để giữ hay không
+        let closeTimer, debounceTimer, isPinned = false;
 
-        // Hàm hiện
-        const showSearch = () => {
-            clearTimeout(timeout);
-            searchDropdown.classList.add('active');
-            setTimeout(() => searchInput.focus(), 300);
-        };
+        /* ── Hiện / Ẩn thanh tìm kiếm ── */
+        const showSearch = () => { clearTimeout(closeTimer); searchDropdown.classList.add('active'); setTimeout(() => searchInput.focus(), 300); };
+        const hideSearch = () => { if (!isPinned) { closeTimer = setTimeout(() => { searchDropdown.classList.remove('active'); hideSuggestions(); }, 300); } };
 
-        // Hàm ẩn
-        const hideSearch = () => {
-            // Chỉ ẩn nếu không ở trạng thái "Pinned" (đã click)
-            if (!isPinned) {
-                timeout = setTimeout(() => {
-                    searchDropdown.classList.remove('active');
-                }, 300);
-            }
-        };
-
-        // --- SỰ KIỆN HOVER ---
         searchWrapper.addEventListener('mouseenter', showSearch);
         searchWrapper.addEventListener('mouseleave', hideSearch);
-        searchDropdown.addEventListener('mouseenter', () => clearTimeout(timeout));
+        searchDropdown.addEventListener('mouseenter', () => clearTimeout(closeTimer));
         searchDropdown.addEventListener('mouseleave', hideSearch);
 
-        // --- SỰ KIỆN CLICK (ĐỂ GIỮ CỐ ĐỊNH) ---
-        searchToggle.addEventListener('click', function(e) {
+        searchToggle.addEventListener('click', function (e) {
             e.preventDefault();
-            isPinned = !isPinned; // Đảo ngược trạng thái Pin
-
-            if (isPinned) {
-                searchDropdown.classList.add('active');
-                searchToggle.classList.add('pinned'); // Thêm class để đổi màu icon nếu muốn
-                searchInput.focus();
-            } else {
-                searchDropdown.classList.remove('active');
-                searchToggle.classList.remove('pinned');
-            }
+            isPinned = !isPinned;
+            isPinned ? (searchDropdown.classList.add('active'), searchToggle.classList.add('pinned'), searchInput.focus())
+                : (searchDropdown.classList.remove('active'), searchToggle.classList.remove('pinned'), hideSuggestions());
         });
 
-        // Đóng khi nhấn Esc hoặc Click ra ngoài (nếu đang Pin)
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (isPinned && !searchWrapper.contains(e.target) && !searchDropdown.contains(e.target)) {
                 isPinned = false;
                 searchDropdown.classList.remove('active');
                 searchToggle.classList.remove('pinned');
+                hideSuggestions();
+            }
+        });
+
+        /* ── Logic gợi ý real-time ── */
+        function hideSuggestions() {
+            suggestionsBox.classList.remove('open');
+            suggestionsBox.innerHTML = '';
+        }
+
+        function formatPrice(price) {
+            if (!price) return '';
+            return Number(price).toLocaleString('vi-VN') + '₫';
+        }
+
+        function renderSuggestions(products) {
+            if (!products || products.length === 0) {
+                suggestionsBox.innerHTML = '<div class="suggest-empty"><i class="fas fa-search-minus me-2"></i>Không tìm thấy sản phẩm</div>';
+                suggestionsBox.classList.add('open');
+                return;
+            }
+
+            const html = products.map(p => {
+                const imgSrc = p.image
+                    ? (p.image.startsWith('http') ? p.image : contextPath + '/' + p.image)
+                    : contextPath + '/assets/picture/logo.png';
+
+                const hasDiscount = p.discountPrice && Number(p.discountPrice) > 0;
+                const priceHtml = hasDiscount
+                    ? `<span class="suggest-price">${formatPrice(p.discountPrice)}</span>
+                   <span class="suggest-price-original">${formatPrice(p.originalPrice)}</span>`
+                    : `<span class="suggest-price">${formatPrice(p.originalPrice)}</span>`;
+
+                return `
+            <a href="${contextPath}/product?id=${p.id}" class="suggest-item">
+                <div class="suggest-img-wrap">
+                    <img src="${imgSrc}" alt="${p.name}" class="suggest-img" loading="lazy"
+                         onerror="this.src='${contextPath}/assets/picture/logo.png'">
+                </div>
+                <div class="suggest-info">
+                    <div class="suggest-name">${p.name}</div>
+                    <div class="suggest-price-wrap">${priceHtml}</div>
+                </div>
+                <i class="fas fa-chevron-right suggest-arrow"></i>
+            </a>`;
+            }).join('');
+
+            suggestionsBox.innerHTML = html;
+            suggestionsBox.classList.add('open');
+        }
+
+        searchInput.addEventListener('input', function () {
+            const keyword = this.value.trim();
+            clearTimeout(debounceTimer);
+
+            if (keyword.length < 2) { hideSuggestions(); return; }
+
+            // Loading state
+            suggestionsBox.innerHTML = '<div class="suggest-loading"><span class="spinner"></span> Đang tìm kiếm...</div>';
+            suggestionsBox.classList.add('open');
+
+            debounceTimer = setTimeout(() => {
+                fetch(`${contextPath}/search-suggestions?keyword=${encodeURIComponent(keyword)}`)
+                    .then(res => res.json())
+                    .then(data => renderSuggestions(data))
+                    .catch(() => hideSuggestions());
+            }, 300); // debounce 300ms
+        });
+
+        // Ẩn gợi ý khi blur (trừ khi click vào item)
+        searchInput.addEventListener('blur', function () {
+            setTimeout(hideSuggestions, 200);
+        });
+
+        // Phím tắt
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                hideSuggestions();
+                if (isPinned) { isPinned = false; searchDropdown.classList.remove('active'); searchToggle.classList.remove('pinned'); }
             }
         });
     });

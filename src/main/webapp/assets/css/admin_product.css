@@ -88,8 +88,13 @@ body {
 }
 
 .admin-header h1 {
-    font-weight: 800;
     color: var(--primary) !important;
+    font-weight: 800;
+}
+
+.admin-header p {
+    color: #7a6d62 !important;
+    font-size: 0.95rem;
 }
 
 /* FILTER */

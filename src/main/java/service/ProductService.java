@@ -63,4 +63,7 @@ public class ProductService {
                 featured
         );
     }
+    public List<Product> searchByKeyword(String keyword, int limit) {
+        return productDao.findAllWithFilters(keyword,null,1,null,null,1,limit);
+    }
 }

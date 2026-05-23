@@ -6,21 +6,38 @@ import java.time.LocalDateTime;
 public class Category implements Serializable {
     private int id;
     private String name;
+    private int status;
     private String description;
     private String thumbnail;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private int productCount;
 
-    public Category(int id, String name, String description, String thumbnail, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Category(int id, String name,int status, String description, String thumbnail, LocalDateTime createdAt, LocalDateTime updatedAt, int productCount) {
         this.id = id;
         this.name = name;
+        this.status = status;
         this.description = description;
         this.thumbnail = thumbnail;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.productCount = productCount;
     }
     public Category() {}
+    public int getProductCount() {
+        return productCount;
+    }
+    public int getStatus() {
+        return status;
+    }
 
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public void setProductCount(int productCount) {
+        this.productCount = productCount;
+    }
     public int getId() {
         return id;
     }

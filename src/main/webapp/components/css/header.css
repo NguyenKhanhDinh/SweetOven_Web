@@ -187,6 +187,13 @@ body {
         box-shadow: none;
         border-top: 1px solid #eee;
     }
+    #global-toast-container {
+        top: auto;
+        bottom: 20px;   /* tren mobile hien o duoi man hinh cho dep hon */
+        right: 10px;
+        left: 10px;
+    }
+    .global-toast { min-width: unset; max-width: 100%; }
 }
 /* ==================== SEARCH SUGGESTIONS DROPDOWN ==================== */
 .search-input-wrapper {
@@ -349,6 +356,56 @@ body {
     animation: spin 0.6s linear infinite;
     vertical-align: middle;
 }
+#global-toast-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+.global-toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    min-width: 280px;
+    max-width: 380px;
+    pointer-events: auto;
+    transform: translateX(120%);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(.22,1,.36,1), opacity 0.35s;
+    border-left: 4px solid #8B4513;
+    font-family: 'Quicksand', sans-serif;
+}
+.global-toast.show { transform: translateX(0); opacity: 1; }
+.global-toast.success { border-left-color: #2e9e5b; }
+.global-toast.error   { border-left-color: #e04040; }
+.global-toast .gt-icon { font-size: 18px; flex-shrink: 0; }
+.global-toast.success .gt-icon { color: #2e9e5b; }
+.global-toast.error   .gt-icon { color: #e04040; }
+.global-toast .gt-msg  { font-size: 14px; font-weight: 600; color: #3c2f27; flex: 1; }
+.global-toast .gt-close {
+    background: none; border: none; cursor: pointer;
+    color: #999; font-size: 16px; padding: 0; line-height: 1;
+}
+.global-toast .gt-close:hover { color: #555; }
+.global-toast .gt-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 3px;
+    border-radius: 0 0 0 10px;
+    background: #8B4513;
+    animation: gtBarAnim 3.5s linear forwards;
+}
+.global-toast.success .gt-bar { background: #2e9e5b; }
+.global-toast.error   .gt-bar { background: #e04040; }
+@keyframes gtBarAnim { from { width: 100%; } to { width: 0%; } }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 

@@ -178,37 +178,63 @@ window.scrollTo({ top: 0, behavior: 'smooth' });
 function goToProductDetail(productId) {
 sessionStorage.setItem('selectedProductId', productId);
 window.location.href = 'product?id=' + productId;
-}
 
-// Hiển thị toast nếu có thông báo từ session
-window.onload = function () {
-const message = "${sessionScope.message}";
-const error = "${sessionScope.error}";
-
-if (message || error) {
-    const toast = document.getElementById('toast');
-    const toastMessage = document.getElementById('toast-message');
-    const toastIcon = toast.querySelector('i');
-
-    if (error) {
-        toast.style.background = '#e74c3c'; // Màu đỏ cho lỗi
-        toastIcon.className = 'fas fa-exclamation-circle me-2';
-        toastMessage.textContent = error;
-    } else {
-        toast.style.background = 'var(--primary)'; // Màu chính cho thành công
-        toastIcon.className = 'fas fa-check-circle me-2';
-        toastMessage.textContent = message;
-    }
-
-    toast.classList.add('show');
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
-
-<% session.removeAttribute("message"); %>
-<% session.removeAttribute("error"); %>
-}
 };
+// ── Add to cart từ menu (AJAX, không reload trang) ──────────────────────────
+(function () {
+    var contextPath = document.querySelector('meta[name="contextPath"]')
+        ? document.querySelector('meta[name="contextPath"]').content
+        : '';
 
+    document.querySelectorAll('form[action*="add-cart"]').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
 
+            var productIdInput = form.querySelector('input[name="productId"]');
+            if (!productIdInput) return;
+            var productId = productIdInput.value;
+
+            var btn = form.querySelector('button[type="submit"]');
+            if (btn) btn.disabled = true;
+
+            fetch(contextPath + '/add-cart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'productId=' + encodeURIComponent(productId) + '&quantity=1'
+            })
+                .then(function (res) { return res.json(); })
+                .then(function (result) {
+                    if (typeof window.showGlobalToast === 'function') {
+                        window.showGlobalToast(result.success ? 'success' : 'error', result.message);
+                    }
+                    if (result.success) {
+                        var badge = document.getElementById('cart-badge');
+                        if (badge) {
+                            badge.textContent = result.cartTotalQuantity;
+                            badge.style.display = 'inline-block';
+                        } else if (result.cartTotalQuantity > 0) {
+                            var cartLink = document.querySelector('a[href*="my-cart"]');
+                            if (cartLink) {
+                                var newBadge = document.createElement('span');
+                                newBadge.id = 'cart-badge';
+                                newBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill';
+                                newBadge.style.display = 'inline-block';
+                                newBadge.textContent = result.cartTotalQuantity;
+                                cartLink.appendChild(newBadge);
+                            }
+                        }
+                    }
+                })
+                .catch(function () {
+                    if (typeof window.showGlobalToast === 'function') {
+                        window.showGlobalToast('error', 'Có lỗi xảy ra, vui lòng thử lại!');
+                    }
+                })
+                .finally(function () {
+                    if (btn) btn.disabled = false;
+                });
+        });
+    });
+})();
 

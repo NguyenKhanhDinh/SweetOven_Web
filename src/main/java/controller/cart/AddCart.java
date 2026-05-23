@@ -35,7 +35,8 @@ public class AddCart extends HttpServlet {
            return;
        }
        String returnUrl = request.getParameter("returnUrl");
-       if (returnUrl == null || returnUrl.isEmpty()) {
+       String contextPath = request.getContextPath();
+       if (returnUrl == null || returnUrl.isEmpty()|| !returnUrl.startsWith(contextPath)) {
            returnUrl = request.getContextPath() + "/menu";
        }
      Cart cart = (Cart) session.getAttribute("cart");
@@ -53,13 +54,14 @@ public class AddCart extends HttpServlet {
      }
      int currentQtyInCart = (cart.get(productId)!= null)? cart.get(productId).getQuantity(): 0;
      if(currentQtyInCart + quantity > product.getStockQuantity()){
-         session.setAttribute("error","Số lượng trong kho không đủ ! Còn" +(product.getStockQuantity()-currentQtyInCart)+ " sản phẩm");
+         int remaining = product.getStockQuantity() - currentQtyInCart;
+         session.setAttribute("error","Số lượng trong kho không đủ ! Còn " + remaining+ " sản phẩm");
          response.sendRedirect(returnUrl);
          return;
      }
      cart.addItem(product, quantity);
      session.setAttribute("cart", cart);
-     session.setAttribute("message","Đã thêm\""+product.getName()+"\" vào giỏ hàng!");
+     session.setAttribute("message","Đã thêm \""+product.getName()+"\" vào giỏ hàng!");
 
      User user = (User) session.getAttribute("user");
      if(user != null){
@@ -67,6 +69,8 @@ public class AddCart extends HttpServlet {
      }
      response.sendRedirect(returnUrl);
     }
+
+
 
     private void syncCartToDB(int userId, Cart cart) {
      try {
@@ -103,7 +107,8 @@ public class AddCart extends HttpServlet {
      }
      int currentQtyInCart = (cart.get(productId)!= null)? cart.get(productId).getQuantity(): 0;
      if (currentQtyInCart + quantity > product.getStockQuantity()) {
-         String message = "Số lượng tồn kho không đủ! Còn" + (product.getStockQuantity()-currentQtyInCart) + "sản phẩm";
+         int remaining = product.getStockQuantity() - currentQtyInCart;
+         String message = "Số lượng tồn kho không đủ! Còn " + remaining + " sản phẩm";
          sendJsonResponse(response,false,message,cart.getTotalQuantity());
          return;
      }
@@ -114,7 +119,7 @@ public class AddCart extends HttpServlet {
      if(user != null){
          syncCartToDB(user.getId(), cart);
      }
-     sendJsonResponse(response,true,"Đã thêm\""+ product.getName()+"\" vào giỏ hàng!",cart.getTotalQuantity());
+     sendJsonResponse(response,true,"Đã thêm \""+ product.getName()+"\" vào giỏ hàng!",cart.getTotalQuantity());
 
     }
 

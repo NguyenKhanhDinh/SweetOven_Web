@@ -58,7 +58,7 @@ public class UpdateCart extends HttpServlet {
                     if( quantity < 1) quantity = 1;
                     if(quantity>stock) {
                         quantity = stock;
-                        errorMsg = "Chỉ còn" + stock + "sản phẩm trong kho";
+                        errorMsg = "Chỉ còn " + stock + " sản phẩm trong kho";
                     }
                     cart.updateItem(productId,quantity);
                 }

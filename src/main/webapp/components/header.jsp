@@ -109,6 +109,7 @@
         </div>
     </nav>
 </header>
+<div id="global-toast-container"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -226,4 +227,40 @@
             }
         });
     });
+    window.showGlobalToast = function(type, msg, duration) {
+        duration = duration || 2000;
+        var container = document.getElementById('global-toast-container');
+        if (!container || !msg) return;
+        var icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+        var icon  = icons[type] || icons.info;
+        var toast = document.createElement('div');
+        toast.className = 'global-toast ' + type;
+        toast.style.position = 'relative';
+        /* FIX: dung \" de escape dau nháy don trong onclick, tranh loi cu phap */
+        toast.innerHTML =
+            '<span class="gt-icon"><i class="fas ' + icon + '"></i></span>' +
+            '<span class="gt-msg">' + msg + '</span>' +
+            '<button class="gt-close" onclick="this.closest(\'.global-toast\').remove()"><i class="fas fa-times"></i></button>' +
+            '<div class="gt-bar"></div>';
+        container.appendChild(toast);
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() { toast.classList.add('show'); });
+        });
+        setTimeout(function() {
+            toast.classList.remove('show');
+            setTimeout(function() { if (toast.parentNode) toast.remove(); }, 400);
+        }, duration);
+    };
+    (function() {
+        var msg = '<c:out value="${sessionScope.message}" escapeXml="true"/>';
+        var err = '<c:out value="${sessionScope.error}"   escapeXml="true"/>';
+        <c:if test="${not empty sessionScope.message}">
+        if (msg && msg.trim()) window.showGlobalToast('success', msg);
+        <% session.removeAttribute("message"); %>
+        </c:if>
+        <c:if test="${not empty sessionScope.error}">
+        if (err && err.trim()) window.showGlobalToast('error', err);
+        <% session.removeAttribute("error"); %>
+        </c:if>
+    })();
 </script>

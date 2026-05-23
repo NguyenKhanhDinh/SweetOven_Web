@@ -153,7 +153,7 @@
 
         function formatPrice(price) {
             if (!price) return '';
-            return Number(price).toLocaleString('vi-VN') + '₫';
+            return Number(price).toLocaleString('vi-VN') + 'VNĐ';
         }
 
         // Đánh dấu khi người dùng đang click vào suggestion để tránh blur ẩn mất

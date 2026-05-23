@@ -298,12 +298,19 @@
             fetch('${contextPath}/api/categories')
                 .then(function(res) { return res.json(); })
                 .then(function(data) {
+                    if (!data || data.length === 0) {
+                        listEl.innerHTML = '';
+                        return;
+                    }
                     listEl.innerHTML = data.map(function(c) {
                         return '<li class="category-dropdown-item">'
                             + '<a href="${contextPath}/menu?categoryId=' + c.id + '" class="category-dropdown-link">'
                             + c.name
                             + '</a></li>';
                     }).join('');
+                })
+                .catch(function() {
+                    listEl.innerHTML = '';
                 });
         }
     })();

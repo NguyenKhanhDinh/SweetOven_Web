@@ -58,12 +58,12 @@ public class UploadAvatarController extends HttpServlet {
             if(updated){
                 user.setAvatar(dbPath);
                 session.setAttribute("user", user);
-                session.setAttribute("successMsg", "Cập nhật avatar lên Cloud thành công!");
+                session.setAttribute("successMsg", "Cập nhật avatar thành công!");
             }else{
                 session.setAttribute("errorMsg", "Lỗi khi lưu avatar vào database!");
             }
         }else{
-            session.setAttribute("errorMsg", "Lỗi mạng khi tải ảnh lên Cloudinary!");
+            session.setAttribute("errorMsg", "Lỗi mạng khi tải ảnh!");
         }
         response.sendRedirect(request.getContextPath() + "/profile");
     }

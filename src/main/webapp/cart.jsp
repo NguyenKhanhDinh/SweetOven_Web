@@ -388,7 +388,9 @@
 
                     <td class="san-pham">
                         <div class="img-container">
-                            <img src="${item.imageUrl}" alt="${item.product.name}">
+                            <a href="${pageContext.request.contextPath}/product?id=${item.product.id}">
+                              <img src="${item.imageUrl}" alt="${item.product.name}">
+                            </a>
                             <c:if test="${item.product.stockQuantity <= 0}">
                                 <div class="out-of-stock-overlay">Hết hàng</div>
                             </c:if>
@@ -667,6 +669,10 @@
         .catch(err => console.error('Lỗi xóa sản phẩm:', err));
     }
     recalcSelectedTotal();
+    function goToProductDetail(productId) {
+        sessionStorage.setItem('selectedProductId', productId);
+        window.location.href = 'product?id=' + productId;
+    }
 </script>
 </body>
 

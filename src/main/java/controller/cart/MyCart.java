@@ -1,4 +1,4 @@
-package controller;
+package controller.cart;
 
 import dao.CartDao;
 import dao.ProductDao;
@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 import model.Cart;
 import model.CartItem;
 import model.Product;
+import model.User;
 
 import java.io.IOException;
 
@@ -24,7 +25,12 @@ public class MyCart extends HttpServlet {
 
       Cart cart = (Cart)session.getAttribute("cart");
       if (cart == null){
-          cart = new Cart();
+          User  user = (User)session.getAttribute("user");
+          if(user != null){
+              cart = cartDao.loadCartFromDB(user.getId());
+          }else {
+              cart = new Cart();
+          }
           session.setAttribute("cart", cart);
       }
       for(CartItem item : cart.getItems()){

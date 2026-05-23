@@ -47,6 +47,13 @@ public class LoginGoogleController extends HttpServlet {
                 return;
             }
             request.getSession().setAttribute("user", user);
+            jakarta.servlet.http.HttpSession session = request.getSession();
+            dao.CartDao cartDao = new dao.CartDao();
+            model.Cart sessionCart = (model.Cart) session.getAttribute("cart");
+            if (sessionCart == null) sessionCart = new model.Cart() ;
+            model.Cart merged = cartDao.mergeDBCartIntoSession(user.getId(), sessionCart);
+            cartDao.saveCartToDB(user.getId(), merged);
+            session.setAttribute("cart",merged);
             response.sendRedirect(request.getContextPath() + "/");
 
         } catch (Exception e) {

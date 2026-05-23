@@ -1,4 +1,4 @@
-package controller;
+package controller.cart;
 
 import com.google.gson.JsonObject;
 import dao.CartDao;
@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpSession;
 import model.Cart;
 import model.Product;
 import model.User;
-import org.cloudinary.json.JSONObject;
 import service.ProductService;
 
 import java.io.IOException;

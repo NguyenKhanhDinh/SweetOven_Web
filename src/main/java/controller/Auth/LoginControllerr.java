@@ -1,11 +1,13 @@
 package controller.Auth;
 
+import dao.CartDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.Cart;
 import service.UserService;
 import model.User;
 import java.io.IOException;
@@ -34,7 +36,12 @@ private UserService userService;
         if(user!=null){
             HttpSession session = request.getSession();
             session.setAttribute("user",user);
-
+            Cart sessionCart  = (Cart) session.getAttribute("cart");
+            if(sessionCart==null) sessionCart=new Cart();
+            CartDao  cartDao = new CartDao();
+            Cart merged = cartDao.mergeDBCartIntoSession(user.getId(), sessionCart);
+            cartDao.saveCartToDB(user.getId(), merged);
+            session.setAttribute("cart",merged);
             response.sendRedirect(request.getContextPath()+"/home");
         }else {
             request.setAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng");

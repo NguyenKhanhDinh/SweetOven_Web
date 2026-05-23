@@ -29,22 +29,16 @@
                         <a class="nav-link ${param.activePage == 'home' ? 'active' : ''}" href="${contextPath}/">TRANG CHỦ</a>
                     </li>
                     <li class="nav-item nav-item-dropdown" id="products-nav-item">
-                        <a class="nav-link ${param.activePage == 'menu' ? 'active' : ''}" href="${contextPath}/menu" id="products-nav-link">
+                        <a class="nav-link ${param.activePage == 'menu' ? 'active' : ''}" href="${contextPath}/menu">
                             SẢN PHẨM
                             <i class="fas fa-chevron-down nav-chevron"></i>
                         </a>
                         <div class="category-dropdown" id="category-dropdown">
-                            <div class="category-dropdown-inner">
-                                <div class="category-dropdown-header">
-                                    <span>Danh mục sản phẩm</span>
-                                    <a href="${contextPath}/menu" class="view-all-link">Xem tất cả →</a>
-                                </div>
-                                <ul class="category-dropdown-list" id="category-dropdown-list">
-                                    <li class="category-dropdown-item skeleton"></li>
-                                    <li class="category-dropdown-item skeleton"></li>
-                                    <li class="category-dropdown-item skeleton"></li>
-                                </ul>
-                            </div>
+                            <ul class="category-dropdown-list" id="category-dropdown-list">
+                                <li class="category-dropdown-item skeleton"></li>
+                                <li class="category-dropdown-item skeleton"></li>
+                                <li class="category-dropdown-item skeleton"></li>
+                            </ul>
                         </div>
                     </li>
                     <li class="nav-item">
@@ -280,60 +274,37 @@
         </c:if>
     })();
     (function() {
-        var navItem     = document.getElementById('products-nav-item');
-        var dropdown    = document.getElementById('category-dropdown');
-        var listEl      = document.getElementById('category-dropdown-list');
-        var contextPath = '${contextPath}';
-        var loaded      = false;
-        var closeTimer  = null;
+        var navItem  = document.getElementById('products-nav-item');
+        var dropdown = document.getElementById('category-dropdown');
+        var listEl   = document.getElementById('category-dropdown-list');
+        var loaded   = false;
+        var closeTimer = null;
 
-        function showDropdown() {
+        navItem.addEventListener('mouseenter', function() {
             clearTimeout(closeTimer);
             dropdown.classList.add('active');
             if (!loaded) loadCategories();
-        }
-
-        function hideDropdown() {
-            closeTimer = setTimeout(function() {
-                dropdown.classList.remove('active');
-            }, 200);
-        }
-
-        navItem.addEventListener('mouseenter', showDropdown);
-        navItem.addEventListener('mouseleave', hideDropdown);
+        });
+        navItem.addEventListener('mouseleave', function() {
+            closeTimer = setTimeout(function() { dropdown.classList.remove('active'); }, 200);
+        });
         dropdown.addEventListener('mouseenter', function() { clearTimeout(closeTimer); });
-        dropdown.addEventListener('mouseleave', hideDropdown);
+        dropdown.addEventListener('mouseleave', function() {
+            closeTimer = setTimeout(function() { dropdown.classList.remove('active'); }, 200);
+        });
 
         function loadCategories() {
             loaded = true;
-            fetch(contextPath + '/api/categories')
+            fetch('${contextPath}/api/categories')
                 .then(function(res) { return res.json(); })
-                .then(function(data) { renderCategories(data); })
-                .catch(function() {
-                    listEl.innerHTML = '<li class="category-dropdown-item category-error">Không tải được danh mục</li>';
+                .then(function(data) {
+                    listEl.innerHTML = data.map(function(c) {
+                        return '<li class="category-dropdown-item">'
+                            + '<a href="${contextPath}/menu?categoryId=' + c.id + '" class="category-dropdown-link">'
+                            + c.name
+                            + '</a></li>';
+                    }).join('');
                 });
-        }
-
-        function renderCategories(categories) {
-            if (!categories || categories.length === 0) {
-                listEl.innerHTML = '<li class="category-dropdown-item category-error">Chưa có danh mục nào</li>';
-                return;
-            }
-            var html = '<li class="category-dropdown-item">'
-                + '<a href="' + contextPath + '/menu" class="category-dropdown-link">'
-                + '<span class="cat-name">Tất cả sản phẩm</span>'
-                + '</a></li>';
-            categories.forEach(function(c) {
-                var countHtml = c.productCount > 0
-                    ? '<span class="cat-count">' + c.productCount + '</span>'
-                    : '';
-                html += '<li class="category-dropdown-item">'
-                    + '<a href="' + contextPath + '/menu?categoryId=' + c.id + '" class="category-dropdown-link">'
-                    + '<span class="cat-name">' + c.name + '</span>'
-                    + countHtml
-                    + '</a></li>';
-            });
-            listEl.innerHTML = html;
         }
     })();
 </script>

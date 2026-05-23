@@ -3,7 +3,6 @@ package dao;
 import model.Cart;
 import model.CartItem;
 import model.Product;
-import model.User;
 import utils.JdbiConnector;
 
 import java.math.BigDecimal;
@@ -27,7 +26,7 @@ public void saveCartToDB(int userId, Cart cart){
                     VALUES (:cartId,:productId,:quantity,:price)
                 """).bind("cartId", cartId).bind("productId", item.getProduct().getId()).bind("quantity", item.getQuantity()).bind("price", item.getPrice()).execute();
         }
-        handle.createUpdate("UPDATE cart SET updated_at = NOW()").bind("cartId", cartId).execute();
+        handle.createUpdate("UPDATE cart SET updated_at = NOW() WHERE id=:cartId").bind("cartId", cartId).execute();
     });
 }
 public Cart loadCartFromDB(int userId){
@@ -36,7 +35,7 @@ public Cart loadCartFromDB(int userId){
     ProductDao productDao = new ProductDao();
     ProductImageDao productImageDao = new ProductImageDao();
 
-    List<CartItem> items = JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery("SELECT product_id,quantity,price FROM cart_item WHERE cart_id =: cartId").bind("cartId",cartId)
+    List<CartItem> items = JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery("SELECT product_id,quantity,price FROM cart_item WHERE cart_id =:cartId").bind("cartId",cartId)
             .map((rs,ctx)->{ int productId = rs.getInt("product_id");
                 int quantity = rs.getInt("quantity");
                 BigDecimal price = rs.getBigDecimal("price");

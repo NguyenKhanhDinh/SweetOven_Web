@@ -34,7 +34,6 @@ public class CategoryController extends HttpServlet {
             Map<String, Object> map = new HashMap<>();
             map.put("id", category.getId());
             map.put("name", category.getName());
-            map.put("productCount", category.getProductCount());
             return map;
         }).collect(Collectors.toList());
         response.getWriter().write(new Gson().toJson(result));

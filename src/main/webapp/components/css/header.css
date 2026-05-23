@@ -599,17 +599,16 @@ body {
         height: 44px;
     }
 
-    /* Tùy chỉnh menu danh mục trên Mobile nếu muốn hiển thị dạng tràn màn hình hoặc static */
+    /* Tùy chỉnh menu danh mục trên Mobile */
     .category-dropdown {
-        position: absolute; /* Giữ absolute hoặc chuyển thành static tùy thuộc vào việc bạn muốn menu đẩy layout xuống hay đè lên */
+        position: absolute;
         width: 100%;
-        left: 0;
-        transform: translateY(-5px);
+        left: 0; /* Ghi đè left: 50% từ rule gốc */
+        transform: translateY(-5px); /* Không cần translateX(-50%) vì left đã là 0 */
     }
 
     .category-dropdown.active {
-        transform: translateY(0);
+        transform: translateY(0); /* Không cần translateX(-50%) vì left đã là 0 */
     }
 
 }
-

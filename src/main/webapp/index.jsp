@@ -8,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sweet Oven Bakery - Bánh ngọt & Đồ nướng</title>
   <meta name="description" content="Tiệm bánh ngọt & đồ nướng thủ công - Sweet Oven Bakery" />
+  <meta name="contextPath" content="${pageContext.request.contextPath}">
   <link rel="icon" href="${pageContext.request.contextPath}/assets/picture/logo.png">
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/home.css">
 
@@ -63,18 +64,16 @@
                   <div class="product-price">
                     <fmt:formatNumber value="${p.displayPrice}" type="number" /> VNĐ
                   </div>
-                  <form method="get" action="${pageContext.request.contextPath}/add-cart"
-                        onclick="event.stopPropagation();">
-                    <input type="hidden" name="productId" value="${p.id}">
-                    <input type="hidden" name="quantity" value="1">
-                    <input type="hidden" name="returnUrl" value="${pageContext.request.contextPath}/">
-                    <button type="submit" class="btn-add-to-cart" ${p.stockQuantity <=0 ? 'disabled' : '' }>
+                    <button type="button"
+                            class="btn-add-to-cart"
+                            data-product-id="${p.id}"
+                            onclick="event.stopPropagation();"
+                        ${p.stockQuantity <= 0 ? 'disabled' : ''}>
                       <c:choose>
                         <c:when test="${p.stockQuantity <= 0}">Hết hàng</c:when>
                         <c:otherwise>Thêm vào giỏ</c:otherwise>
                       </c:choose>
                     </button>
-                  </form>
                 </div>
               </div>
             </div>
@@ -301,5 +300,65 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="${pageContext.request.contextPath}/assets/js/main.js"></script>
+  <script src="${pageContext.request.contextPath}/assets/js/main.js"></script>
+
+  <script>
+      // Gắn AJAX cho tất cả nút thêm vào giỏ ở trang chủ
+      (function () {
+          var contextPath = document.querySelector('meta[name="contextPath"]')
+              ? document.querySelector('meta[name="contextPath"]').content
+              : '';
+
+          document.querySelectorAll('.btn-add-to-cart[data-product-id]').forEach(function (btn) {
+              btn.addEventListener('click', function (e) {
+                  e.stopPropagation();
+                  var productId = this.dataset.productId;
+                  var self = this;
+
+                  self.disabled = true;
+                  var originalText = self.innerHTML;
+                  self.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                  fetch(contextPath + '/add-cart', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                      body: 'productId=' + encodeURIComponent(productId) + '&quantity=1'
+                  })
+                      .then(function (res) { return res.json(); })
+                      .then(function (data) {
+                          if (typeof window.showGlobalToast === 'function') {
+                              window.showGlobalToast(data.success ? 'success' : 'error', data.message);
+                          }
+                          if (data.success) {
+                              var badge = document.getElementById('cart-badge');
+                              if (badge) {
+                                  badge.textContent = data.cartTotalQuantity;
+                                  badge.style.display = 'inline-block';
+                              } else if (data.cartTotalQuantity > 0) {
+                                  var cartLink = document.querySelector('a[href*="my-cart"]');
+                                  if (cartLink) {
+                                      var newBadge = document.createElement('span');
+                                      newBadge.id = 'cart-badge';
+                                      newBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill';
+                                      newBadge.style.display = 'inline-block';
+                                      newBadge.textContent = data.cartTotalQuantity;
+                                      cartLink.appendChild(newBadge);
+                                  }
+                              }
+                          }
+                      })
+                      .catch(function () {
+                          if (typeof window.showGlobalToast === 'function') {
+                              window.showGlobalToast('error', 'Có lỗi xảy ra, vui lòng thử lại!');
+                          }
+                      })
+                      .finally(function () {
+                          self.innerHTML = originalText;
+                          self.disabled = false;
+                      });
+              });
+          });
+      })();
+  </script>
 </body>
 </html>

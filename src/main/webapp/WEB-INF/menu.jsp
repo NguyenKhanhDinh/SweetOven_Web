@@ -2,11 +2,13 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="contextPath" content="${pageContext.request.contextPath}">
     <title>Sản phẩm | Sweet Oven Bakery</title>
 
     <link rel="icon" href="${pageContext.request.contextPath}/assets/picture/logo.png">
@@ -162,16 +164,6 @@
         </div>
     </div>
 </main>
-
-
-<!-- Toast -->
-
-<div class="toast-notification" id="toast">
-    <div class="d-flex align-items-center">
-        <i class="fas fa-check-circle me-2"></i>
-        <span id="toast-message">Đã thêm vào giỏ hàng!</span>
-    </div>
-</div>
 
 <jsp:include page="/components/footer.jsp" />
 

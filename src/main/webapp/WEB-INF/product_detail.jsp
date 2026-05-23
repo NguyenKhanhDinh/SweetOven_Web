@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi tiết sản phẩm | Sweet Oven Bakery</title>
     <meta name="description" content="Bánh kem dâu tươi thơm ngon - Sweet Oven Bakery" />
+    <meta name="contextPath" content="${pageContext.request.contextPath}">
     <link rel="icon" href="${pageContext.request.contextPath}/assets/picture/logo.png">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
 
@@ -61,7 +62,6 @@
 
 
             <div class="product-actions">
-                <form method="get" action="${pageContext.request.contextPath}/add-cart">
                     <input type="hidden" name="productId" value="${product.id}">
                     <input type="hidden" name="quantity" value="1">
                     <input type="hidden" name="returnUrl"
@@ -79,14 +79,13 @@
                         </c:choose>
                     </div>
 
-                    <button type="submit" class="btn-add" ${product.stockQuantity <=0 ? 'disabled' : '' }>
+                <button type="button" class="btn-add" data-product-id="${product.id}">
                         <c:choose>
                             <c:when test="${product.stockQuantity <= 0}">Hết hàng</c:when>
                             <c:otherwise>Thêm vào giỏ</c:otherwise>
                         </c:choose>
                     </button>
 
-                </form>
 
             </div>
 
@@ -164,20 +163,19 @@
                             </c:choose>
                         </div>
 
-                        <form method="get" action="${pageContext.request.contextPath}/add-cart"
-                              onclick="event.stopPropagation();">
+
                             <input type="hidden" name="productId" value="${rp.id}">
                             <input type="hidden" name="quantity" value="1">
                             <input type="hidden" name="returnUrl"
                                    value="${pageContext.request.contextPath}/product?id=${product.id}">
 
-                            <button type="submit" class="btn-related-cart" ${rp.stockQuantity <=0 ? 'disabled' : '' }>
+                        <button type="button" class="btn-related-cart" data-product-id="${rp.id}"${rp.stockQuantity <= 0 ? 'disabled' : ''}>
                                 <c:choose>
                                     <c:when test="${rp.stockQuantity <= 0}">Hết hàng</c:when>
                                     <c:otherwise>Thêm vào giỏ</c:otherwise>
                                 </c:choose>
                             </button>
-                        </form>
+
 
                     </div>
                 </div>

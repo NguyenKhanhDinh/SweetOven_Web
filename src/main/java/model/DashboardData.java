@@ -12,7 +12,10 @@ public class DashboardData {
     private List<DashboardRevenueData> yearlyRevenue;
     private List<DashboardProductSales> topSellingProducts;
     private List<DashboardProductSales> slowMovingProducts;
+    private BigDecimal currentMonthRevenue;
 
+    public BigDecimal getCurrentMonthRevenue() { return currentMonthRevenue; }
+    public void setCurrentMonthRevenue(BigDecimal currentMonthRevenue) { this.currentMonthRevenue = currentMonthRevenue; }
     // Getters and Setters
     public int getTotalOrders() { return totalOrders; }
     public void setTotalOrders(int totalOrders) { this.totalOrders = totalOrders; }

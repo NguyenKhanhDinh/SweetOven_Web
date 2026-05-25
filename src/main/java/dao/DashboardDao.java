@@ -16,12 +16,14 @@ public class DashboardDao {
                 handle.createQuery(sql).mapTo(Integer.class).one()
         );
     }
-
     public List<DashboardRevenueData> getMonthlyRevenue(int year) {
         String sql = """
-        SELECT MONTH(order_date) as month, COALESCE(SUM(total_amount), 0) as revenue
+        SELECT 
+            MONTH(order_date) as month,
+            COALESCE(SUM(total_amount), 0) as revenue
         FROM `order` 
-        WHERE YEAR(order_date) = :year AND order_status = 4
+        WHERE YEAR(order_date) = :year 
+            AND order_status = 4
         GROUP BY MONTH(order_date)
         ORDER BY month
         """;
@@ -32,8 +34,6 @@ public class DashboardDao {
                         .map((rs, ctx) -> new DashboardRevenueData(rs.getInt("month"), rs.getBigDecimal("revenue")))
                         .list()
         );
-
-        // Đảm bảo đủ 12 tháng
         List<DashboardRevenueData> fullResults = new ArrayList<>();
         for (int i = 1; i <= 12; i++) {
             final int month = i;
@@ -119,6 +119,40 @@ public class DashboardDao {
                                 rs.getInt("total_sold"),
                                 rs.getBigDecimal("total_revenue")
                         ))
+                        .list()
+        );
+    }
+    // Doanh thu theo năm
+    public BigDecimal getRevenueByYear(int year) {
+        String sql = """
+        SELECT COALESCE(SUM(total_amount), 0) 
+        FROM `order` 
+        WHERE YEAR(order_date) = :year AND order_status = 4
+        """;
+
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("year", year)
+                        .mapTo(BigDecimal.class)
+                        .one()
+        );
+    }
+
+    // Doanh thu theo năm
+    public List<DashboardRevenueData> getYearlyRevenue() {
+        String sql = """
+        SELECT 
+            YEAR(order_date) as year,
+            COALESCE(SUM(total_amount), 0) as revenue
+        FROM `order` 
+        WHERE order_status = 4
+        GROUP BY YEAR(order_date)
+        ORDER BY year ASC
+        """;
+
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .map((rs, ctx) -> new DashboardRevenueData(rs.getInt("year"), rs.getBigDecimal("revenue")))
                         .list()
         );
     }

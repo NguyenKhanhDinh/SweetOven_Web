@@ -31,9 +31,18 @@ public class AdminDashboardController extends HttpServlet {
         int month = (monthParam != null && !monthParam.isEmpty())
                 ? Integer.parseInt(monthParam)
                 : LocalDate.now().getMonthValue();
-
+        // Doanh thu so sánh
+        int previousMonth = month - 1;
+        int previousMonthYear = year;
+        if (previousMonth < 1) {
+            previousMonth = 12;
+            previousMonthYear = year - 1;
+        }
         DashboardData dashboard = new DashboardData();
-
+        dashboard.setPreviousMonthRevenue(dashboardDao.getRevenueByMonth(previousMonthYear, previousMonth));
+        dashboard.setCurrentYearRevenue(dashboardDao.getRevenueByYear(year));
+        dashboard.setPreviousYearRevenue(dashboardDao.getRevenueByYear(year - 1));
+        dashboard.setYearlyRevenue(dashboardDao.getYearlyRevenue());
         // Thống kê tổng quan
         dashboard.setTotalOrders(dashboardDao.getTotalOrders());
         dashboard.setTotalRevenue(dashboardDao.getTotalRevenue());

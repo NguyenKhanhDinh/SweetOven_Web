@@ -33,6 +33,8 @@ public class AdminDashboardController extends HttpServlet {
 
         // Doanh thu theo tháng
         dashboard.setMonthlyRevenue(dashboardDao.getMonthlyRevenue(year));
+        //Top 10 sản ohaarm bán chạy nhất
+        dashboard.setTopSellingProducts(dashboardDao.getTopSellingProducts(10));
 
         request.setAttribute("dashboard", dashboard);
         request.setAttribute("selectedYear", year);

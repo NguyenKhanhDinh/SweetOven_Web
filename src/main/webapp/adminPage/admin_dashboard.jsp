@@ -307,29 +307,75 @@
 
             <div class="chart-title">
                 <i class="fas fa-fire me-2"></i>
-                Top sản phẩm bán chạy
+                Top sản phẩm bán chạy nhất
             </div>
 
             <div class="table-responsive">
 
-                <table class="table mb-0">
+                <table class="table table-hover">
 
-                    <thead>
+                    <thead class="table-dark">
                     <tr>
                         <th>#</th>
-                        <th>Sản phẩm</th>
-                        <th>Số lượng</th>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Mã SP</th>
+                        <th>Số lượng bán</th>
                         <th>Doanh thu</th>
                     </tr>
                     </thead>
 
                     <tbody>
 
-                    <tr>
-                        <td colspan="4" class="text-center py-5">
-                            Chưa có dữ liệu
-                        </td>
-                    </tr>
+                    <c:forEach items="${dashboard.topSellingProducts}"
+                               var="p"
+                               varStatus="loop">
+
+                        <tr>
+                            <td>
+                                <span class="badge bg-warning">
+                                    ${loop.index + 1}
+                                </span>
+                            </td>
+
+                            <td>
+                                <img src="${pageContext.request.contextPath}/${p.image}"
+                                     style="width:45px;height:45px;border-radius:10px;object-fit:cover"
+                                     onerror="this.src='${pageContext.request.contextPath}/assets/picture/logo.png'">
+                            </td>
+
+                            <td class="fw-bold">
+                                ${p.name}
+                            </td>
+
+                            <td>
+                                <span class="badge bg-secondary">
+                                    ${p.productCode}
+                                </span>
+                            </td>
+
+                            <td class="fw-bold text-success">
+                                ${p.totalSold}
+                            </td>
+
+                            <td class="fw-bold text-primary">
+                                <fmt:formatNumber
+                                        value="${p.totalRevenue}"
+                                        type="currency"
+                                        currencySymbol="₫"
+                                        maxFractionDigits="0"/>
+                            </td>
+                        </tr>
+
+                    </c:forEach>
+
+                    <c:if test="${empty dashboard.topSellingProducts}">
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                Chưa có dữ liệu
+                            </td>
+                        </tr>
+                    </c:if>
 
                     </tbody>
 

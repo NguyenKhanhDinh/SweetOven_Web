@@ -358,9 +358,8 @@
                                     ${loop.index + 1}
                                 </span>
                             </td>
-
                             <td>
-                                <img src="${pageContext.request.contextPath}/${p.image}"
+                                <img src="${p.image}"
                                      style="width:45px;height:45px;border-radius:10px;object-fit:cover"
                                      onerror="this.src='${pageContext.request.contextPath}/assets/picture/logo.png'">
                             </td>
@@ -442,9 +441,8 @@
                                     ${loop.index + 1}
                                 </span>
                             </td>
-
                             <td>
-                                <img src="${pageContext.request.contextPath}/${p.image}"
+                                <img src="${p.image}"
                                      style="width:45px;height:45px;border-radius:10px;object-fit:cover"
                                      onerror="this.src='${pageContext.request.contextPath}/assets/picture/logo.png'">
                             </td>

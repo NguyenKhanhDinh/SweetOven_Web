@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -197,49 +198,90 @@
         <div class="stats-grid">
 
             <div class="stats-card">
-                <div class="stats-icon">
-                    <i class="fas fa-shopping-cart"></i>
+                <div class="stats-icon bg-warning bg-opacity-10">
+                    <i class="fas fa-shopping-cart fa-2x text-warning"></i>
                 </div>
 
                 <div class="stats-content">
                     <p>Tổng đơn hàng</p>
-                    <h3>${totalOrders}</h3>
+                    <h3>${dashboard.totalOrders}</h3>
+                    <span>đơn hàng</span>
+                </div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-icon">
+                    <i class="fas fa-shopping-cart fa-2x"></i>
+                </div>
+
+                <div class="stats-content">
+                    <p>Tổng đơn hàng</p>
+                    <h3>${dashboard.totalOrders}</h3>
                     <span>đơn hàng</span>
                 </div>
             </div>
 
             <div class="stats-card">
                 <div class="stats-icon">
-                    <i class="fas fa-dollar-sign"></i>
+                    <i class="fas fa-dollar-sign fa-2x"></i>
                 </div>
 
                 <div class="stats-content">
                     <p>Tổng doanh thu</p>
-                    <h3>${totalRevenue}</h3>
+                    <h3>
+                        <fmt:formatNumber
+                            value="${dashboard.totalRevenue}"
+                            type="currency"
+                            currencySymbol="₫"
+                            maxFractionDigits="0"/>
+                    </h3>
                     <span>VNĐ</span>
                 </div>
             </div>
 
             <div class="stats-card">
                 <div class="stats-icon">
-                    <i class="fas fa-box"></i>
+                    <i class="fas fa-box fa-2x"></i>
                 </div>
 
                 <div class="stats-content">
                     <p>Tổng sản phẩm</p>
-                    <h3>${totalProducts}</h3>
+                    <h3>${dashboard.totalProducts}</h3>
                     <span>sản phẩm</span>
                 </div>
             </div>
 
             <div class="stats-card">
                 <div class="stats-icon">
-                    <i class="fas fa-users"></i>
+                    <i class="fas fa-users fa-2x"></i>
                 </div>
 
                 <div class="stats-content">
                     <p>Khách hàng</p>
-                    <h3>${totalUsers}</h3>
+                    <h3>${dashboard.totalUsers}</h3>
+                    <span>người dùng</span>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-icon bg-info bg-opacity-10">
+                    <i class="fas fa-box fa-2x text-info"></i>
+                </div>
+
+                <div class="stats-content">
+                    <p>Tổng sản phẩm</p>
+                    <h3>${dashboard.totalProducts}</h3>
+                    <span>sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-icon bg-primary bg-opacity-10">
+                    <i class="fas fa-users fa-2x text-primary"></i>
+                </div>
+
+                <div class="stats-content">
+                    <p>Khách hàng</p>
+                    <h3>${dashboard.totalUsers}</h3>
                     <span>người dùng</span>
                 </div>
             </div>

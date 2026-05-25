@@ -13,7 +13,27 @@ public class DashboardData {
     private List<DashboardProductSales> topSellingProducts;
     private List<DashboardProductSales> slowMovingProducts;
     private BigDecimal currentMonthRevenue;
+    private BigDecimal previousMonthRevenue;
+    private BigDecimal currentYearRevenue;
+    private BigDecimal previousYearRevenue;
 
+    // Getters & Setters
+    public BigDecimal getPreviousMonthRevenue() { return previousMonthRevenue; }
+    public void setPreviousMonthRevenue(BigDecimal previousMonthRevenue) { this.previousMonthRevenue = previousMonthRevenue; }
+    public BigDecimal getCurrentYearRevenue() { return currentYearRevenue; }
+    public void setCurrentYearRevenue(BigDecimal currentYearRevenue) { this.currentYearRevenue = currentYearRevenue; }
+    public BigDecimal getPreviousYearRevenue() { return previousYearRevenue; }
+    public void setPreviousYearRevenue(BigDecimal previousYearRevenue) { this.previousYearRevenue = previousYearRevenue; }
+
+    public String getMonthlyGrowthRate() {
+        if (previousMonthRevenue == null || previousMonthRevenue.compareTo(BigDecimal.ZERO) == 0) {
+            return "+100%";
+        }
+        BigDecimal growth = currentMonthRevenue.subtract(previousMonthRevenue)
+                .divide(previousMonthRevenue, 2, BigDecimal.ROUND_HALF_UP)
+                .multiply(BigDecimal.valueOf(100));
+        return (growth.compareTo(BigDecimal.ZERO) >= 0 ? "+" : "") + growth + "%";
+    }
     public BigDecimal getCurrentMonthRevenue() { return currentMonthRevenue; }
     public void setCurrentMonthRevenue(BigDecimal currentMonthRevenue) { this.currentMonthRevenue = currentMonthRevenue; }
     // Getters and Setters

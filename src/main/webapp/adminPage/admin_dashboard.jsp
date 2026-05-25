@@ -200,6 +200,53 @@
 
             </form>
         </div>
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card text-white text-center" style="background: linear-gradient(135deg, #3C2F27, #5A463A); border-radius: 20px;">
+                    <div class="card-body">
+                        <p class="mb-2 opacity-75">Doanh thu tháng ${selectedMonth}/${selectedYear}</p>
+                        <h3 class="fw-bold"><fmt:formatNumber value="${dashboard.currentMonthRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></h3>
+                        <small class="${dashboard.currentMonthRevenue >= dashboard.previousMonthRevenue ? 'text-success' : 'text-danger'}">
+                            <i class="fas ${dashboard.currentMonthRevenue >= dashboard.previousMonthRevenue ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                            ${dashboard.monthlyGrowthRate}
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-white text-center" style="background: linear-gradient(135deg, #5A463A, #7A5C4A); border-radius: 20px;">
+                    <div class="card-body">
+                        <p class="mb-2 opacity-75">Doanh thu tháng trước</p>
+                        <h3 class="fw-bold"><fmt:formatNumber value="${dashboard.previousMonthRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-white text-center" style="background: linear-gradient(135deg, #D4A76A, #C19A6B); border-radius: 20px;">
+                    <div class="card-body">
+                        <p class="mb-2 opacity-75">Doanh thu năm ${selectedYear}</p>
+                        <h3 class="fw-bold"><fmt:formatNumber value="${dashboard.currentYearRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></h3>
+                        <small class="${dashboard.currentYearRevenue >= dashboard.previousYearRevenue ? 'text-success' : 'text-danger'}">
+                            <i class="fas ${dashboard.currentYearRevenue >= dashboard.previousYearRevenue ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                            vs năm trước
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-white text-center" style="background: linear-gradient(135deg, #E7C79B, #D4A76A); border-radius: 20px;">
+                    <div class="card-body">
+                        <p class="mb-2 opacity-75">Doanh thu năm ${selectedYear-1}</p>
+                        <h3 class="fw-bold"><fmt:formatNumber value="${dashboard.previousYearRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title"><i class="fas fa-chart-line"></i> Doanh thu theo năm</div>
+            <canvas id="yearlyRevenueChart" height="100"></canvas>
+        </div>
 
         <!-- STATS -->
 

@@ -45,6 +45,37 @@ public class DashboardDao {
         }
         return fullResults;
     }
+    //Lấy sản phẩm bán chậm cần đấy mạnh
+    public List<DashboardProductSales> getSlowMovingProducts(int limit) {
+        String sql = """
+        SELECT 
+            p.id, p.name, p.product_code,
+            pi.image_url as image,
+            COALESCE(SUM(od.quantity), 0) as total_sold,
+            COALESCE(SUM(od.total_price), 0) as total_revenue
+        FROM product p
+        LEFT JOIN order_detail od ON p.id = od.product_id
+        LEFT JOIN `order` o ON od.order_id = o.id AND o.order_status = 4
+        LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1
+        GROUP BY p.id, p.name, p.product_code, pi.image_url
+        ORDER BY total_sold ASC
+        LIMIT :limit
+        """;
+
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("limit", limit)
+                        .map((rs, ctx) -> new DashboardProductSales(
+                                rs.getInt("id"),
+                                rs.getString("name"),
+                                rs.getString("product_code"),
+                                rs.getString("image"),
+                                rs.getInt("total_sold"),
+                                rs.getBigDecimal("total_revenue")
+                        ))
+                        .list()
+        );
+    }
 
     // Tổng doanh thu đối với đơn hàng hoàn thành
     public BigDecimal getTotalRevenue() {

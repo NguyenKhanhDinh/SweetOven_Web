@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.DashboardData;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.Year;
 
 @WebServlet("/admin/dashboard")
@@ -21,7 +22,15 @@ public class AdminDashboardController extends HttpServlet {
             throws ServletException, IOException {
 
         String yearParam = request.getParameter("year");
-        int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam) : Year.now().getValue();
+        String monthParam = request.getParameter("month");
+
+        int year = (yearParam != null && !yearParam.isEmpty())
+                ? Integer.parseInt(yearParam)
+                : Year.now().getValue();
+
+        int month = (monthParam != null && !monthParam.isEmpty())
+                ? Integer.parseInt(monthParam)
+                : LocalDate.now().getMonthValue();
 
         DashboardData dashboard = new DashboardData();
 
@@ -33,12 +42,28 @@ public class AdminDashboardController extends HttpServlet {
 
         // Doanh thu theo tháng
         dashboard.setMonthlyRevenue(dashboardDao.getMonthlyRevenue(year));
+
+        // Doanh thu theo tháng được chọn
+        dashboard.setCurrentMonthRevenue(
+                dashboardDao.getRevenueByMonth(year, month)
+        );
+
         //Top 10 sản ohaarm bán chạy nhất
-        dashboard.setTopSellingProducts(dashboardDao.getTopSellingProducts(10));
+        dashboard.setTopSellingProducts(
+                dashboardDao.getTopSellingProducts(10)
+        );
+
         //Top 10 sản pẩm bán chậm
-        dashboard.setSlowMovingProducts(dashboardDao.getSlowMovingProducts(10));
+        dashboard.setSlowMovingProducts(
+                dashboardDao.getSlowMovingProducts(10)
+        );
+
         request.setAttribute("dashboard", dashboard);
         request.setAttribute("selectedYear", year);
-        request.getRequestDispatcher("/adminPage/admin_dashboard.jsp").forward(request, response);
+        request.setAttribute("selectedMonth", month);
+        request.setAttribute("years", dashboardDao.getAvailableYears());
+
+        request.getRequestDispatcher("/adminPage/admin_dashboard.jsp")
+                .forward(request, response);
     }
 }

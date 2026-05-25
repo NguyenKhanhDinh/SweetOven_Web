@@ -125,9 +125,54 @@ public class DashboardDao {
 
     // Tổng người dùng
     public int getTotalUsers() {
-        String sql = "SELECT COUNT(*) FROM user WHERE role = 0"; // role = 0 là khách hàng
+        String sql = "SELECT COUNT(*) FROM user WHERE role_id = 2"; // role = 2 là khách hàng
         return JdbiConnector.getJdbi().withHandle(handle ->
                 handle.createQuery(sql).mapTo(Integer.class).one()
+        );
+    }
+    // Doanh thu theo tháng cụ thể
+    public BigDecimal getRevenueByMonth(int year, int month) {
+        // Xử lý tháng 0 đến tháng 12 của năm trước
+        if (month < 1) {
+            month = 12;
+            year = year - 1;
+        }
+        if (month > 12) {
+            month = 1;
+            year = year + 1;
+        }
+
+        String sql = """
+        SELECT COALESCE(SUM(total_amount), 0) 
+        FROM `order` 
+        WHERE YEAR(order_date) = :year 
+            AND MONTH(order_date) = :month 
+            AND order_status = 4
+        """;
+
+        int finalYear = year;
+        int finalMonth = month;
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("year", finalYear)
+                        .bind("month", finalMonth)
+                        .mapTo(BigDecimal.class)
+                        .one()
+        );
+    }
+
+    // Lấy danh sách năm có dữ liệu
+    public List<Integer> getAvailableYears() {
+        String sql = """
+        SELECT DISTINCT YEAR(order_date) as year
+        FROM `order`
+        ORDER BY year DESC
+        """;
+
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .mapTo(Integer.class)
+                        .list()
         );
     }
 }

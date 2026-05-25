@@ -152,44 +152,53 @@
             </button>
 
         </div>
-
         <!-- FILTER -->
 
         <div class="filter-bar">
-
-            <div class="row g-3">
+            <form method="get"
+                  action="${pageContext.request.contextPath}/admin/dashboard"
+                  class="row g-3 align-items-end">
 
                 <div class="col-md-4">
-                    <label class="fw-bold mb-2">
+                    <label class="form-label fw-bold">
+                        <i class="fas fa-calendar me-1"></i>
                         Năm
                     </label>
 
-                    <select class="form-select">
-                        <option>2024</option>
-                        <option selected>2025</option>
+                    <select name="year" class="form-select">
+                        <c:forEach var="y" items="${years}">
+                            <option value="${y}"
+                                ${y == selectedYear ? 'selected' : ''}>
+                                Năm ${y}
+                            </option>
+                        </c:forEach>
                     </select>
                 </div>
 
                 <div class="col-md-4">
-                    <label class="fw-bold mb-2">
+                    <label class="form-label fw-bold">
+                        <i class="fas fa-calendar-week me-1"></i>
                         Tháng
                     </label>
 
-                    <select class="form-select">
-                        <option>Tất cả</option>
-                        <option>1</option>
-                        <option>2</option>
+                    <select name="month" class="form-select">
+                        <c:forEach var="m" begin="1" end="12">
+                            <option value="${m}"
+                                ${m == selectedMonth ? 'selected' : ''}>
+                                Tháng ${m}
+                            </option>
+                        </c:forEach>
                     </select>
                 </div>
 
-                <div class="col-md-4 d-flex align-items-end">
-                    <button class="btn btn-dark w-100">
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-dark w-100">
+                        <i class="fas fa-chart-line me-2"></i>
                         Xem thống kê
                     </button>
                 </div>
 
-            </div>
-
+            </form>
         </div>
 
         <!-- STATS -->
@@ -207,17 +216,7 @@
                     <span>đơn hàng</span>
                 </div>
             </div>
-            <div class="stats-card">
-                <div class="stats-icon">
-                    <i class="fas fa-shopping-cart fa-2x"></i>
-                </div>
 
-                <div class="stats-content">
-                    <p>Tổng đơn hàng</p>
-                    <h3>${dashboard.totalOrders}</h3>
-                    <span>đơn hàng</span>
-                </div>
-            </div>
 
             <div class="stats-card">
                 <div class="stats-icon">
@@ -252,30 +251,6 @@
             <div class="stats-card">
                 <div class="stats-icon">
                     <i class="fas fa-users fa-2x"></i>
-                </div>
-
-                <div class="stats-content">
-                    <p>Khách hàng</p>
-                    <h3>${dashboard.totalUsers}</h3>
-                    <span>người dùng</span>
-                </div>
-            </div>
-
-            <div class="stats-card">
-                <div class="stats-icon bg-info bg-opacity-10">
-                    <i class="fas fa-box fa-2x text-info"></i>
-                </div>
-
-                <div class="stats-content">
-                    <p>Tổng sản phẩm</p>
-                    <h3>${dashboard.totalProducts}</h3>
-                    <span>sản phẩm</span>
-                </div>
-            </div>
-
-            <div class="stats-card">
-                <div class="stats-icon bg-primary bg-opacity-10">
-                    <i class="fas fa-users fa-2x text-primary"></i>
                 </div>
 
                 <div class="stats-content">

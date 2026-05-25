@@ -497,9 +497,29 @@
     </div>
 
 </div>
+<script>
+const monthlyData = [
+<c:forEach items="${dashboard.monthlyRevenue}" var="m" varStatus="loop">
+${m.revenue}${!loop.last ? ',' : ''}
+</c:forEach>
+];
 
+const yearlyLabels = [
+<c:forEach items="${dashboard.yearlyRevenue}" var="y" varStatus="loop">
+'${y.period}'${!loop.last ? ',' : ''}
+</c:forEach>
+];
+
+const yearlyValues = [
+<c:forEach items="${dashboard.yearlyRevenue}" var="y" varStatus="loop">
+${y.revenue}${!loop.last ? ',' : ''}
+</c:forEach>
+];
+</script>
+
+<script src="${pageContext.request.contextPath}/assets/js/admin_dashboard.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/admin_dashboard.js"></script>
 
 </body>

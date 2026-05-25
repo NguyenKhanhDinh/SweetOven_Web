@@ -1,7 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -372,6 +371,94 @@
                     <c:if test="${empty dashboard.topSellingProducts}">
                         <tr>
                             <td colspan="6" class="text-center py-5">
+                                Chưa có dữ liệu
+                            </td>
+                        </tr>
+                    </c:if>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+        <!-- SLOW MOVING PRODUCT -->
+
+        <div class="chart-container">
+
+            <div class="chart-title">
+                <i class="fas fa-turtle me-2"></i>
+                Sản phẩm bán chậm (cần nhập nguyên liệu)
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover">
+
+                    <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Mã SP</th>
+                        <th>Số lượng bán</th>
+                        <th>Doanh thu</th>
+                        <th>Gợi ý</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <c:forEach items="${dashboard.slowMovingProducts}"
+                               var="p"
+                               varStatus="loop">
+
+                        <tr>
+                            <td>
+                                <span class="badge bg-danger">
+                                    ${loop.index + 1}
+                                </span>
+                            </td>
+
+                            <td>
+                                <img src="${pageContext.request.contextPath}/${p.image}"
+                                     style="width:45px;height:45px;border-radius:10px;object-fit:cover"
+                                     onerror="this.src='${pageContext.request.contextPath}/assets/picture/logo.png'">
+                            </td>
+
+                            <td class="fw-bold">${p.name}</td>
+
+                            <td>
+                                <span class="badge bg-secondary">
+                                    ${p.productCode}
+                                </span>
+                            </td>
+
+                            <td class="fw-bold text-warning">
+                                ${p.totalSold}
+                            </td>
+
+                            <td class="fw-bold">
+                                <fmt:formatNumber
+                                        value="${p.totalRevenue}"
+                                        type="currency"
+                                        currencySymbol="₫"
+                                        maxFractionDigits="0"/>
+                            </td>
+
+                            <td>
+                                <span class="badge bg-info">
+                                    Cần đẩy mạnh
+                                </span>
+                            </td>
+                        </tr>
+
+                    </c:forEach>
+
+                    <c:if test="${empty dashboard.slowMovingProducts}">
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
                                 Chưa có dữ liệu
                             </td>
                         </tr>

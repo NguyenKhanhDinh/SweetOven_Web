@@ -1,4 +1,4 @@
-package controller.admin;
+package controller.Admin;
 
 import dao.DashboardDao;
 import jakarta.servlet.ServletException;
@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.DashboardData;
 
 import java.io.IOException;
+import java.time.Year;
 
 @WebServlet("/admin/dashboard")
 public class AdminDashboardController extends HttpServlet {
@@ -19,6 +20,9 @@ public class AdminDashboardController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        String yearParam = request.getParameter("year");
+        int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam) : Year.now().getValue();
+
         DashboardData dashboard = new DashboardData();
 
         // Thống kê tổng quan
@@ -27,7 +31,11 @@ public class AdminDashboardController extends HttpServlet {
         dashboard.setTotalProducts(dashboardDao.getTotalProducts());
         dashboard.setTotalUsers(dashboardDao.getTotalUsers());
 
+        // Doanh thu theo tháng
+        dashboard.setMonthlyRevenue(dashboardDao.getMonthlyRevenue(year));
+
         request.setAttribute("dashboard", dashboard);
+        request.setAttribute("selectedYear", year);
         request.getRequestDispatcher("/adminPage/admin_dashboard.jsp").forward(request, response);
     }
 }

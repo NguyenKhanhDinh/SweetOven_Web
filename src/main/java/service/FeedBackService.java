@@ -3,6 +3,8 @@ package service;
 import dao.FeedBackDao;
 import model.FeedBack;
 
+import java.util.List;
+
 public class FeedBackService {
     private FeedBackDao feedBackDao = new FeedBackDao();
     public String insertFeedBack(FeedBack feedBack) {
@@ -20,5 +22,8 @@ public class FeedBackService {
         }
         boolean result = feedBackDao.insert(feedBack);
         return result?"SUCCESS":"Lỗi database";
+    }
+    public List<FeedBack> getAllFeedbacks() {
+        return feedBackDao.getAllFeedbacks();
     }
 }

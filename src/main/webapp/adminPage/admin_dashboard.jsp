@@ -19,8 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
           rel="stylesheet">
 
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/assets/css/admin_dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin_dashboard.css">
 </head>
 
 <body>
@@ -145,11 +144,12 @@
                     Phân tích doanh thu và sản phẩm
                 </p>
             </div>
-
-            <button class="btn btn-dark" onclick="printReport()">
-                <i class="fas fa-print me-2"></i>
-                In báo cáo
-            </button>
+                <a href="${pageContext.request.contextPath}/admin/dashboard?action=print&year=${selectedYear}&month=${selectedMonth}"
+                   class="btn btn-dark"
+                   target="_blank">
+                    <i class="fas fa-print me-2"></i>
+                    In báo cáo
+                </a>
 
         </div>
         <!-- FILTER -->

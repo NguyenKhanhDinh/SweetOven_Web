@@ -23,6 +23,7 @@ public class AdminDashboardController extends HttpServlet {
 
         String yearParam = request.getParameter("year");
         String monthParam = request.getParameter("month");
+        String action = request.getParameter("action");
 
         int year = (yearParam != null && !yearParam.isEmpty())
                 ? Integer.parseInt(yearParam)
@@ -37,6 +38,10 @@ public class AdminDashboardController extends HttpServlet {
         if (previousMonth < 1) {
             previousMonth = 12;
             previousMonthYear = year - 1;
+        }
+        if ("print".equals(action)) {
+            handlePrint(request, response);
+            return;
         }
         DashboardData dashboard = new DashboardData();
         dashboard.setPreviousMonthRevenue(dashboardDao.getRevenueByMonth(previousMonthYear, previousMonth));
@@ -73,6 +78,48 @@ public class AdminDashboardController extends HttpServlet {
         request.setAttribute("years", dashboardDao.getAvailableYears());
 
         request.getRequestDispatcher("/adminPage/admin_dashboard.jsp")
+                .forward(request, response);
+    }
+    private void handlePrint(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String yearParam = request.getParameter("year");
+        String monthParam = request.getParameter("month");
+
+        int year = (yearParam != null && !yearParam.isEmpty())
+                ? Integer.parseInt(yearParam)
+                : Year.now().getValue();
+
+        int month = (monthParam != null && !monthParam.isEmpty())
+                ? Integer.parseInt(monthParam)
+                : LocalDate.now().getMonthValue();
+
+        DashboardData dashboard = new DashboardData();
+
+        // Thống kê tổng quan
+        dashboard.setTotalOrders(dashboardDao.getTotalOrders());
+        dashboard.setTotalRevenue(dashboardDao.getTotalRevenue());
+        dashboard.setTotalProducts(dashboardDao.getTotalProducts());
+        dashboard.setTotalUsers(dashboardDao.getTotalUsers());
+
+        // Doanh thu theo tháng được chọn
+        dashboard.setCurrentMonthRevenue(dashboardDao.getRevenueByMonth(year, month));
+
+        // Top sản phẩm
+        dashboard.setTopSellingProducts(dashboardDao.getTopSellingProducts(20));
+        dashboard.setSlowMovingProducts(dashboardDao.getSlowMovingProducts(20));
+
+        // Doanh thu theo năm
+        dashboard.setYearlyRevenue(dashboardDao.getYearlyRevenue());
+        dashboard.setCurrentYearRevenue(dashboardDao.getRevenueByYear(year));
+        dashboard.setPreviousYearRevenue(dashboardDao.getRevenueByYear(year - 1));
+
+        request.setAttribute("dashboard", dashboard);
+        request.setAttribute("selectedYear", year);
+        request.setAttribute("selectedMonth", month);
+        request.setAttribute("printDate", new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date()));
+
+        request.getRequestDispatcher("/adminPage/print_report_dashboard.jsp")
                 .forward(request, response);
     }
 }

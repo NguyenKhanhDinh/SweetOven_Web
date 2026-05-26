@@ -200,71 +200,33 @@
         </div>
 
         <div class="row g-4">
-          <div class="col-md-6 col-lg-4">
-            <div class="review-card">
-              <div class="customer-info">
-                <img src="https://i.pravatar.cc/150?img=32" alt="Khách hàng" class="customer-avatar">
-                <div class="customer-details">
-                  <h5>Chị Mai Anh</h5>
-                  <p>Đã mua hàng 5 lần</p>
+            <c:forEach var="fb" items="${feedbacks}">
+              <div class="col-md-6 col-lg-4"
+                <div class="review-card">
+                  <div class="customer-info">
+                    <img src="https://i.pravatar.cc/150?img=${fb.id % 70 + 1}" alt="${fb.fullName}" class="customer-avatar">
+                    <div class="customer-details">
+                      <h5>${fb.fullName}</h5>
+                      <p>${fb.email}</p>
+                    </div>
+                  </div>
+                  <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                  </div>
+                  <p class="review-text">${fb.content}</p>
                 </div>
               </div>
-              <div class="rating">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-              </div>
-              <p class="review-text">
-                Bánh ở đây ngon tuyệt! Đặc biệt là bánh tiramisu, mềm mịn và không quá ngọt. Giao hàng nhanh, đóng gói cẩn thận. Mình sẽ ủng hộ dài lâu!
-              </p>
-            </div>
-          </div>
+            </c:forEach>
 
-          <div class="col-md-6 col-lg-4">
-            <div class="review-card">
-              <div class="customer-info">
-                <img src="https://i.pravatar.cc/150?img=12" alt="Khách hàng" class="customer-avatar">
-                <div class="customer-details">
-                  <h5>Anh Tuấn Minh</h5>
-                  <p>Đã mua hàng 3 lần</p>
-                </div>
+            <c:if test="${empty feedbacks}">
+              <div class="col-12 text-center">
+                <p>Chưa có đánh giá nào. Hãy là khách hàng đầu tiên gửi đánh giá!</p>
               </div>
-              <div class="rating">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star-half-alt"></i>
-              </div>
-              <p class="review-text">
-                Mình rất ấn tượng với bánh mì nguyên cám ở đây. Thơm ngon, bổ dưỡng và giá cả hợp lý. Nhân viên tư vấn nhiệt tình, giao hàng đúng hẹn.
-              </p>
-            </div>
-          </div>
-
-          <div class="col-md-6 col-lg-4">
-            <div class="review-card">
-              <div class="customer-info">
-                <img src="https://i.pravatar.cc/150?img=44" alt="Khách hàng" class="customer-avatar">
-                <div class="customer-details">
-                  <h5>Chị Hương Giang</h5>
-                  <p>Đã mua hàng 8 lần</p>
-                </div>
-              </div>
-              <div class="rating">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-              </div>
-              <p class="review-text">
-                Bánh croissant giòn tan, bơ thơm đúng chuẩn Pháp. Mình rất thích nhưng mong cửa hàng có thêm nhiều lựa chọn không đường cho người ăn kiêng.
-              </p>
-            </div>
-          </div>
+            </c:if>
         </div>
       </div>
     </section>

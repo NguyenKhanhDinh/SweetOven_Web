@@ -39,9 +39,10 @@ import java.util.List;
         //categories
         List<Category> categories = categoryService.getAllCategories();
         request.setAttribute("categories", categories);
-        // feedbacks from database
-        List<FeedBack> feedbacks = feedBackService.getAllFeedbacks();
-        request.setAttribute("feedbacks", feedbacks);
+        // Only get POSITIVE feedbacks for homepage - no AI call here!
+        List<FeedBack> positiveFeedbacks = feedBackService.getPositiveFeedbacksForHomepage();
+        request.setAttribute("feedbacks", positiveFeedbacks);
+
         request.getRequestDispatcher("/index.jsp").forward(request, response);
     }
 

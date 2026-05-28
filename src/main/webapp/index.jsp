@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -190,45 +191,50 @@
         </div>
       </div>
     </section>
-
     <!-- Reviews Section -->
     <section class="py-5 my-5">
-      <div class="container">
-        <div class="section-title">
-          <h2>Đánh Giá Từ Khách Hàng</h2>
-          <p>Những phản hồi chân thành là động lực để chúng tôi hoàn thiện hơn mỗi ngày</p>
-        </div>
+        <div class="container">
+            <div class="section-title">
+                <h2>Đánh Giá Từ Khách Hàng</h2>
+                <p>Những phản hồi chân thành là động lực để chúng tôi hoàn thiện hơn mỗi ngày</p>
+            </div>
 
-        <div class="row g-4">
-            <c:forEach var="fb" items="${feedbacks}">
-              <div class="col-md-6 col-lg-4"
-                <div class="review-card">
-                  <div class="customer-info">
-                    <img src="https://i.pravatar.cc/150?img=${fb.id % 70 + 1}" alt="${fb.fullName}" class="customer-avatar">
-                    <div class="customer-details">
-                      <h5>${fb.fullName}</h5>
-                      <p>${fb.email}</p>
+            <div class="row g-4">
+                <c:forEach var="fb" items="${feedbacks}">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="review-card-simple">
+                            <div class="review-header-simple">
+                                <div class="avatar-simple">
+                                    <i class="fas fa-user-circle fa-3x" style="color: var(--secondary);"></i>
+                                </div>
+                                <div class="review-user-info">
+                                    <h5 class="mb-0">${fb.fullName}</h5>
+                                    <small class="text-muted">${fb.email}</small>
+                                </div>
+                            </div>
+                            <div class="rating-simple mb-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <p class="review-content-simple">"${fb.content}"</p>
+                            <small class="text-muted">
+                                <i class="far fa-calendar-alt"></i>
+                                ${fb.createdAt}
+                            </small>
+                        </div>
                     </div>
-                  </div>
-                  <div class="rating">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                  </div>
-                  <p class="review-text">${fb.content}</p>
-                </div>
-              </div>
-            </c:forEach>
+                </c:forEach>
 
-            <c:if test="${empty feedbacks}">
-              <div class="col-12 text-center">
-                <p>Chưa có đánh giá nào. Hãy là khách hàng đầu tiên gửi đánh giá!</p>
-              </div>
-            </c:if>
+                <c:if test="${empty feedbacks}">
+                    <div class="col-12 text-center">
+                        <p class="text-muted">Chưa có đánh giá nào. Hãy là khách hàng đầu tiên gửi đánh giá!</p>
+                    </div>
+                </c:if>
+            </div>
         </div>
-      </div>
     </section>
 
     <!-- Statistics Section -->

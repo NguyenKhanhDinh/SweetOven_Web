@@ -10,14 +10,18 @@ private String email;
 private String phoneNumber;
 private String content;
 private LocalDateTime createdAt;
-
-public  FeedBack(int id, String fullName, String email, String phoneNumber, String content, LocalDateTime createdAt) {
+private String sentiment;
+private LocalDateTime sentimentAnalyzedAt;
+public  FeedBack(int id, String fullName, String email, String phoneNumber, String content, LocalDateTime createdAt, String sentiment,
+                 LocalDateTime sentimentAnalyzedAt) {
     this.id = id;
     this.fullName = fullName;
     this.email = email;
     this.phoneNumber = phoneNumber;
     this.content = content;
     this.createdAt = createdAt;
+    this.sentiment = sentiment;
+    this.sentimentAnalyzedAt = sentimentAnalyzedAt;
 }
 public FeedBack() {}
 
@@ -57,5 +61,13 @@ public FeedBack() {}
     }
     public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
+    }
+
+    public String getSentiment() { return sentiment; }
+    public void setSentiment(String sentiment) { this.sentiment = sentiment; }
+
+    public LocalDateTime getSentimentAnalyzedAt() { return sentimentAnalyzedAt; }
+    public void setSentimentAnalyzedAt(LocalDateTime sentimentAnalyzedAt) {
+        this.sentimentAnalyzedAt = sentimentAnalyzedAt;
     }
 }

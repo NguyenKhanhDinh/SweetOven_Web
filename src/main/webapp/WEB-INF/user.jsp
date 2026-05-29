@@ -936,7 +936,7 @@
     }
     function useVoucher(code) {
         sessionStorage.setItem('pendingVoucherCode', code);
-        window.location.href = '${pageContext.request.contextPath}/cart';
+        window.location.href = '${pageContext.request.contextPath}/my-cart';
     }
 
     function closeToast(id) {

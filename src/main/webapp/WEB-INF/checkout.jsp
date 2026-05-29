@@ -756,6 +756,20 @@
         else { setAddressFieldsLocked(false); }
     })();
 
+    // ─── Auto-apply voucher từ /vouchers hoặc /profile ────────────────────
+    (function () {
+        var pending = sessionStorage.getItem('pendingVoucherCode');
+        if (pending) {
+            sessionStorage.removeItem('pendingVoucherCode');
+            var inp = document.getElementById('discount-code-input');
+            if (inp) {
+                inp.value = pending.toUpperCase();
+                // Tự động áp dụng sau 600ms (chờ SUBTOTAL load xong)
+                setTimeout(function () { applyDiscount(); }, 600);
+            }
+        }
+    })();
+
     // ─── Validation trước submit ───────────────────────────────────────────
     document.getElementById('checkout-form') &&
     document.getElementById('checkout-form').addEventListener('submit', function (e) {

@@ -31,6 +31,12 @@ body {
     overflow-x: hidden;
 }
 
+/* WRAPPER */
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
 /* SIDEBAR */
 .sidebar {
     width: 260px;
@@ -75,6 +81,10 @@ body {
     margin-left: 260px;
     padding: 28px;
     min-height: 100vh;
+    width: calc(100% - 260px);
+    max-width: calc(100% - 260px);
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 /* HEADER */
@@ -105,6 +115,7 @@ body {
     padding: 24px;
     margin-bottom: 28px;
     border: 1px solid rgba(212,167,106,0.12);
+    overflow: hidden;
 }
 
 .filter-card .form-control,
@@ -127,13 +138,15 @@ body {
     background: white;
     border-radius: 24px;
     box-shadow: var(--shadow);
-    overflow: hidden;
+    overflow-x: auto;
     border: 1px solid rgba(212,167,106,0.12);
+    max-width: 100%;
 }
 
 .table {
     margin-bottom: 0;
-    min-width: 1200px;
+    width: 100%;
+    table-layout: auto;
 }
 
 .table thead th {
@@ -155,7 +168,6 @@ body {
 
 .table tbody tr:hover {
     background: rgba(212,167,106,0.08);
-    transform: scale(1.002);
 }
 
 .table tbody td {
@@ -443,7 +455,9 @@ body {
 
 @media (max-width: 992px) {
     .sidebar {
-        width: 90px;
+        width: 100%;
+        position: relative;
+        min-height: auto;
     }
 
     .sidebar .nav-link span,
@@ -453,8 +467,10 @@ body {
     }
 
     .main-content {
-        margin-left: 90px;
+        margin-left: 0;
         padding: 20px;
+        width: 100%;
+        max-width: 100%;
     }
 
     .sidebar .nav-link {
@@ -478,6 +494,8 @@ body {
     .main-content {
         margin-left: 0;
         padding: 16px;
+        width: 100%;
+        max-width: 100%;
     }
 
     .admin-header,

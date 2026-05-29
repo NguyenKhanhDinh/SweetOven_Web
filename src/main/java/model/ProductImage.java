@@ -5,14 +5,14 @@ import java.io.Serializable;
 public class ProductImage implements Serializable {
     private int id;
     private int productId;
-    private String ImageUrl;
+    private String imageUrl;
     private boolean isPrimary;
 
-    public ProductImage(int id, int productId, String ImageUrl, boolean isPrimary) {
+    public ProductImage(int id, int productId, String imageUrl, boolean isPrimary) {
         this.id = id;
         this.productId = productId;
-        this.ImageUrl = ImageUrl;
-        this.isPrimary = false;
+        this.imageUrl = imageUrl;
+        this.isPrimary = isPrimary;
     }
     public ProductImage(){}
 
@@ -29,10 +29,10 @@ public class ProductImage implements Serializable {
         this.productId = productId;
     }
     public String getImageUrl() {
-        return ImageUrl;
+        return imageUrl;
     }
     public void setImageUrl(String imageUrl) {
-        ImageUrl = imageUrl;
+        this.imageUrl = imageUrl;
     }
     public boolean isPrimary() {
         return isPrimary;

@@ -2,20 +2,23 @@ package model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 public class OrderDetail implements Serializable {
 private int id;
 private int orderId;
 private int productId;
 private String productName;
+private String productImage;
 private BigDecimal buyPrice;
 private int quantity;
 private BigDecimal totalPrice;
 private LocalDateTime createdAt;
 private LocalDateTime updatedAt;
 
-public OrderDetail(int id, int orderId, int productId, String productName, BigDecimal buyPrice, int quantity, BigDecimal totalPrice, LocalDateTime createdAt, LocalDateTime updatedAt) {
+public OrderDetail(int id, int orderId, int productId, String productName,String productImage, BigDecimal buyPrice, int quantity, BigDecimal totalPrice, LocalDateTime createdAt, LocalDateTime updatedAt) {
     this.id = id;
     this.orderId = orderId;
     this.productId = productId;
@@ -26,6 +29,7 @@ public OrderDetail(int id, int orderId, int productId, String productName, BigDe
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
 }
+public OrderDetail() {}
 
 public int getId() {
 return id;
@@ -51,6 +55,8 @@ public String getProductName() {
 public void setProductName(String productName) {
     this.productName = productName;
 }
+public String getProductImage() { return productImage;}
+public void setProductImage(String productImage) {this.productImage = productImage;}
 public BigDecimal getBuyPrice() {
     return buyPrice;
 }
@@ -81,4 +87,16 @@ public LocalDateTime getUpdatedAt() {
 public void setUpdatedAt(LocalDateTime updatedAt) {
     this.updatedAt = updatedAt;
 }
+
+    public String getTotalPriceFormatted() {
+        if(totalPrice == null) return "0 đ";
+        NumberFormat nf = NumberFormat.getInstance(new Locale("vi","VN"));
+        return nf.format(totalPrice) + " đ";
+    }
+
+    public String getBuyPriceFormatted() {
+        if(buyPrice == null) return "0 đ";
+        NumberFormat nf = NumberFormat.getInstance(new Locale("vi","VN"));
+        return nf.format(buyPrice) + " đ";
+    }
 }

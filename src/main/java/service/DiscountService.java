@@ -3,12 +3,13 @@ package service;
 import dao.DiscountDao;
 import model.Discount;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class DiscountService {
-    private DiscountDao discountDao = new  DiscountDao();
+    private DiscountDao discountDao = new DiscountDao();
 
     //get all discounts for homepage
     public List<Discount> getAllDiscounts() {
@@ -45,5 +46,25 @@ public class DiscountService {
                     return startValid && endValid && minOrderValid;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public Discount getDiscountByCode(String code) {
+        return discountDao.getDiscountByCode(code);
+    }
+
+    public Discount getDiscountById(int id) {
+        return discountDao.getDiscountById(id);
+    }
+
+    public BigDecimal calculateDiscountAmount(Discount discount, BigDecimal subToTal) {
+        if (discount == null) return null;
+        if (!discount.isValid()) return null;
+        if (discount.getMinValueOrder() != null && subToTal.compareTo(discount.getMinValueOrder()) < 0) return null;
+        if (discount.getDiscountType() == 1) {
+            return subToTal.multiply(discount.getValue().divide(BigDecimal.valueOf(100)));
+        } else {
+            BigDecimal amt = discount.getValue();
+            return amt.compareTo(subToTal) > 0 ? subToTal : amt;
+        }
     }
 }

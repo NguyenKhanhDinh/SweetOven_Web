@@ -6,8 +6,14 @@ import utils.JdbiConnector;
 import java.util.List;
 
 public class DiscountDao {
+    private static final String SELECT_COLS = """
+            SELECT id,code,description,discount_type AS discountType,value,min_order_value AS minValueOrder,
+            start_date AS startDate,end_date AS endDate,created_at AS createdAt,updated_at AS updatedAt FROM discount
+            """;
+
+
     public List<Discount> getAllDiscounts() {
-        String sql = "SELECT * FROM discount ORDER BY created_at DESC";
+        String sql = SELECT_COLS + " ORDER BY created_at DESC";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).mapToBean(Discount.class).list());
     }
 

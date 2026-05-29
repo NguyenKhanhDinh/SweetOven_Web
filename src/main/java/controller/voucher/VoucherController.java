@@ -29,8 +29,8 @@ public class VoucherController extends HttpServlet {
         User user = (session != null) ? (User) session.getAttribute("user") : null;
         if (user != null) {
             try {
-                List<Integer> savedIds = userDiscountService.getSavedDiscountIds(user.getId());
-                request.setAttribute("savedIds", savedIds);
+                List<Integer> savedDiscountIds = userDiscountService.getSavedDiscountIds(user.getId());
+                request.setAttribute("savedDiscountIds", savedDiscountIds);
             } catch (Exception e) {
                 e.printStackTrace();
             }

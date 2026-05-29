@@ -2,7 +2,10 @@ package model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class Order implements Serializable {
     private int id;
@@ -15,7 +18,7 @@ public class Order implements Serializable {
     private BigDecimal subTotal;
     private BigDecimal discountAmount;
     private BigDecimal shippingFee;
-    private BigDecimal toltalAmount;
+    private BigDecimal totalAmount;
     private String note;
     private int paymentMethod;
     private int orderStatus;
@@ -23,7 +26,7 @@ public class Order implements Serializable {
     private  LocalDateTime updatedAt;
 
     public Order(int id,String orderCode,int userId,String fullName,String phoneNumber,String address,int discountId,BigDecimal subTotal
-    ,BigDecimal discountAmount,BigDecimal shippingFee,BigDecimal toltalAmount,String note,int paymentMethod,int orderStatus,LocalDateTime orderDate,LocalDateTime updatedAt){
+    ,BigDecimal discountAmount,BigDecimal shippingFee,BigDecimal totalAmount,String note,int paymentMethod,int orderStatus,LocalDateTime orderDate,LocalDateTime updatedAt){
         this.id = id;
         this.orderCode = orderCode;
         this.userId = userId;
@@ -34,7 +37,7 @@ public class Order implements Serializable {
         this.subTotal = subTotal;
         this.discountAmount = discountAmount;
         this.shippingFee = shippingFee;
-        this.toltalAmount = toltalAmount;
+        this.totalAmount = totalAmount;
         this.note = note;
         this.paymentMethod = paymentMethod;
         this.orderStatus = orderStatus;
@@ -103,11 +106,11 @@ public class Order implements Serializable {
     public void setShippingFee(BigDecimal shippingFee) {
         this.shippingFee = shippingFee;
     }
-    public BigDecimal getToltalAmount() {
-        return toltalAmount;
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
     }
-    public void setToltalAmount(BigDecimal toltalAmount) {
-        this.toltalAmount = toltalAmount;
+    public void setTotalAmount(BigDecimal toltalAmount) {
+        this.totalAmount = toltalAmount;
     }
     public String getNote() {
         return note;
@@ -138,5 +141,39 @@ public class Order implements Serializable {
     }
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getOrderDateFormatted() {
+        if (orderDate == null) return "";
+        return orderDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy "));
+    }
+
+    public String getUpdatedAtFormatted() {
+        if (updatedAt == null) return "";
+        return updatedAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+
+    private String formatMoney(BigDecimal value) {
+        if (value == null) return "0 đ";
+
+        NumberFormat nf = NumberFormat.getInstance(new Locale("vi", "VN"));
+        return nf.format(value) + " đ";
+    }
+
+    public String getSubTotalFormatted() {
+        return formatMoney(subTotal);
+    }
+
+    public String getDiscountAmountFormatted() {
+        return formatMoney(discountAmount);
+    }
+
+    public String getShippingFeeFormatted() {
+        return formatMoney(shippingFee);
+    }
+
+    public String getTotalAmountFormatted() {
+        return formatMoney(totalAmount);
     }
 }

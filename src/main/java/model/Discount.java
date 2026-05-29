@@ -121,9 +121,9 @@ public class Discount implements Serializable {
 
     public String getDisplayMinOrder() {
         if (minValueOrder == null || minValueOrder.compareTo(BigDecimal.ZERO) == 0) {
-            return "0đ";
+            return "0 VNĐ";
         }
-        return String.format("%,.0fđ", minValueOrder);
+        return String.format("%,.0f VNĐ", minValueOrder);
     }
     public boolean isPercentage() {
         return discountType == 1;

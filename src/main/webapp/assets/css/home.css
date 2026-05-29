@@ -152,82 +152,190 @@ body {
 
 
 .promotions-section {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  padding: 5rem 0;
-  color: #fff;
+    background: linear-gradient(135deg, var(--primary) 0%, #a84c10 55%, #c97b2a 100%);
+    padding: 4.5rem 0 5rem;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+.promotions-section::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    border: 60px solid rgba(255,255,255,.04);
+    top: -200px; right: -100px;
+    pointer-events: none;
 }
 
-.promo-row-scroll {
-  display: flex;
-  overflow-x: auto;
-  gap: 1.5rem;
-}
-
-.promo-item {
-  min-width: 280px;
-  flex: 0 0 auto;
-}
-
-.promo-card {
-  background: rgba(255,255,255,0.1);
-  padding: 1.5rem;
-  border-radius: 20px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  min-height: 360px;
-}
-
-.promo-code {
-  margin: 1rem 0;
-}
-
-.btn-save-voucher {
-    background: linear-gradient(135deg, var(--secondary), #E6B17E);
-    color: var(--primary);
-    border: none;
-    padding: 10px 16px;
-    border-radius: 30px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
+/* Scroll container */
+.home-vc-scroll {
     display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,.3) transparent;
+}
+.home-vc-scroll::-webkit-scrollbar { height: 4px; }
+.home-vc-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.3); border-radius: 20px; }
+
+/* ── Voucher Card (horizontal, Shopee-style) ── */
+.home-vc-card {
+    display: flex;
+    align-items: stretch;
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    min-width: 300px;
+    max-width: 300px;
+    flex-shrink: 0;
+    box-shadow: 0 6px 24px rgba(0,0,0,.18);
+    transition: transform .2s, box-shadow .2s;
+    position: relative;
+}
+.home-vc-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,.25);
+}
+
+/* Left ribbon */
+.home-vc-left {
+    width: 82px;
+    flex-shrink: 0;
+    background: linear-gradient(160deg, #e67a2a 0%, #a84c0e 100%);
+    border-radius: 14px 0 0 14px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    width: 100%;
-    margin-top: auto;
-    box-shadow: 0 4px 12px rgba(212, 167, 106, 0.3);
+    padding: 16px 6px;
 }
-
-.btn-save-voucher i {
-    font-size: 14px;
-    transition: var(--transition);
-}
-
-.btn-save-voucher:hover {
-    background: linear-gradient(135deg, var(--primary), #A0522D);
+.home-vc-left i { color: #fff; font-size: 22px; }
+.home-vc-val {
     color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(139, 69, 19, 0.4);
+    font-weight: 700;
+    font-size: 17px;
+    text-align: center;
+    line-height: 1.2;
+}
+.home-vc-type {
+    display: block;
+    font-size: 10px;
+    font-weight: 500;
+    opacity: .85;
+    margin-top: 2px;
 }
 
-.btn-save-voucher:hover i {
-    transform: scale(1.1);
+/* Notch separator */
+.home-vc-notch-wrap {
+    width: 16px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    background: #fff;
+}
+.home-vc-notch {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #a84c0e, #c97b2a);
+    flex-shrink: 0;
+    position: absolute;
+}
+.home-vc-notch.top { top: -8px; }
+.home-vc-notch.bot { bottom: -8px; }
+.home-vc-dash {
+    flex: 1;
+    width: 1px;
+    margin: 8px 0;
+    background: repeating-linear-gradient(to bottom,
+    #e5e7eb 0, #e5e7eb 5px,
+    transparent 5px, transparent 11px);
 }
 
-
-.btn-save-voucher.saved {
-    background: #f5f5f5;
+/* Body */
+.home-vc-body {
+    flex: 1;
+    padding: 14px 14px 14px 10px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.home-vc-code {
+    font-size: 14px;
+    font-weight: 700;
     color: var(--primary);
-    border: 1px solid var(--secondary);
-    box-shadow: none;
+    letter-spacing: .6px;
+    font-family: monospace;
+    background: #FFF3E0;
+    border: 1px dashed var(--secondary);
+    border-radius: 5px;
+    padding: 2px 8px;
+    display: inline-block;
+    margin-bottom: 6px;
+}
+.home-vc-desc {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+.home-vc-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 11px;
+    color: #9ca3af;
+    margin-bottom: 10px;
+}
+.home-vc-meta span { display: flex; align-items: center; gap: 4px; }
+.home-vc-meta b { color: #555; }
+.home-vc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+    width: 100%;
+    gap: 5px;
+}
+.home-vc-btn:hover {
+    background: var(--secondary);
+    color: var(--primary);
+    transform: translateY(-1px);
+}
+/* Nút "Dùng ngay" sau khi đã lưu */
+.home-vc-btn-use {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff !important;
+    font-family: 'Quicksand', sans-serif;
+}
+.home-vc-btn-use:hover {
+    background: linear-gradient(135deg, #16a34a, #15803d) !important;
+    color: #fff !important;
+    transform: scale(1.03);
+}
+/* Card đã lưu: ribbon xanh */
+.home-vc-saved .home-vc-left {
+    background: linear-gradient(160deg, #22c55e, #15803d);
+}
+.home-vc-saved {
+    border: 1.5px solid #86efac !important;
 }
 
-.btn-save-voucher.saved i {
-    color: var(--secondary);
-}
 
 /* CATEGORY */
 .categories-section {

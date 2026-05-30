@@ -100,7 +100,7 @@
 
             <c:choose>
                 <c:when test="${empty discounts}">
-                    <div class="text-center text-white py-4" style="opacity:.75;">
+                    <div class="text-center py-4" style="opacity:.6; color: var(--primary);">
                         <i class="fas fa-tag fa-2x mb-3 d-block"></i>
                         <p>Hiện chưa có voucher nào. Hãy quay lại sau nhé!</p>
                     </div>
@@ -111,66 +111,64 @@
                             <c:set var="isSaved"
                                    value="${savedDiscountIds != null && savedDiscountIds.contains(d.id)}"/>
                             <div class="home-vc-card ${isSaved ? 'home-vc-saved' : ''}">
-                                    <%-- Left ribbon --%>
-                                <div class="home-vc-left">
-                                    <i class="fas ${d.discountType == 1 ? 'fa-percent' : 'fa-coins'}"></i>
-                                    <div class="home-vc-val">
+
+                                    <%-- LEFT: Logo panel --%>
+                                <div class="home-vc-logo-panel">
+                                    <img src="${pageContext.request.contextPath}/assets/picture/logo-voucher.png"
+                                         alt="Sweet Oven" class="home-vc-logo-img"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                    <div class="home-vc-logo-name">Sweet Oven<br>Bakery</div>
+                                </div>
+
+                                    <%-- RIGHT: Body --%>
+                                <div class="home-vc-body">
+                                    <div>
+                                        <div class="home-vc-top">
+                                            <span class="home-vc-code">${d.code}</span>
+                                            <c:choose>
+                                                <c:when test="${isSaved}">
+                                                    <span class="home-vc-badge home-vc-badge-saved"><i class="fa fa-check me-1"></i>Đã lưu</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="home-vc-badge home-vc-badge-new">✦ Mới</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                        <div class="home-vc-desc">${d.description}</div>
+                                        <div class="home-vc-meta">
+                                            <span><i class="fa fa-receipt"></i> Đơn tối thiểu: <b>${d.displayMinOrder}</b></span>
+                                        </div>
+                                    </div>
+                                    <div class="home-vc-footer">
+                                        <span class="home-vc-expire"><i class="fa fa-clock"></i>&nbsp;HSD: <b style="color:#8B4513;">${d.formattedEndDate}</b></span>
                                         <c:choose>
-                                            <c:when test="${d.discountType == 1}">
-                                                <fmt:formatNumber value="${d.value}" maxFractionDigits="0"/>%
+                                            <c:when test="${isSaved}">
+                                                <a href="${pageContext.request.contextPath}/my-cart?pendingVoucher=${d.code}"
+                                                   class="home-vc-btn-use">
+                                                    <i class="fa fa-cart-shopping"></i>Dùng ngay
+                                                </a>
+                                            </c:when>
+                                            <c:when test="${empty sessionScope.user}">
+                                                <a href="${pageContext.request.contextPath}/login?redirect=home"
+                                                   class="home-vc-btn-save">
+                                                    <i class="fa fa-bookmark"></i>Lưu ngay
+                                                </a>
                                             </c:when>
                                             <c:otherwise>
-                                                <fmt:formatNumber value="${d.value}" type="number" groupingUsed="true"
-                                                                  maxFractionDigits="0"/>VNĐ
+                                                <form method="post"
+                                                      action="${pageContext.request.contextPath}/save-voucher"
+                                                      style="margin:0;">
+                                                    <input type="hidden" name="discountId" value="${d.id}">
+                                                    <input type="hidden" name="redirectTo" value="home">
+                                                    <button type="submit" class="home-vc-btn-save">
+                                                        <i class="fa fa-bookmark"></i>Lưu ngay
+                                                    </button>
+                                                </form>
                                             </c:otherwise>
                                         </c:choose>
-                                        <span class="home-vc-type">
-                                              <c:choose>
-                                                  <c:when test="${d.discountType == 1}">Giảm %</c:when>
-                                                  <c:otherwise>Giảm tiền</c:otherwise>
-                                              </c:choose>
-                                          </span>
                                     </div>
                                 </div>
 
-                                <div class="home-vc-body">
-                                    <div class="home-vc-code">${d.code}</div>
-                                    <div class="home-vc-desc">${d.description}</div>
-                                    <div class="home-vc-meta">
-                                        <span><i class="fa fa-receipt"></i> Từ <b>${d.displayMinOrder}</b></span>
-                                        <span><i class="fa fa-clock"></i> HSD: <b>${d.formattedEndDate}</b></span>
-                                    </div>
-
-                                        <%-- Nút hành động: kiểm tra đã lưu chưa --%>
-                                    <c:choose>
-                                        <c:when test="${isSaved}">
-                                            <%-- Đã lưu → dùng ngay --%>
-                                            <a href="${pageContext.request.contextPath}/my-cart?pendingVoucher=${d.code}"
-                                               class="home-vc-btn home-vc-btn-use">
-                                                <i class="fa fa-cart-shopping me-1"></i>Dùng ngay
-                                            </a>
-                                        </c:when>
-                                        <c:when test="${empty sessionScope.user}">
-                                            <%-- Chưa đăng nhập --%>
-                                            <a href="${pageContext.request.contextPath}/login?redirect=home"
-                                               class="home-vc-btn">
-                                                <i class="fa fa-bookmark me-1"></i>Lưu ngay
-                                            </a>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <%-- Đã đăng nhập, chưa lưu → POST lưu và redirect về home --%>
-                                            <form method="post"
-                                                  action="${pageContext.request.contextPath}/save-voucher"
-                                                  style="margin:0;">
-                                                <input type="hidden" name="discountId" value="${d.id}">
-                                                <input type="hidden" name="redirectTo" value="home">
-                                                <button type="submit" class="home-vc-btn">
-                                                    <i class="fa fa-bookmark me-1"></i>Lưu ngay
-                                                </button>
-                                            </form>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </div>
                             </div>
                         </c:forEach>
                     </div>

@@ -28,8 +28,22 @@
                     <li class="nav-item">
                         <a class="nav-link ${param.activePage == 'home' ? 'active' : ''}" href="${contextPath}/">TRANG CHỦ</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link ${param.activePage == 'menu' ? 'active' : ''}" href="${contextPath}/menu">SẢN PHẨM</a>
+                    <li class="nav-item nav-item-dropdown" id="category-nav-item">
+                        <a class="nav-link ${param.activePage == 'menu' ? 'active' : ''}"
+                           href="${contextPath}/menu"
+                           id="category-nav-link"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                           SẢN PHẨM
+                            <i class="fas fa-chevron-down nav-chevron" id="category-chevron"></i>
+                        </a>
+                        <div class="category-dropdown" id="category-dropdown" role="menu">
+                            <ul class="category-dropdown-list">
+                                <li class="category-dropdown-item skeleton" aria-hidden="true"></li>
+                                <li class="category-dropdown-item skeleton" aria-hidden="true"></li>
+                                <li class="category-dropdown-item skeleton" aria-hidden="true"></li>
+                            </ul>
+                        </div>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link ${param.activePage == 'introduce' ? 'active' : ''}" href="${contextPath}/introduce">GIỚI THIỆU</a>
@@ -247,6 +261,75 @@
             setTimeout(function() { if (toast.parentNode) toast.remove(); }, 400);
         }, duration);
     };
+
+    // ==================== CATEGORY DROPDOWN ====================
+    (function () {
+        var navItem  = document.getElementById('category-nav-item');
+        var dropdown = document.getElementById('category-dropdown');
+        var chevron  = document.getElementById('category-chevron');
+        var navLink  = document.getElementById('category-nav-link');
+        var ctxPath  = '${contextPath}';
+        var loaded   = false;
+        var closeTimer = null;
+        var isDesktop = function () { return window.innerWidth >= 992; };
+
+        function openDropdown() {
+            clearTimeout(closeTimer);
+            dropdown.classList.add('active');
+            chevron.style.transform = 'rotate(180deg)';
+            navLink.setAttribute('aria-expanded', 'true');
+            if (!loaded) loadCategories();
+        }
+        function closeDropdown() {
+            dropdown.classList.remove('active');
+            chevron.style.transform = '';
+            navLink.setAttribute('aria-expanded', 'false');
+        }
+        function scheduleClose() { closeTimer = setTimeout(closeDropdown, 150); }
+
+        // Desktop: hover
+        navItem.addEventListener('mouseenter', function () { if (isDesktop()) openDropdown(); });
+        navItem.addEventListener('mouseleave', function () { if (isDesktop()) scheduleClose(); });
+        dropdown.addEventListener('mouseenter', function () { if (isDesktop()) clearTimeout(closeTimer); });
+        dropdown.addEventListener('mouseleave', function () { if (isDesktop()) scheduleClose(); });
+
+        // Mobile: click toggle
+        navLink.addEventListener('click', function (e) {
+            if (!isDesktop()) {
+                e.preventDefault();
+                dropdown.classList.contains('active') ? closeDropdown() : openDropdown();
+            }
+        });
+
+        // Close on outside click
+        document.addEventListener('click', function (e) {
+            if (navItem && !navItem.contains(e.target)) closeDropdown();
+        });
+
+        // Load categories via API
+        function loadCategories() {
+            loaded = true;
+            fetch(ctxPath + '/api/categories')
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    var list = dropdown.querySelector('.category-dropdown-list');
+                    list.querySelectorAll('.skeleton, .category-dropdown-divider').forEach(function (el) { el.remove(); });
+                    if (!data || data.length === 0) return;
+                    data.forEach(function (cat) {
+                        var li = document.createElement('li');
+                        li.className = 'category-dropdown-item';
+                        var a = document.createElement('a');
+                        a.className = 'category-dropdown-link';
+                        a.href = ctxPath + '/menu?categoryId=' + cat.id;
+                        a.setAttribute('role', 'menuitem');
+                        a.innerHTML = '<span>' + cat.name + '</span>';
+                        li.appendChild(a);
+                        list.appendChild(li);
+                    });
+                })
+                .catch(function () { /* silent fail */ });
+        }
+    })();
 
     (function() {
         var msg = '<c:out value="${sessionScope.message}" escapeXml="true"/>';

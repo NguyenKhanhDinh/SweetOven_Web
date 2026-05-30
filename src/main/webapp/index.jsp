@@ -117,6 +117,7 @@
                                     <img src="${pageContext.request.contextPath}/assets/picture/logo-voucher.png"
                                          alt="Sweet Oven" class="home-vc-logo-img"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                    <i class="fas fa-bread-slice home-vc-logo-fallback"></i>
                                     <div class="home-vc-logo-name">Sweet Oven<br>Bakery</div>
                                 </div>
 
@@ -155,15 +156,11 @@
                                                 </a>
                                             </c:when>
                                             <c:otherwise>
-                                                <form method="post"
-                                                      action="${pageContext.request.contextPath}/save-voucher"
-                                                      style="margin:0;">
-                                                    <input type="hidden" name="discountId" value="${d.id}">
-                                                    <input type="hidden" name="redirectTo" value="home">
-                                                    <button type="submit" class="home-vc-btn-save">
-                                                        <i class="fa fa-bookmark"></i>Lưu ngay
-                                                    </button>
-                                                </form>
+                                                <button type="button"
+                                                        class="home-vc-btn-save"
+                                                        onclick="saveVoucherHome(this, ${d.id})">
+                                                    <i class="fa fa-bookmark"></i>Lưu ngay
+                                                </button>
                                             </c:otherwise>
                                         </c:choose>
                                     </div>
@@ -397,6 +394,63 @@
             });
         });
     })();
+    var _vcContextPath = (document.querySelector('meta[name="contextPath"]') || {}).content || '';
+
+    function saveVoucherHome(btn, discountId) {
+        btn.disabled = true;
+        var originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+
+        fetch(_vcContextPath + '/save-voucher', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: 'discountId=' + encodeURIComponent(discountId)
+        })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                var card = btn.closest('.home-vc-card');
+                if (data.status === 'ok') {
+                    // Đổi badge → Đã lưu
+                    var badge = card.querySelector('.home-vc-badge');
+                    if (badge) {
+                        badge.className = 'home-vc-badge home-vc-badge-saved';
+                        badge.innerHTML = '<i class="fa fa-check me-1"></i>Đã lưu';
+                    }
+                    // Đổi card style → saved
+                    card.classList.add('home-vc-saved');
+                    // Đổi nút → Dùng ngay
+                    var code = card.querySelector('.home-vc-code').textContent.trim();
+                    var footer = btn.closest('.home-vc-footer');
+                    btn.outerHTML = '<a href="' + _vcContextPath + '/my-cart?pendingVoucher=' + encodeURIComponent(code) + '" class="home-vc-btn-use"><i class="fa fa-cart-shopping"></i>Dùng ngay</a>';
+                    if (typeof window.showGlobalToast === 'function') {
+                        window.showGlobalToast('success', data.message);
+                    }
+                } else if (data.status === 'already') {
+                    card.classList.add('home-vc-saved');
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                    if (typeof window.showGlobalToast === 'function') {
+                        window.showGlobalToast('error', data.message);
+                    }
+                } else {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                    if (typeof window.showGlobalToast === 'function') {
+                        window.showGlobalToast('error', data.message);
+                    }
+                }
+            })
+            .catch(function() {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+                if (typeof window.showGlobalToast === 'function') {
+                    window.showGlobalToast('error', 'Có lỗi xảy ra, vui lòng thử lại!');
+                }
+            });
+    }
 </script>
 </body>
 </html>

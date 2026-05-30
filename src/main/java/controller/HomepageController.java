@@ -5,14 +5,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import model.Banner;
-import model.Category;
-import model.Discount;
-import model.Product;
-import service.CategoryService;
-import service.DiscountService;
-import service.ProductService;
-import service.BannerService;
+import jakarta.servlet.http.HttpSession;
+import model.*;
+import service.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,11 +19,13 @@ import java.util.List;
     private BannerService bannerService;
     private DiscountService discountService;
     private CategoryService categoryService;
+    private UserDiscountService userDiscountService;
     public void init() {
         this.productService = new ProductService();
         this.bannerService = new BannerService();
         this.discountService = new DiscountService();
         this.categoryService = new CategoryService();
+        this.userDiscountService = new UserDiscountService();
     }
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //for featured products
@@ -43,6 +40,17 @@ import java.util.List;
         //categories
         List<Category> categories = categoryService.getAllCategories();
         request.setAttribute("categories", categories);
+
+        HttpSession session = request.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+        if (user != null) {
+            try {
+                List<Integer> savedDiscountIds = userDiscountService.getSavedDiscountIds(user.getId());
+                request.setAttribute("savedDiscountIds", savedDiscountIds);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
 
         request.getRequestDispatcher("/index.jsp").forward(request, response);
     }

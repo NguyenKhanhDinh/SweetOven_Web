@@ -1,211 +1,238 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tất Cả Voucher | Sweet Oven Bakery</title>
+    <title>Voucher Ưu Đãi | Sweet Oven Bakery</title>
     <link rel="icon" href="${pageContext.request.contextPath}/assets/picture/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <%-- header CSS --%>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/components/css/header.css"/>
-
     <style>
-        body { background: #F9F6F0; font-family: 'Quicksand', 'Segoe UI', sans-serif; }
-
-        .page-wrapper { margin-top: 90px; margin-bottom: 60px; }
-
-        .page-header {
-            background: linear-gradient(135deg, #d4722a 0%, #b85a1a 100%);
-            border-radius: 18px;
-            padding: 32px 36px;
-            color: #fff;
-            margin-bottom: 32px;
+        :root {
+            --brand: #3C2F27;
+            --brand2: #b85a1a;
+            --brand3: #8B4513;
+            --brand-light: #d4722a;
+            --bg: #fffff;
+            --border: #e9ddd0;
+            --green: #16a34a;
         }
-        .page-header h2 { font-weight: 700; font-size: 26px; margin: 0 0 6px; }
-        .page-header p  { margin: 0; opacity: .85; font-size: 14px; }
+        body { background: white; font-family: 'Quicksand', sans-serif; }
+        .page-wrapper { margin-top: 90px; padding-bottom: 60px; }
 
-        /* ─── Voucher card (Shopee-style) ─────────────────────── */
-        .vc-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 18px;
+        /* HERO */
+        .vc-hero {
+            background: var(--brand);
+            padding: 26px 36px; color: #fff; margin-bottom: 24px;
+            display: flex; align-items: center; justify-content: space-between; gap: 16px;
+            position: relative; overflow: hidden;
         }
 
+        .vc-hero h2 { font-size: 22px; font-weight: 700; margin: 0 0 4px; }
+        .vc-hero p  { font-size: 13px; opacity: .85; margin: 0; }
+        .vc-hero-stats { display: flex; gap: 16px; z-index: 1; flex-shrink: 0; }
+        .vc-stat { background: rgba(255,255,255,.13); padding: 10px 18px; text-align: center; border: 1px solid rgba(255,255,255,.15); }
+        .vc-stat .n { font-size: 22px; font-weight: 700; line-height: 1; }
+        .vc-stat .l { font-size: 11px; opacity: .8; margin-top: 2px; }
+
+        /* TABS */
+        .vc-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
+        .vc-tab {
+            padding: 10px 20px; border: none; background: transparent;
+            font-family: 'Quicksand', sans-serif; font-size: 14px; font-weight: 600;
+            color: #6b7280; cursor: pointer;
+            position: relative; bottom: -2px; transition: color .15s;
+        }
+        .vc-tab.active {
+            background: #ffffff; color: var(--brand2);
+            border: 2px solid var(--border); border-bottom-color: #fff;
+        }
+        .vc-tab .badge {
+            background: var(--brand2); color: #fff; font-size: 10px; font-weight: 700;
+            padding: 1px 7px; margin-left: 5px; border-radius: 2px;
+        }
+        .vc-tab.active .badge { background: var(--brand); }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+
+        /* GRID — 2 cột cố định, card rộng hơn */
+        .vc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 10px; }
+
+        /* ── SHOPEE-STYLE CARD ── */
         .vc-card {
-            background: #fff;
-            border-radius: 14px;
+            background: #ffffff;
             display: flex;
-            overflow: hidden;
-            box-shadow: 0 3px 14px rgba(0,0,0,.07);
-            transition: transform .18s, box-shadow .18s;
+            overflow: visible;          /* cần để notch hiện ra ngoài */
+            border: 1px solid var(--border);
+            transition: box-shadow .18s, border-color .18s;
             position: relative;
+            min-height: 0;              /* tự co theo nội dung */
         }
-        .vc-card:not(.vc-saved):hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(212,114,42,.18);
-        }
+        .vc-card:hover { box-shadow: 0 4px 22px rgba(139,69,19,.13); border-color: #ffffff; }
+        .vc-card.saved { border-color: #86efac; background: #f0fdf4; }
+        .vc-card.saved .vc-logo-panel { background: linear-gradient(160deg, #22c55e, #15803d); }
 
-        /* stripe bên trái */
-        .vc-stripe {
-            width: 80px;
+        /* Shopee notch — 2 lõm tròn tại đường chia */
+        .vc-card::before,
+        .vc-card::after {
+            content: '';
+            position: absolute;
+            left: 100px;            /* khớp với width logo-panel */
+            width: 16px; height: 16px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            z-index: 3;
+        }
+        .vc-card::before { top: -8px; }
+        .vc-card::after  { bottom: -8px; }
+        .vc-card.saved::before,
+        .vc-card.saved::after { background: #f0fdf4; border-color: #86efac; }
+
+        /* LEFT: Logo-only panel — nhỏ gọn, chỉ logo + tên */
+        .vc-logo-panel {
+            width: 108px;
             flex-shrink: 0;
-            background: linear-gradient(160deg, #d4722a, #b85a1a);
+            background:var(--brand);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 14px 6px;
-            gap: 8px;
+            padding: 14px 8px;
+            gap: 5px;
+            position: relative;
         }
-        .vc-stripe i { color: #fff; font-size: 22px; }
-        .vc-stripe .vc-val {
+        .vc-logo-panel::after {
+            content: '';
+            position: absolute;
+            right: 0; top: 12px; bottom: 12px;
+            border-right: 2px dashed rgba(255,255,255,.22);
+        }
+        .vc-logo-panel .logo-voucher-img {
+            width: 46px;
+            height: 46px;
+            object-fit: contain;
+
+            /* ép nằm gọn trong khung */
+            max-width: 100%;
+            max-height: 100%;
+
+            display: block;
+        }
+        .vc-logo-panel .logo-fallback {
+            font-size: 28px; color: #fff; opacity: .85; display: none;
+        }
+        .vc-logo-panel .logo-name {
             color: #fff;
-            font-weight: 700;
-            font-size: 17px;
-            text-align: center;
-            line-height: 1.2;
-            word-break: break-word;
+            font-size: 10px; font-weight: 700;
+            text-align: center; line-height: 1.3; opacity: .88;
+            letter-spacing: .2px;
         }
 
-        /* body */
+        /* RIGHT: Content */
         .vc-body {
             flex: 1;
-            padding: 14px 16px;
+            padding: 11px 14px 10px;
             min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Top row: code + badge */
+        .vc-top {
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 6px; margin-bottom: 3px;
         }
         .vc-code {
+            font-weight: 700; font-size: 13px; color: var(--brand);
+            letter-spacing: .6px; background: #FFF3E0;
+            border: 1px dashed #D4A76A;
+            padding: 1px 8px; font-family: monospace;
+        }
+        .vc-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; white-space: nowrap; }
+        .badge-new   { background: #fef3c7; color: #b45309; }
+        .badge-saved { background: #dcfce7; color: #15803d; }
+
+        /* Description — nổi bật, là dòng chính user nhìn đầu tiên */
+        .vc-desc-main {
+            font-size: 15px;
             font-weight: 700;
-            font-size: 16px;
-            color: #1a1a1a;
-            letter-spacing: .5px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .vc-desc {
-            font-size: 13px;
-            color: #555;
-            margin: 4px 0 8px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .vc-meta { display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; color: #777; }
-        .vc-meta span { display: flex; align-items: center; gap: 4px; }
-
-        /* action */
-        .vc-action {
-            display: flex;
-            align-items: center;
-            padding: 0 16px;
-            flex-shrink: 0;
+            color: var(--brand);
+            margin: 2px 0 5px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            line-height: 1.3;
         }
 
-        /* saved state */
-        .vc-saved .vc-stripe {
-            background: linear-gradient(160deg, #22c55e, #16a34a);
-        }
-        .vc-saved { border: 2px solid #22c55e; }
+        /* Meta row */
+        .vc-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 11.5px; color: #888; margin-bottom: 0; }
+        .vc-meta span { display: flex; align-items: center; gap: 3px; }
+        .vc-meta b { color: var(--brand3); font-weight: 700; }
 
-        /* nút */
+        /* Footer: expire + button */
+        .vc-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-top: 8px; padding-top: 7px;
+            border-top: 1px dashed var(--border);
+        }
+        .vc-expire { font-size: 11px; color: #aaa; display: flex; align-items: center; gap: 3px; }
+
         .btn-save {
-            background: linear-gradient(135deg, #d4722a, #b85a1a);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 14px;
-            font-size: 13px;
-            font-weight: 600;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: opacity .15s;
+            background: var(--brand2); color: #fff; border: 1px solid transparent;
+            padding: 5px 16px; font-size: 12px; font-weight: 700;
+            font-family: 'Quicksand', sans-serif; cursor: pointer; white-space: nowrap;
+            transition: background .15s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 4px;
         }
-        .btn-save:hover { opacity: .85; }
-
+        .btn-save:hover { background: var(--brand); color: #fff; }
         .btn-use {
-            background: linear-gradient(135deg, #22c55e, #16a34a);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 14px;
-            font-size: 13px;
-            font-weight: 600;
-            white-space: nowrap;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: opacity .15s;
+            background: #fff; color: var(--green); border: 1px solid var(--green);
+            padding: 5px 14px; font-size: 12px; font-weight: 700;
+            font-family: 'Quicksand', sans-serif; cursor: pointer; white-space: nowrap;
+            transition: background .15s, color .15s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 4px;
         }
-        .btn-use:hover { opacity: .85; color: #fff; }
+        .btn-use:hover { background: #f0fdf4; color: var(--green); }
 
-        /* dashed separator */
-        .vc-sep {
-            width: 1px;
-            background: repeating-linear-gradient(to bottom, #e5e7eb 0, #e5e7eb 6px, transparent 6px, transparent 12px);
-            margin: 10px 0;
+        .info-strip {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
         }
 
-        /* toast */
-        .toast-wrap { position: fixed; top: 80px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        /* Empty */
+        .vc-empty { grid-column: 1/-1; text-align: center; padding: 56px 20px; color: #bbb; }
+        .vc-empty i { font-size: 50px; margin-bottom: 14px; display: block; }
+
+        /* Toast */
+        .toast-wrap { position: fixed; top: 82px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast-item {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 18px rgba(0,0,0,.13);
-            padding: 14px 20px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideIn .3s ease;
+            background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,.12);
+            padding: 12px 18px; font-size: 14px; display: flex; align-items: center; gap: 10px;
+            animation: slideIn .3s ease; min-width: 260px;
         }
         .toast-success { border-left: 4px solid #22c55e; }
         .toast-error   { border-left: 4px solid #ef4444; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity:0; } to { transform: translateX(0); opacity:1; } }
-
-        /* empty */
-        .empty-box { text-align: center; padding: 60px 20px; color: #aaa; }
-        .empty-box i { font-size: 48px; margin-bottom: 14px; }
-
-        /* badge đã lưu */
-        .badge-saved {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #22c55e;
-            color: #fff;
-            font-size: 11px;
-            font-weight: 600;
-            border-radius: 20px;
-            padding: 2px 9px;
-        }
+        @keyframes slideIn { from{transform:translateX(110%);opacity:0} to{transform:translateX(0);opacity:1} }
     </style>
 </head>
 <body>
-
-<%-- HEADER --%>
 <%@ include file="/components/header.jsp" %>
 
 <%-- TOASTS --%>
 <div class="toast-wrap" id="toast-wrap">
     <c:if test="${not empty sessionScope.successMsg}">
         <div class="toast-item toast-success" id="t-ok">
-            <i class="fa fa-check-circle text-success"></i>
-            <span>${sessionScope.successMsg}</span>
+            <i class="fa fa-check-circle text-success"></i><span>${sessionScope.successMsg}</span>
         </div>
         <c:remove var="successMsg" scope="session"/>
     </c:if>
     <c:if test="${not empty sessionScope.errorMsg}">
         <div class="toast-item toast-error" id="t-err">
-            <i class="fa fa-times-circle text-danger"></i>
-            <span>${sessionScope.errorMsg}</span>
+            <i class="fa fa-times-circle text-danger"></i><span>${sessionScope.errorMsg}</span>
         </div>
         <c:remove var="errorMsg" scope="session"/>
     </c:if>
@@ -213,89 +240,99 @@
 
 <div class="container page-wrapper">
 
-    <div class="page-header">
-        <h2><i class="fa fa-ticket-alt me-2"></i>Tất Cả Voucher</h2>
-        <p>Lưu và sử dụng voucher để nhận ưu đãi hấp dẫn cho đơn hàng của bạn!</p>
+    <%-- HERO --%>
+    <div class="vc-hero">
+        <div style="z-index:1;">
+            <h2><i class="fa fa-ticket-alt me-2"></i>Kho Voucher Ưu Đãi</h2>
+            <p>Lưu và dùng ngay để tiết kiệm cho đơn hàng của bạn!</p>
+        </div>
+        <div class="vc-hero-stats">
+            <div class="vc-stat">
+                <div class="n">${not empty discounts ? discounts.size() : 0}</div>
+                <div class="l">Voucher hiện có</div>
+            </div>
+            <div class="vc-stat">
+                <div class="n">${not empty savedDiscountIds ? savedDiscountIds.size() : 0}</div>
+                <div class="l">Đã lưu</div>
+            </div>
+        </div>
     </div>
 
-    <c:choose>
-        <c:when test="${empty discounts}">
-            <div class="empty-box">
-                <i class="fa fa-tag"></i>
-                <div style="font-size:16px; margin-bottom:6px;">Hiện chưa có voucher nào.</div>
-                <div style="font-size:13px;">Hãy quay lại sau bạn nhé!</div>
-            </div>
-        </c:when>
-        <c:otherwise>
-            <div class="vc-grid">
-                <c:forEach var="d" items="${discounts}">
-                    <c:set var="isSaved" value="${savedDiscountIds != null && savedDiscountIds.contains(d.id)}"/>
-                    <div class="vc-card ${isSaved ? 'vc-saved' : ''}">
+    <%-- Thông báo khách chưa đăng nhập --%>
+    <c:if test="${empty sessionScope.user}">
+        <div class="info-strip">
+            <i class="fa fa-circle-info"></i>
+            <span>Đăng nhập để lưu và sử dụng voucher khi thanh toán.
+                <a href="${pageContext.request.contextPath}/login?redirect=vouchers"
+                   style="color:var(--brand);font-weight:700;">Đăng nhập ngay →</a></span>
+        </div>
+    </c:if>
 
-                        <c:if test="${isSaved}">
-                            <span class="badge-saved"><i class="fa fa-check me-1"></i>Đã lưu</span>
-                        </c:if>
+    <%-- TABS --%>
+    <div class="vc-tabs">
+        <button class="vc-tab active" onclick="switchTab(this,'all')">
+            Tất cả <span class="badge" id="cnt-all">0</span>
+        </button>
+        <button class="vc-tab" onclick="switchTab(this,'unsaved')">
+            Chưa lưu <span class="badge" id="cnt-unsaved">0</span>
+        </button>
+        <button class="vc-tab" onclick="switchTab(this,'saved')">
+            Đã lưu <span class="badge" id="cnt-saved">0</span>
+        </button>
+    </div>
 
-                            <%-- stripe --%>
-                        <div class="vc-stripe">
-                            <i class="fas ${d.discountType == 1 ? 'fa-percent' : 'fa-hand-holding-usd'}"></i>
-                            <div class="vc-val">
-                                <c:choose>
-                                    <c:when test="${d.discountType == 1}">
-                                        <fmt:formatNumber value="${d.value}" maxFractionDigits="0"/>%
-                                    </c:when>
-                                    <c:otherwise>
-                                        <fmt:formatNumber value="${d.value}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ
-                                    </c:otherwise>
-                                </c:choose>
+    <div class="tab-pane active" id="tab-all">
+        <div class="vc-grid" id="grid-all">
+            <c:choose>
+                <c:when test="${empty discounts}">
+                    <div class="vc-empty">
+                        <i class="fa fa-tags"></i>
+                        <p>Hiện chưa có voucher nào. Hãy quay lại sau!</p>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <c:forEach var="d" items="${discounts}">
+                        <c:set var="isSaved" value="${savedDiscountIds != null && savedDiscountIds.contains(d.id)}"/>
+                        <div class="vc-card ${isSaved ? 'saved' : ''}" data-saved="${isSaved}">
+
+                                <%-- LEFT: Logo only --%>
+                            <div class="vc-logo-panel">
+                                <img src="${pageContext.request.contextPath}/assets/picture/logo-voucher.png"
+                                     alt="Sweet Oven" class="logo-voucher-img"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <i class="fas fa-bread-slice logo-fallback"></i>
+                                <div class="logo-name">Sweet Oven<br>Bakery</div>
                             </div>
-                        </div>
 
-                            <%-- separator --%>
-                        <div class="vc-sep"></div>
-
-                            <%-- body --%>
-                        <div class="vc-body">
-                            <div class="vc-code">${d.code}</div>
-                            <div class="vc-desc">${d.description}</div>
-                            <div class="vc-meta">
-                                <span>
-                                    <i class="fa fa-receipt"></i>
-                                    Đơn tối thiểu <b>${d.displayMinOrder}</b>
-                                </span>
-                                <span>
-                                    <i class="fa fa-clock"></i>
-                                    HSD: <b>${d.formattedEndDate}</b>
-                                </span>
-                                <span>
+                                <%-- RIGHT: Content --%>
+                            <div class="vc-body">
+                                <div>
+                                    <div class="vc-top">
+                                        <span class="vc-code">${d.code}</span>
+                                        <c:choose>
+                                            <c:when test="${isSaved}">
+                                                <span class="vc-badge badge-saved"><i class="fa fa-check me-1"></i>Đã lưu</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="vc-badge badge-new">✦ Mới</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                    <div class="vc-desc-main">${d.description}</div>
+                                    <div class="vc-meta">
+                                        <span><i class="fa fa-receipt"></i>Đơn tối thiểu: <b>${d.displayMinOrder}</b></span>
+                                    </div>
+                                </div>
+                                <div class="vc-footer">
+                                    <span class="vc-expire"><i class="fa fa-clock"></i>&nbsp;HSD: <b style="color:var(--brand3);">${d.formattedEndDate}</b></span>
                                     <c:choose>
-                                        <c:when test="${d.discountType == 1}">
-                                            <i class="fa fa-percent"></i> Giảm theo %
+                                        <c:when test="${isSaved}">
+                                            <a href="${pageContext.request.contextPath}/my-cart?pendingVoucher=${d.code}"
+                                               class="btn-use">Dùng ngay</a>
                                         </c:when>
-                                        <c:otherwise>
-                                            <i class="fa fa-hand-holding-usd"></i> Giảm cố định
-                                        </c:otherwise>
-                                    </c:choose>
-                                </span>
-                            </div>
-                        </div>
-
-                            <%-- action --%>
-                        <div class="vc-action">
-                            <c:choose>
-                                <c:when test="${isSaved}">
-                                    <a href="${pageContext.request.contextPath}/my-cart?pendingVoucher=${d.code}"
-                                       class="btn-use">
-                                        <i class="fa fa-cart-shopping"></i>Sử dụng
-                                    </a>
-                                </c:when>
-                                <c:otherwise>
-                                    <c:choose>
                                         <c:when test="${empty sessionScope.user}">
                                             <a href="${pageContext.request.contextPath}/login?redirect=vouchers"
-                                               class="btn-save">
-                                                <i class="fa fa-bookmark me-1"></i>Lưu ngay
-                                            </a>
+                                               class="btn-save"><i class="fa fa-bookmark"></i>Lưu ngay</a>
                                         </c:when>
                                         <c:otherwise>
                                             <form method="post"
@@ -303,41 +340,67 @@
                                                   style="margin:0;">
                                                 <input type="hidden" name="discountId" value="${d.id}">
                                                 <button type="submit" class="btn-save">
-                                                    <i class="fa fa-bookmark me-1"></i>Lưu ngay
+                                                    <i class="fa fa-bookmark"></i>Lưu ngay
                                                 </button>
                                             </form>
                                         </c:otherwise>
                                     </c:choose>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
+                                </div>
+                            </div>
 
-                    </div>
-                </c:forEach>
-            </div>
-        </c:otherwise>
-    </c:choose>
+                        </div>
+                    </c:forEach>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="tab-unsaved"><div class="vc-grid" id="grid-unsaved"></div></div>
+    <div class="tab-pane" id="tab-saved"><div class="vc-grid" id="grid-saved"></div></div>
 
 </div>
 
 <%@ include file="/components/footer.jsp" %>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/menu.js"></script>
-
 <script>
-    // Auto-dismiss toasts
     document.addEventListener('DOMContentLoaded', function () {
-        ['t-ok', 't-err'].forEach(function (id) {
+        // Toast dismiss
+        ['t-ok','t-err'].forEach(function(id){
             var el = document.getElementById(id);
             if (!el) return;
-            setTimeout(function () {
-                el.style.transition = 'opacity .4s';
-                el.style.opacity = '0';
-                setTimeout(function () { el.remove(); }, 400);
-            }, 3500);
+            setTimeout(function(){ el.style.transition='opacity .4s'; el.style.opacity='0';
+                setTimeout(function(){ el.remove(); }, 400); }, 3500);
         });
+
+        // Build sub-tabs from all-grid
+        var allCards = Array.from(document.querySelectorAll('#grid-all .vc-card'));
+        var savedGrid   = document.getElementById('grid-saved');
+        var unsavedGrid = document.getElementById('grid-unsaved');
+        var savedCards   = allCards.filter(function(c){ return c.dataset.saved === 'true'; });
+        var unsavedCards = allCards.filter(function(c){ return c.dataset.saved !== 'true'; });
+
+        if (savedCards.length)
+            savedCards.forEach(function(c){ savedGrid.appendChild(c.cloneNode(true)); });
+        else
+            savedGrid.innerHTML = '<div class="vc-empty"><i class="fa fa-bookmark"></i><p>Bạn chưa lưu voucher nào.</p></div>';
+
+        if (unsavedCards.length)
+            unsavedCards.forEach(function(c){ unsavedGrid.appendChild(c.cloneNode(true)); });
+        else
+            unsavedGrid.innerHTML = '<div class="vc-empty"><i class="fa fa-tags"></i><p>Bạn đã lưu tất cả voucher!</p></div>';
+
+        document.getElementById('cnt-all').textContent     = allCards.length;
+        document.getElementById('cnt-saved').textContent   = savedCards.length;
+        document.getElementById('cnt-unsaved').textContent = unsavedCards.length;
     });
+
+    function switchTab(btn, id) {
+        document.querySelectorAll('.vc-tab').forEach(function(t){ t.classList.remove('active'); });
+        document.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById('tab-' + id).classList.add('active');
+    }
 </script>
 </body>
 </html>

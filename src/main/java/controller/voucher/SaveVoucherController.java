@@ -21,14 +21,22 @@ public class SaveVoucherController extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (session != null) ? (User) session.getAttribute("user") : null;
 
+        String redirectTo = request.getParameter("redirectTo");
+        String redirectUrl ;
+        if("home".equals(redirectTo)) {
+            redirectUrl = request.getContextPath() +"/home";
+        }else{
+            redirectUrl = request.getContextPath() +"/vouchers";
+        }
+
         if (user == null) {
-            response.sendRedirect(request.getContextPath() + "/login?redirect=voucher");
+            response.sendRedirect(request.getContextPath() + "/login?redirect=vouchers");
             return;
         }
         String discountIdStr = request.getParameter("discountId");
         if (discountIdStr == null || discountIdStr.isBlank()) {
             session.setAttribute("errorMsg", "Voucher không hợp lệ!");
-            response.sendRedirect(request.getContextPath() + "/vouchers");
+            response.sendRedirect(redirectUrl);
             return;
         }
         int discountId;
@@ -36,7 +44,7 @@ public class SaveVoucherController extends HttpServlet {
             discountId = Integer.parseInt(discountIdStr.trim());
         } catch (NumberFormatException e) {
             session.setAttribute("errorMsg", "Voucher không hợp lệ!");
-            response.sendRedirect(request.getContextPath() + "/vouchers");
+            response.sendRedirect(redirectUrl);
             return;
         }
         try {
@@ -54,10 +62,11 @@ public class SaveVoucherController extends HttpServlet {
             e.printStackTrace();
             session.setAttribute("errorMsg", "Lỗi hệ thống. Vui lòng thử lại!");
         }
-        response.sendRedirect(request.getContextPath() + "/vouchers");
+        response.sendRedirect(redirectUrl);
     }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        response.sendRedirect(request.getContextPath() + "/vouchers");
     }
 }

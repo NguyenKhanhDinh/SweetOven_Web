@@ -28,18 +28,8 @@
                     <li class="nav-item">
                         <a class="nav-link ${param.activePage == 'home' ? 'active' : ''}" href="${contextPath}/">TRANG CHỦ</a>
                     </li>
-                    <li class="nav-item nav-item-dropdown" id="products-nav-item">
-                        <a class="nav-link ${param.activePage == 'menu' ? 'active' : ''}" href="${contextPath}/menu">
-                            SẢN PHẨM
-                            <i class="fas fa-chevron-down nav-chevron"></i>
-                        </a>
-                        <div class="category-dropdown" id="category-dropdown">
-                            <ul class="category-dropdown-list" id="category-dropdown-list">
-                                <li class="category-dropdown-item skeleton"></li>
-                                <li class="category-dropdown-item skeleton"></li>
-                                <li class="category-dropdown-item skeleton"></li>
-                            </ul>
-                        </div>
+                    <li class="nav-item">
+                        <a class="nav-link ${param.activePage == 'menu' ? 'active' : ''}" href="${contextPath}/menu">SẢN PHẨM</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link ${param.activePage == 'introduce' ? 'active' : ''}" href="${contextPath}/introduce">GIỚI THIỆU</a>
@@ -53,6 +43,13 @@
                 </ul>
 
                 <div class="nav-icons d-flex align-items-center">
+                    <div class="nav-phone me-3 d-none d-lg-flex flex-column align-items-center">
+                        <span class="nav-phone-label">Liên hệ</span>
+                        <a href="tel:0909123456" class="nav-phone-number">
+                            <i class="fas fa-phone-alt me-1"></i>0909 123 456
+                        </a>
+                    </div>
+
                     <div id="search-wrapper" class="d-inline-block">
                         <button class="btn icon-action me-3" id="search-toggle">
                             <i class="fas fa-search"></i>
@@ -148,26 +145,11 @@
                 : (searchDropdown.classList.remove('active'), searchToggle.classList.remove('pinned'), hideSuggestions());
         });
 
-        document.addEventListener('click', function (e) {
-            if (isPinned && !searchWrapper.contains(e.target) && !searchDropdown.contains(e.target)) {
-                isPinned = false;
-                searchDropdown.classList.remove('active');
-                searchToggle.classList.remove('pinned');
-                hideSuggestions();
-            }
-        });
-
         function hideSuggestions() {
             suggestionsBox.classList.remove('open');
-            suggestionsBox.innerHTML = '';
+            setTimeout(() => { suggestionsBox.innerHTML = ''; }, 200);
         }
 
-        function formatPrice(price) {
-            if (!price) return '';
-            return Number(price).toLocaleString('vi-VN') + 'VNĐ';
-        }
-
-        // Đánh dấu khi người dùng đang click vào suggestion để tránh blur ẩn mất
         let isClickingSuggestion = false;
         suggestionsBox.addEventListener('mousedown', function () { isClickingSuggestion = true; });
         suggestionsBox.addEventListener('mouseup',   function () { isClickingSuggestion = false; });
@@ -178,6 +160,10 @@
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
+        }
+
+        function formatPrice(price) {
+            return Number(price).toLocaleString('vi-VN') + 'đ';
         }
 
         function renderSuggestions(products) {
@@ -237,6 +223,7 @@
             }
         });
     });
+
     window.showGlobalToast = function(type, msg, duration) {
         duration = duration || 2000;
         var container = document.getElementById('global-toast-container');
@@ -246,7 +233,6 @@
         var toast = document.createElement('div');
         toast.className = 'global-toast ' + type;
         toast.style.position = 'relative';
-        /* FIX: dung \" de escape dau nháy don trong onclick, tranh loi cu phap */
         toast.innerHTML =
             '<span class="gt-icon"><i class="fas ' + icon + '"></i></span>' +
             '<span class="gt-msg">' + msg + '</span>' +
@@ -261,6 +247,7 @@
             setTimeout(function() { if (toast.parentNode) toast.remove(); }, 400);
         }, duration);
     };
+
     (function() {
         var msg = '<c:out value="${sessionScope.message}" escapeXml="true"/>';
         var err = '<c:out value="${sessionScope.error}"   escapeXml="true"/>';
@@ -272,46 +259,5 @@
         if (err && err.trim()) window.showGlobalToast('error', err);
         <% session.removeAttribute("error"); %>
         </c:if>
-    })();
-    (function() {
-        var navItem  = document.getElementById('products-nav-item');
-        var dropdown = document.getElementById('category-dropdown');
-        var listEl   = document.getElementById('category-dropdown-list');
-        var loaded   = false;
-        var closeTimer = null;
-
-        navItem.addEventListener('mouseenter', function() {
-            clearTimeout(closeTimer);
-            dropdown.classList.add('active');
-            if (!loaded) loadCategories();
-        });
-        navItem.addEventListener('mouseleave', function() {
-            closeTimer = setTimeout(function() { dropdown.classList.remove('active'); }, 200);
-        });
-        dropdown.addEventListener('mouseenter', function() { clearTimeout(closeTimer); });
-        dropdown.addEventListener('mouseleave', function() {
-            closeTimer = setTimeout(function() { dropdown.classList.remove('active'); }, 200);
-        });
-
-        function loadCategories() {
-            loaded = true;
-            fetch('${contextPath}/api/categories')
-                .then(function(res) { return res.json(); })
-                .then(function(data) {
-                    if (!data || data.length === 0) {
-                        listEl.innerHTML = '';
-                        return;
-                    }
-                    listEl.innerHTML = data.map(function(c) {
-                        return '<li class="category-dropdown-item">'
-                            + '<a href="${contextPath}/menu?categoryId=' + c.id + '" class="category-dropdown-link">'
-                            + c.name
-                            + '</a></li>';
-                    }).join('');
-                })
-                .catch(function() {
-                    listEl.innerHTML = '';
-                });
-        }
     })();
 </script>

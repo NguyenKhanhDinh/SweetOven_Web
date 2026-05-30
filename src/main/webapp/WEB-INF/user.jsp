@@ -210,40 +210,154 @@
             cursor:pointer;
         }
 
-        .voucher-card {
+        /* ── VOUCHER LIST: scroll ngang ── */
+        .voucher-list {
             display: flex;
-            align-items: center;
-            gap: 0;
-            border: 1.5px dashed #d9a45e;
-            border-radius: 14px;
-            margin-bottom: 12px;
-            overflow: hidden;
-            background: #fffaf3;
-            transition: box-shadow .2s, transform .2s;
+            flex-direction: row;
+            gap: 12px;
+            padding: 8px 2px 12px;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #d9a45e transparent;
         }
-        .voucher-card:hover:not(.voucher-disabled) {
-            box-shadow: 0 6px 18px rgba(196,107,18,.18);
+        .voucher-list::-webkit-scrollbar { height: 4px; }
+        .voucher-list::-webkit-scrollbar-thumb { background: #d9a45e; border-radius: 20px; }
+
+        /* Card wrapper — Shopee-style, width ~2/3 (280px thay vì full) */
+        .voucher-card {
+            background: #ffffff;
+            display: flex;
+            overflow: visible;
+            border: 1px solid #e9ddd0;
+            transition: box-shadow .18s, border-color .18s, transform .15s;
+            position: relative;
+            flex-shrink: 0;
+            width: 550px;
+        }
+        .voucher-card:hover {
+            box-shadow: 0 4px 22px rgba(139,69,19,.13);
+            border-color: #ffffff;
             transform: translateY(-2px);
         }
-        .voucher-disabled { opacity: .55; filter: grayscale(.4); }
-        .voucher-left {
-            flex-shrink: 0; width: 58px;
-            background: linear-gradient(135deg,#e89b3c,#c46b12);
-            align-self: stretch; display: flex;
-            align-items: center; justify-content: center;
+        /* Shopee notch */
+        .voucher-card::before,
+        .voucher-card::after {
+            content: '';
+            position: absolute;
+            left: 92px;
+            width: 16px; height: 16px;
+            background: #F9F6F0;
+            border: 1px solid #e9ddd0;
+            border-radius: 50%;
+            z-index: 3;
         }
-        .voucher-icon { color: #fff; font-size: 22px; writing-mode: vertical-rl; }
-        .voucher-body { flex: 1; padding: 12px 14px; min-width: 0; }
-        .voucher-code {
-            font-size: 15px; font-weight: 700; color: #c46b12;
-            letter-spacing: .5px; font-family: monospace;
-            background: #fff3e0; padding: 2px 8px;
-            border-radius: 6px; border: 1px solid #e89b3c;
+        .voucher-card::before { top: -8px; }
+        .voucher-card::after  { bottom: -8px; }
+
+        /* LEFT: Logo panel */
+        .vc-logo-panel {
+            width: 100px;
+            flex-shrink: 0;
+            background: #3C2F27;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 8px;
+            gap: 4px;
+            position: relative;
         }
-        .voucher-desc { font-size: 13px; color: #555; margin: 4px 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .voucher-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12px; color: #777; }
-        .voucher-action { flex-shrink: 0; padding: 0 14px; }
-        .btn-use-voucher { white-space: nowrap; font-size: 13px; padding: 7px 12px; }
+        .vc-logo-panel::after {
+            content: '';
+            position: absolute;
+            right: 0; top: 10px; bottom: 10px;
+            border-right: 2px dashed rgba(255,255,255,.22);
+        }
+        .vc-logo-panel .logo-img {
+            width: 38px; height: 38px;
+            object-fit: contain; display: block;
+        }
+        .vc-logo-panel .logo-fallback-icon {
+            font-size: 22px; color: #fff; opacity: .85; display: none;
+        }
+        .vc-logo-panel .logo-label {
+            color: #fff; font-size: 9px; font-weight: 700;
+            text-align: center; line-height: 1.3; opacity: .88;
+        }
+
+        /* Divider không cần nữa */
+        .vc-divider { display: none; }
+
+        /* Body */
+        .vc-body {
+            flex: 1;
+            padding: 10px 12px 10px;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .vc-header {
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 6px; margin-bottom: 3px;
+        }
+        .vc-code-tag {
+            font-size: 12px; font-weight: 700;
+            color: #3C2F27; background: #FFF3E0;
+            border: 1px dashed #D4A76A;
+            padding: 1px 7px; font-family: monospace;
+            letter-spacing: .5px; white-space: nowrap;
+        }
+        .vc-status-badge {
+            font-size: 9px; font-weight: 700;
+            padding: 2px 7px; white-space: nowrap;
+        }
+        .badge-valid    { background: #dcfce7; color: #15803d; }
+        .badge-expiring { background: #fef3c7; color: #b45309; }
+
+        .vc-desc {
+            font-size: 13px; font-weight: 700; color: #3C2F27;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            margin: 1px 0 4px; line-height: 1.3;
+        }
+        .vc-meta {
+            display: flex; gap: 8px; flex-wrap: wrap;
+            font-size: 10.5px; color: #9ca3af;
+        }
+        .vc-meta span { display: flex; align-items: center; gap: 3px; }
+        .vc-meta b { color: #8B4513; font-weight: 600; }
+
+        /* Footer: expire + action */
+        .vc-footer-row {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-top: 7px; padding-top: 6px;
+            border-top: 1px dashed #e9ddd0;
+        }
+        .vc-expire { font-size: 10px; color: #aaa; display: flex; align-items: center; gap: 3px; }
+
+        /* Action */
+        .vc-action { display: none; } /* hidden, replaced by footer row */
+        .btn-use-now {
+            background: #fff; color: #16a34a; border: 1px solid #16a34a;
+            padding: 4px 12px; font-size: 11px; font-weight: 700;
+            cursor: pointer; white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 4px;
+            transition: background .15s;
+            font-family: 'Quicksand', sans-serif;
+        }
+        .btn-use-now:hover {
+            background: #f0fdf4; color: #16a34a;
+        }
+
+        /* Empty state */
+        .vc-empty-state {
+            text-align: center;
+            padding: 30px 16px;
+            color: #bbb;
+        }
+        .vc-empty-state i { font-size: 38px; margin-bottom: 10px; display: block; }
+        .vc-empty-state p { font-size: 13px; margin: 0 0 10px; }
+        .vc-empty-state a { font-size: 13px; color: #8B4513; font-weight: 600; }
         .address-item{
             border:1px solid #eee;
             border-radius:14px;
@@ -389,306 +503,326 @@
     </c:if>
 </div>
 
-    <!-- TOP -->
-    <div class="main-grid">
+<!-- TOP -->
+<div class="main-grid">
 
-        <!-- PROFILE -->
-        <div class="card-box text-center">
+    <!-- PROFILE -->
+    <div class="card-box text-center">
 
-            <div class="avatar-box">
+        <div class="avatar-box">
 
-                <form action="${pageContext.request.contextPath}/upload-avatar" method="post" enctype="multipart/form-data">
-                    <c:choose>
-                        <c:when test="${not empty user.avatar}">
-                            <c:choose>
-                                <c:when test="${user.avatar.startsWith('http')}">
-                                    <img src="${sessionScope.user.avatar}" class="avatar">
-                                </c:when>
-                                <c:otherwise>
-                                    <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar">
-                                </c:otherwise>
-                            </c:choose>
-                        </c:when>
-                        <c:otherwise>
-
-                            <c:choose>
-                                <c:when test="${user.gender == 0}">
-                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7imMwm5oKZ8t3qnhAptR3ZzpD-i2AuSiHoQ&s"
-                                         class="avatar">
-                                </c:when>
-                                <c:when test="${user.gender == 1}">
-                                    <img src="https://anhdephd.vn/wp-content/uploads/2022/04/avatar-trang-1.jpg"
-                                         class="avatar">
-                                </c:when>
-                                <c:otherwise>
-                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrHT9KQ3vag-Gdd9sjA7pi6zl2f_ho4Gh7Vg&s"
-                                         class="avatar">
-                                </c:otherwise>
-                            </c:choose>
-
-                        </c:otherwise>
-                    </c:choose>
-
-                    <label class="avatar-upload">
-                        <i class="fa fa-camera"></i>
-                        <input type="file" hidden name="avatar" onchange="this.form.submit()">
-                    </label>
-
-                </form>
-            </div>
-
-            <h4 class="mt-3">${user.fullName}</h4>
-
-            <div class="text-start mt-4">
-                <p><b>Email:</b> ${user.email}</p>
-                <p><b>SĐT:</b> ${user.phoneNumber}</p>
-
-                <p>
-                    <b>Giới tính:</b>
-                    <c:choose>
-                        <c:when test="${user.gender == 0}">Nam</c:when>
-                        <c:when test="${user.gender == 1}">Nữ</c:when>
-                        <c:otherwise>Khác</c:otherwise>
-                    </c:choose>
-                </p>
-            </div>
-
-            <button class="btn btn-main w-100"
-                    data-bs-toggle="modal"
-                    data-bs-target="#editModal">
-                Chỉnh sửa thông tin
-            </button>
-
-        </div>
-
-        <!-- ORDER -->
-        <div class="card-box">
-
-            <div class="section-title">Đơn hàng của tôi</div>
-
-            <div class="orders-header">
-                <div>Mã đơn</div>
-                <div>Ngày</div>
-                <div>Tổng tiền</div>
-                <div>Trạng thái</div>
-                <div></div>
-            </div>
-
-            <div class="scroll-box">
-
+            <form action="${pageContext.request.contextPath}/upload-avatar" method="post" enctype="multipart/form-data">
                 <c:choose>
-
-                    <c:when test="${empty orders}">
-                        <div class="text-center text-muted p-4">
-                            <i class="fa fa-box-open fa-2x mb-2"></i>
-                            <div>Chưa có đơn hàng</div>
-                        </div>
+                    <c:when test="${not empty user.avatar}">
+                        <c:choose>
+                            <c:when test="${user.avatar.startsWith('http')}">
+                                <img src="${sessionScope.user.avatar}" class="avatar">
+                            </c:when>
+                            <c:otherwise>
+                                <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar">
+                            </c:otherwise>
+                        </c:choose>
                     </c:when>
-
                     <c:otherwise>
-                        <c:forEach var="o" items="${orders}">
-                            <div class="order-row">
 
-                                <div>${o.orderCode}</div>
+                        <c:choose>
+                            <c:when test="${user.gender == 0}">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7imMwm5oKZ8t3qnhAptR3ZzpD-i2AuSiHoQ&s"
+                                     class="avatar">
+                            </c:when>
+                            <c:when test="${user.gender == 1}">
+                                <img src="https://anhdephd.vn/wp-content/uploads/2022/04/avatar-trang-1.jpg"
+                                     class="avatar">
+                            </c:when>
+                            <c:otherwise>
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrHT9KQ3vag-Gdd9sjA7pi6zl2f_ho4Gh7Vg&s"
+                                     class="avatar">
+                            </c:otherwise>
+                        </c:choose>
 
-                                <div>${o.orderDateFormatted}</div>
-                                <div>${o.totalAmountFormatted}</div>
-
-                                <div>
-                                    <c:choose>
-                                        <c:when test="${o.orderStatus == 1}">
-                                            <span class="badge bg-warning">Chờ xác nhận</span>
-                                        </c:when>
-
-                                        <c:when test="${o.orderStatus == 2}">
-                                            <span class="badge bg-info">Đang giao</span>
-                                        </c:when>
-
-                                        <c:when test="${o.orderStatus == 3}">
-                                            <span class="badge bg-success">Hoàn thành</span>
-                                        </c:when>
-
-                                        <c:when test="${o.orderStatus == 4}">
-                                            <span class="badge bg-danger">Đã hủy</span>
-                                        </c:when>
-
-                                        <c:otherwise>
-                                            <span class="badge bg-secondary">Khác</span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </div>
-
-                                <div>
-                                    <a href="order-detail?id=${o.id}">
-                                        <i class="fa fa-eye"></i>
-                                    </a>
-                                </div>
-
-                            </div>
-                        </c:forEach>
                     </c:otherwise>
-
                 </c:choose>
 
+                <label class="avatar-upload">
+                    <i class="fa fa-camera"></i>
+                    <input type="file" hidden name="avatar" onchange="this.form.submit()">
+                </label>
+
+            </form>
+        </div>
+
+        <h4 class="mt-3">${user.fullName}</h4>
+
+        <div class="text-start mt-4">
+            <p><b>Email:</b> ${user.email}</p>
+            <p><b>SĐT:</b> ${user.phoneNumber}</p>
+
+            <p>
+                <b>Giới tính:</b>
+                <c:choose>
+                    <c:when test="${user.gender == 0}">Nam</c:when>
+                    <c:when test="${user.gender == 1}">Nữ</c:when>
+                    <c:otherwise>Khác</c:otherwise>
+                </c:choose>
+            </p>
+        </div>
+
+        <button class="btn btn-main w-100"
+                data-bs-toggle="modal"
+                data-bs-target="#editModal">
+            Chỉnh sửa thông tin
+        </button>
+
+    </div>
+
+    <!-- ORDER -->
+    <div class="card-box">
+
+        <div class="section-title">Đơn hàng của tôi</div>
+
+        <div class="orders-header">
+            <div>Mã đơn</div>
+            <div>Ngày</div>
+            <div>Tổng tiền</div>
+            <div>Trạng thái</div>
+            <div></div>
+        </div>
+
+        <div class="scroll-box">
+
+            <c:choose>
+
+                <c:when test="${empty orders}">
+                    <div class="text-center text-muted p-4">
+                        <i class="fa fa-box-open fa-2x mb-2"></i>
+                        <div>Chưa có đơn hàng</div>
+                    </div>
+                </c:when>
+
+                <c:otherwise>
+                    <c:forEach var="o" items="${orders}">
+                        <div class="order-row">
+
+                            <div>${o.orderCode}</div>
+
+                            <div>${o.orderDateFormatted}</div>
+                            <div>${o.totalAmountFormatted}</div>
+
+                            <div>
+                                <c:choose>
+                                    <c:when test="${o.orderStatus == 1}">
+                                        <span class="badge bg-warning">Chờ xác nhận</span>
+                                    </c:when>
+
+                                    <c:when test="${o.orderStatus == 2}">
+                                        <span class="badge bg-info">Đang giao</span>
+                                    </c:when>
+
+                                    <c:when test="${o.orderStatus == 3}">
+                                        <span class="badge bg-success">Hoàn thành</span>
+                                    </c:when>
+
+                                    <c:when test="${o.orderStatus == 4}">
+                                        <span class="badge bg-danger">Đã hủy</span>
+                                    </c:when>
+
+                                    <c:otherwise>
+                                        <span class="badge bg-secondary">Khác</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+
+                            <div>
+                                <a href="order-detail?id=${o.id}">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                            </div>
+
+                        </div>
+                    </c:forEach>
+                </c:otherwise>
+
+            </c:choose>
+
+        </div>
+    </div>
+</div>
+
+<!-- BOTTOM -->
+<div class="bottom-grid">
+
+    <!-- FAVORITE -->
+    <div class="card-box">
+        <div class="section-title">Yêu thích</div>
+
+        <div class="favorite-scroll-wrapper">
+            <div class="favorite-grid">
+                <c:forEach var="p" items="${favoriteProducts}">
+                    <div class="favorite-item">
+                        <form action="remove-favorite" method="post">
+                            <input type="hidden" name="id" value="${p.id}">
+                            <div class="remove-fav" onclick="this.closest('form').submit()">×</div>
+                        </form>
+                        <a href="${pageContext.request.contextPath}/product?id=${p.id}"
+                           style="text-decoration:none;color:inherit;">
+                            <img src="${p.image}" alt="${p.name}"
+                                 onerror="this.src='${pageContext.request.contextPath}/assets/img/no-image.png'">
+                            <div class="fav-name">${p.name}</div>
+                            <b class="fav-price">
+                                <fmt:formatNumber value="${p.displayPrice}" type="number" groupingUsed="true"/> VNĐ
+                            </b>
+                        </a>
+                    </div>
+                </c:forEach>
             </div>
         </div>
     </div>
 
-    <!-- BOTTOM -->
-    <div class="bottom-grid">
-
-        <!-- FAVORITE -->
-        <div class="card-box">
-            <div class="section-title">Yêu thích</div>
-
-            <div class="favorite-scroll-wrapper">
-                <div class="favorite-grid">
-                    <c:forEach var="p" items="${favoriteProducts}">
-                        <div class="favorite-item">
-                            <form action="remove-favorite" method="post">
-                                <input type="hidden" name="id" value="${p.id}">
-                                <div class="remove-fav" onclick="this.closest('form').submit()">×</div>
-                            </form>
-                            <a href="${pageContext.request.contextPath}/product?id=${p.id}"
-                               style="text-decoration:none;color:inherit;">
-                                <img src="${p.image}" alt="${p.name}"
-                                     onerror="this.src='${pageContext.request.contextPath}/assets/img/no-image.png'">
-                                <div class="fav-name">${p.name}</div>
-                                <b class="fav-price">
-                                    <fmt:formatNumber value="${p.displayPrice}" type="number" groupingUsed="true"/> VNĐ
-                                </b>
-                            </a>
-                        </div>
-                    </c:forEach>
-                </div>
+    <div class="card-box">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="section-title m-0">
+                <i class="fa fa-ticket-alt me-2" style="color:#e67a2a;"></i>Voucher của tôi
             </div>
+            <a href="${pageContext.request.contextPath}/vouchers"
+               style="font-size:13px;color:#8B4513;font-weight:600;text-decoration:none;">
+                Thêm voucher <i class="fa fa-arrow-right ms-1" style="font-size:11px;"></i>
+            </a>
         </div>
-
-        <div class="card-box">
-            <div class="section-title">Voucher của tôi</div>
-            <div class="scroll-box">
-                <c:choose>
-                    <c:when test="${empty vouchers}">
-                        <div class="text-center p-4 text-muted">
-                            <i class="fa fa-ticket fa-2x mb-2"></i>
-                            <div>Bạn chưa lưu voucher nào.</div>
-                        </div>
-                    </c:when>
-                    <c:otherwise>
+        <div style="overflow:visible;">
+            <c:choose>
+                <c:when test="${empty vouchers}">
+                    <div class="vc-empty-state">
+                        <i class="fa fa-ticket-alt"></i>
+                        <p>Bạn chưa lưu voucher nào.</p>
+                        <a href="${pageContext.request.contextPath}/vouchers">Xem kho voucher →</a>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="voucher-list">
                         <c:forEach var="v" items="${vouchers}">
                             <c:if test="${!v.used && v.valid}">
                                 <div class="voucher-card">
-                                    <div class="voucher-left">
-                                        <div class="voucher-icon"><i class="fa ${v.iconClass}"></i></div>
+                                        <%-- LEFT: Logo panel (đồng nhất với trang /vouchers) --%>
+                                    <div class="vc-logo-panel">
+                                        <img src="${pageContext.request.contextPath}/assets/picture/logo-voucher.png"
+                                             alt="Sweet Oven" class="logo-img"
+                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                        <i class="fas fa-bread-slice logo-fallback-icon"></i>
+                                        <div class="logo-label">Sweet Oven<br>Bakery</div>
                                     </div>
-                                    <div class="voucher-body">
-                                        <div class="d-flex align-items-center gap-2 mb-1">
-                                            <span class="voucher-code">${v.code}</span>
-                                            <span class="badge ${v.statusClass}">${v.statusLable}</span>
+                                    <div class="vc-divider"></div>
+                                        <%-- Body --%>
+                                    <div class="vc-body">
+                                        <div>
+                                            <div class="vc-header">
+                                                <span class="vc-code-tag">${v.code}</span>
+                                                <span class="vc-status-badge badge-valid">
+                                                    <i class="fa fa-check me-1"></i>Còn hạn
+                                                </span>
+                                            </div>
+                                            <div class="vc-desc">${v.description}</div>
+                                            <div class="vc-meta">
+                                                <span><i class="fa fa-receipt"></i>Từ <b>${v.displayMinOrder}</b></span>
+                                                <span><i class="fa fa-clock"></i>HSD: <b>${v.formattedEndDate}</b></span>
+                                            </div>
                                         </div>
-                                        <div class="voucher-desc">${v.description}</div>
-                                        <div class="voucher-meta">
-                                            <span><i class="fa fa-tag me-1"></i>Giảm <b>${v.displayValue}</b></span>
-                                            <span><i class="fa fa-receipt me-1"></i>Đơn tối thiểu <b>${v.displayMinOrder}</b></span>
-                                            <span><i class="fa fa-clock me-1"></i>HSD: <b>${v.formattedEndDate}</b></span>
+                                        <div class="vc-footer-row">
+                                            <span class="vc-expire"><i class="fa fa-clock"></i>&nbsp;HSD: <b style="color:#8B4513;">${v.formattedEndDate}</b></span>
+                                            <button class="btn-use-now" onclick="useVoucher('${v.code}')">
+                                                <i class="fa fa-cart-shopping"></i>Dùng ngay
+                                            </button>
                                         </div>
-                                    </div>
-                                    <div class="voucher-action">
-                                        <button class="btn btn-main btn-sm btn-use-voucher"
-                                                data-code="${v.code}"
-                                                onclick="useVoucher('${v.code}')">
-                                            <i class="fa fa-cart-shopping me-1"></i>Sử dụng
-                                        </button>
                                     </div>
                                 </div>
                             </c:if>
                         </c:forEach>
-                    </c:otherwise>
-                </c:choose>
-            </div>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
+
+    <!-- ADDRESS -->
+    <div class="card-box" style="grid-column:span 2;">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="section-title m-0">Địa chỉ giao hàng</div>
+            <button class="btn btn-main btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addressModal"
+                    onclick="openAddModal()">
+                + Thêm địa chỉ
+            </button>
         </div>
 
-        <!-- ADDRESS -->
-        <div class="card-box" style="grid-column:span 2;">
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="section-title m-0">Địa chỉ giao hàng</div>
-                <button class="btn btn-main btn-sm"
-                        data-bs-toggle="modal"
-                        data-bs-target="#addressModal"
-                        onclick="openAddModal()">
-                    + Thêm địa chỉ
-                </button>
-            </div>
-
-            <div class="scroll-box">
-                <c:choose>
-                    <c:when test="${empty addresses}">
-                        <div class="text-center p-4 text-muted">
-                            <i class="fa fa-map-location-dot fa-2x mb-2"></i>
-                            <div>Bạn chưa có địa chỉ giao hàng nào.</div>
-                        </div>
-                    </c:when>
-                    <c:otherwise>
-                        <c:forEach var="a" items="${addresses}">
-                            <div class="address-item ${a.isDefault ? 'is-default' : ''}">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <b>${a.addressDetail}</b>
-                                    <c:if test="${a.isDefault}">
-                                        <span class="badge bg-success">Mặc định</span>
-                                    </c:if>
+        <div class="scroll-box">
+            <c:choose>
+                <c:when test="${empty addresses}">
+                    <div class="text-center p-4 text-muted">
+                        <i class="fa fa-map-location-dot fa-2x mb-2"></i>
+                        <div>Bạn chưa có địa chỉ giao hàng nào.</div>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <c:forEach var="a" items="${addresses}">
+                        <div class="address-item ${a.isDefault ? 'is-default' : ''}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <b>${a.addressDetail}</b>
+                                <c:if test="${a.isDefault}">
+                                    <span class="badge bg-success">Mặc định</span>
+                                </c:if>
+                            </div>
+                            <div class="text-muted">
+                                    ${a.ward}, ${a.district}, ${a.province}
+                            </div>
+                            <div class="d-flex gap-2 mt-2 align-items-center">
+                                <div class="icon-btn" title="Sửa" onclick="openEditModal(${a.id},'${a.addressDetail}','${a.province}','${a.district}','${a.ward}')">
+                                    <i class="fa fa-pen"></i>
                                 </div>
-                                <div class="text-muted">
-                                        ${a.ward}, ${a.district}, ${a.province}
-                                </div>
-                                <div class="d-flex gap-2 mt-2 align-items-center">
-                                    <div class="icon-btn" title="Sửa" onclick="openEditModal(${a.id},'${a.addressDetail}','${a.province}','${a.district}','${a.ward}')">
-                                        <i class="fa fa-pen"></i>
-                                    </div>
-                                    <form action="address" method="post" style="margin:0;" onsubmit="return confirm('Bạn có chắc muốn xóa địa chỉ này không?')">
-                                        <input type="hidden" name="action" value="delete">
+                                <form action="address" method="post" style="margin:0;" onsubmit="return confirm('Bạn có chắc muốn xóa địa chỉ này không?')">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="id" value="${a.id}">
+                                    <button type="submit" class="icon-btn border-0 text-danger" title="Xóa"
+                                            style="background:transparent;">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </form>
+                                <c:if test="${!a.isDefault}">
+                                    <form action="address" method="post" style="margin:0;">
+                                        <input type="hidden" name="action" value="setDefault">
                                         <input type="hidden" name="id" value="${a.id}">
-                                        <button type="submit" class="icon-btn border-0 text-danger" title="Xóa"
-                                                style="background:transparent;">
-                                            <i class="fa fa-trash"></i>
+                                        <button type="submit" class="btn btn-sm btn-outline-warning" title="Đặt mặc định"
+                                                style="font-size:12px; padding:4px 10px; border-radius:20px;">
+                                            Đặt mặc định
                                         </button>
                                     </form>
-                                    <c:if test="${!a.isDefault}">
-                                        <form action="address" method="post" style="margin:0;">
-                                            <input type="hidden" name="action" value="setDefault">
-                                            <input type="hidden" name="id" value="${a.id}">
-                                            <button type="submit" class="btn btn-sm btn-outline-warning" title="Đặt mặc định"
-                                                    style="font-size:12px; padding:4px 10px; border-radius:20px;">
-                                                Đặt mặc định
-                                            </button>
-                                        </form>
-                                    </c:if>
-                                </div>
+                                </c:if>
                             </div>
-                        </c:forEach>
-                    </c:otherwise>
-                </c:choose>
-            </div>
+                        </div>
+                    </c:forEach>
+                </c:otherwise>
+            </c:choose>
         </div>
-
     </div>
 
-    <!-- ACTION -->
-    <div class="text-center mt-4">
+</div>
 
-        <button class="btn btn-main"
-                data-bs-toggle="modal"
-                data-bs-target="#passwordModal">
-            Đổi mật khẩu
+<!-- ACTION -->
+<div class="text-center mt-4">
+
+    <button class="btn btn-main"
+            data-bs-toggle="modal"
+            data-bs-target="#passwordModal">
+        Đổi mật khẩu
+    </button>
+
+    <form action="logout" method="post" style="display:inline;">
+        <button type="submit" class="btn btn-danger ms-2">
+            Đăng xuất
         </button>
+    </form>
 
-        <form action="logout" method="post" style="display:inline;">
-            <button type="submit" class="btn btn-danger ms-2">
-                Đăng xuất
-            </button>
-        </form>
-
-    </div>
+</div>
 
 </div>
 

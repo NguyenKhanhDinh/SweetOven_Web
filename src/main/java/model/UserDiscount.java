@@ -174,8 +174,8 @@ public class UserDiscount implements Serializable {
 
     public String getDisplayMinOrder() {
         if (minValueOrder == null || minValueOrder.compareTo(BigDecimal.ZERO) == 0)
-            return "0đ";
-        return String.format("%,.0fVNĐ", minValueOrder);
+            return "0 VNĐ";
+        return String.format("%,.0f VNĐ", minValueOrder);
     }
 
     public String getIconClass() {

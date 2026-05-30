@@ -62,10 +62,12 @@
 
             <section class="col-lg-9 products-area">
                 <div class="products-header">
-                    <div class="section-title">
-                        <h2 id="category-title">TẤT CẢ SẢN PHẨM</h2>
-                        <div class="results-count" id="results-count"></div>
-                    </div>
+                    <h2 id="category-title">
+                        <c:choose>
+                            <c:when test="${not empty currentCategory}">${currentCategory.name.toUpperCase()}</c:when>
+                            <c:otherwise>TẤT CẢ SẢN PHẨM</c:otherwise>
+                        </c:choose>
+                    </h2>
                     <div class="filter-section">
                         <div class="price-filter">
                             <form action="${pageContext.request.contextPath}/menu" method="get">
@@ -81,10 +83,10 @@
                                     <option value="name_desc" ${sort == 'name_desc' ? 'selected' : ''}>Tên: Z → A</option>
                                 </select>
                             </form>
-
                         </div>
                     </div>
                 </div>
+                <div class="results-count" id="results-count"></div>
 
                 <div id="products-container">
                     <div class="products-grid">
@@ -131,8 +133,8 @@
                                         <button type="submit" class="btn-add-to-cart" ${p.stockQuantity
                                                 <=0 ? 'disabled' : '' }>
                                             <c:choose>
-                                                <c:when test="${p.stockQuantity <= 0}">Hết hàng</c:when>
-                                                <c:otherwise>Thêm vào giỏ</c:otherwise>
+                                                <c:when test="${p.stockQuantity <= 0}"><i class="fas fa-ban"></i> Hết hàng</c:when>
+                                                <c:otherwise><i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng</c:otherwise>
                                             </c:choose>
                                         </button>
                                     </form>

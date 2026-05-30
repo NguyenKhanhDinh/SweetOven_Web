@@ -520,106 +520,159 @@ body {
 
 /* ==================== RESPONSIVE SEARCH SUGGESTIONS & DROPDOWN ==================== */
 
-/* --- CẤU TRÚC DROPDOWN CHUNG (Áp dụng cho cả PC và Mobile) --- */
+/* ==================== CATEGORY DROPDOWN ====================
+   Phân tích màu Header:
+   --primary-color: #3C2F27 | --hover-color: #5a463a
+   --header-bg: #ffffff    | hover-bg: #faf6f2
+   border/divider: #e8e1d9 | font: Quicksand
+   ========================================================== */
+
+/* --- WRAPPER NAV ITEM --- */
 .nav-item-dropdown {
     position: relative;
 }
 
+/* Chevron icon quay khi mở */
 .nav-chevron {
-    font-size: 0.6rem;
-    margin-left: 4px;
+    font-size: 0.58rem;
+    margin-left: 5px;
     vertical-align: middle;
-    transition: transform 0.3s ease;
+    transition: transform 0.25s ease;
+    display: inline-block;
 }
 
-.nav-item-dropdown:hover .nav-chevron {
-    transform: rotate(180deg);
-}
-
+/* --- DROPDOWN PANEL (Desktop: absolute) --- */
 .category-dropdown {
     position: absolute;
-    top: calc(100% + 10px);
-    left: 50%;
-    transform: translateX(-50%) translateY(-8px);
-    width: 220px; /* Tăng nhẹ kích thước cho đẹp trên PC */
+    top: calc(100% + 8px);
+    left: 0;
+    transform: translateY(-6px);
+    width: 230px;
     background: #ffffff;
-    border-bottom: 3px solid var(--primary-color);
-    border-radius: 0 0 10px 10px;
-    box-shadow: 0 15px 40px rgba(60, 47, 39, 0.12);
+    border: 1px solid #e8e1d9;
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(60, 47, 39, 0.13);
+
+    /* Hidden by default */
     visibility: hidden;
     opacity: 0;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 998;
     pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0s linear 0.22s;
+    z-index: 998;
 }
 
 .category-dropdown.active {
     visibility: visible;
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
     pointer-events: all;
+    transform: translateY(0);
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0s linear 0s;
 }
 
+/* --- LIST --- */
 .category-dropdown-list {
     list-style: none;
     margin: 0;
-    padding: 6px 0;
+    padding: 4px 0;
 }
 
+.category-dropdown-item {
+    border-bottom: none;
+}
+
+/* --- LINK ITEM --- */
 .category-dropdown-link {
     display: block;
     padding: 9px 16px;
     text-decoration: none;
     color: var(--primary-color);
-    font-size: 0.88rem;
+    font-size: 0.875rem;
     font-weight: 600;
-    position: relative;
-    transition: background 0.15s ease, padding-left 0.2s ease;
+    font-family: 'Quicksand', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.category-dropdown-link::before {
-    content: '';
+.category-dropdown-link span {
+    position: relative;
+    display: inline-block;
+}
+
+/* Gạch chân chạy từ trái qua phải */
+.category-dropdown-link span::after {
+    content: "";
     position: absolute;
+    bottom: -2px;
     left: 0;
-    top: 50%;
-    transform: translateY(-50%);
     width: 0;
-    height: 60%;
+    height: 2px;
     background: var(--primary-color);
-    border-radius: 0 3px 3px 0;
-    transition: width 0.2s ease;
+    transition: width 0.3s ease;
 }
 
 .category-dropdown-link:hover {
-    background: #faf6f2;
-    padding-left: 22px;
     color: var(--primary-color);
+    text-decoration: none;
 }
 
-.category-dropdown-link:hover::before {
-    width: 3px;
+.category-dropdown-link:hover span::after {
+    width: 100%;
 }
 
-/* Skeleton Loading */
+/* --- SKELETON LOADING --- */
 .category-dropdown-item.skeleton {
-    height: 36px;
-    margin: 4px 12px;
+    height: 34px;
+    margin: 5px 14px;
     border-radius: 6px;
     background: linear-gradient(90deg, #f5f0eb 25%, #ede8e2 50%, #f5f0eb 75%);
     background-size: 200% 100%;
     animation: shimmer 1.2s infinite;
 }
 
-@keyframes shimmer {
-    0% {
-        background-position: 200% 0;
+/* --- MOBILE (≤ 991px): expand/collapse in-place --- */
+@media (max-width: 991.98px) {
+    .category-dropdown {
+        position: static;
+        width: 100%;
+        transform: none !important;
+        box-shadow: none;
+        border-top: none;
+        border-radius: 0;
+        margin: 4px 0 4px 8px;
+        background: #ffffff;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.28s ease, opacity 0.22s ease, visibility 0s linear 0.22s;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
     }
-    100% {
-        background-position: -200% 0;
+
+    .category-dropdown.active {
+        max-height: 600px;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: all;
+        transition: max-height 0.28s ease, opacity 0.22s ease, visibility 0s linear 0s;
+    }
+
+    .category-dropdown-link {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+
+    .category-dropdown-divider {
+        margin: 2px 10px;
     }
 }
+/* ==================== KEYFRAMES (giữ lại) ==================== */
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
 
-/* --- CẤU TRÚC BIẾN ĐỔI RIÊNG CHO MOBILE (Dưới 992px) --- */
+/* ==================== RESPONSIVE SEARCH / SUGGEST (mobile ≤ 991px) ==================== */
 @media (max-width: 991.98px) {
     .search-suggestions-box {
         border-radius: 8px;
@@ -630,17 +683,4 @@ body {
         width: 44px;
         height: 44px;
     }
-
-    /* Tùy chỉnh menu danh mục trên Mobile */
-    .category-dropdown {
-        position: absolute;
-        width: 100%;
-        left: 0; /* Ghi đè left: 50% từ rule gốc */
-        transform: translateY(-5px); /* Không cần translateX(-50%) vì left đã là 0 */
-    }
-
-    .category-dropdown.active {
-        transform: translateY(0); /* Không cần translateX(-50%) vì left đã là 0 */
-    }
-
 }

@@ -293,7 +293,7 @@
                 <c:otherwise>
                     <c:forEach var="d" items="${discounts}">
                         <c:set var="isSaved" value="${savedDiscountIds != null && savedDiscountIds.contains(d.id)}"/>
-                        <div class="vc-card ${isSaved ? 'saved' : ''}" data-saved="${isSaved}">
+                        <div class="vc-card ${isSaved ? 'saved' : ''}" data-saved="${isSaved}" data-id="${d.id}">
 
                                 <%-- LEFT: Logo only --%>
                             <div class="vc-logo-panel">
@@ -335,14 +335,10 @@
                                                class="btn-save"><i class="fa fa-bookmark"></i>Lưu ngay</a>
                                         </c:when>
                                         <c:otherwise>
-                                            <form method="post"
-                                                  action="${pageContext.request.contextPath}/save-voucher"
-                                                  style="margin:0;">
-                                                <input type="hidden" name="discountId" value="${d.id}">
-                                                <button type="submit" class="btn-save">
-                                                    <i class="fa fa-bookmark"></i>Lưu ngay
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn-save"
+                                                    onclick="saveVoucher(this, ${d.id})">
+                                                <i class="fa fa-bookmark"></i>Lưu ngay
+                                            </button>
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
@@ -364,21 +360,88 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/menu.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Toast dismiss
-        ['t-ok','t-err'].forEach(function(id){
-            var el = document.getElementById(id);
-            if (!el) return;
-            setTimeout(function(){ el.style.transition='opacity .4s'; el.style.opacity='0';
-                setTimeout(function(){ el.remove(); }, 400); }, 3500);
-        });
+    var _ctx = '${pageContext.request.contextPath}';
 
-        // Build sub-tabs from all-grid
-        var allCards = Array.from(document.querySelectorAll('#grid-all .vc-card'));
+    /* ── Toast helper ── */
+    function showVcToast(type, msg) {
+        if (typeof window.showGlobalToast === 'function') {
+            window.showGlobalToast(type, msg); return;
+        }
+        var t = document.createElement('div');
+        t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;padding:12px 20px;border-radius:8px;font-weight:600;font-size:13px;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,.18);transition:opacity .4s;';
+        t.style.background = type === 'success' ? '#16a34a' : '#dc2626';
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(function(){ t.style.opacity='0'; setTimeout(function(){ t.remove(); }, 400); }, 3000);
+    }
+
+    /* ── AJAX lưu voucher ── */
+    function saveVoucher(btn, discountId) {
+        btn.disabled = true;
+        var orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+
+        fetch(_ctx + '/save-voucher', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: 'discountId=' + encodeURIComponent(discountId)
+        })
+            .then(function(r){ return r.json(); })
+            .then(function(data) {
+                if (data.status === 'ok') {
+                    /* Cập nhật TẤT CẢ card trùng discountId (all-tab + clone ở unsaved-tab) */
+                    document.querySelectorAll('.vc-card[data-id="' + discountId + '"]').forEach(function(card) {
+                        /* đổi class → saved */
+                        card.classList.add('saved');
+                        card.dataset.saved = 'true';
+                        /* badge */
+                        var badge = card.querySelector('.vc-badge');
+                        if (badge) { badge.className = 'vc-badge badge-saved'; badge.innerHTML = '<i class="fa fa-check me-1"></i>Đã lưu'; }
+                        /* footer: đổi nút → link dùng ngay */
+                        var code = card.querySelector('.vc-code') ? card.querySelector('.vc-code').textContent.trim() : '';
+                        var footer = card.querySelector('.vc-footer');
+                        if (footer) {
+                            var oldBtn = footer.querySelector('button.btn-save');
+                            if (oldBtn) {
+                                var a = document.createElement('a');
+                                a.href = _ctx + '/my-cart?pendingVoucher=' + encodeURIComponent(code);
+                                a.className = 'btn-use';
+                                a.textContent = 'Dùng ngay';
+                                oldBtn.replaceWith(a);
+                            }
+                        }
+                        /* notch màu saved */
+                        card.querySelectorAll('.vc-card::before,.vc-card::after').forEach(function(n){ n; });
+                    });
+                    /* Cập nhật lại sub-tab saved / unsaved */
+                    rebuildTabs();
+                    showVcToast('success', data.message);
+                } else {
+                    btn.disabled = false;
+                    btn.innerHTML = orig;
+                    showVcToast('error', data.message);
+                }
+            })
+            .catch(function(){
+                btn.disabled = false;
+                btn.innerHTML = orig;
+                showVcToast('error', 'Có lỗi xảy ra, vui lòng thử lại!');
+            });
+    }
+
+    /* ── Build / rebuild sub-tabs ── */
+    function rebuildTabs() {
+        var allCards    = Array.from(document.querySelectorAll('#grid-all .vc-card'));
         var savedGrid   = document.getElementById('grid-saved');
         var unsavedGrid = document.getElementById('grid-unsaved');
         var savedCards   = allCards.filter(function(c){ return c.dataset.saved === 'true'; });
         var unsavedCards = allCards.filter(function(c){ return c.dataset.saved !== 'true'; });
+
+        savedGrid.innerHTML = '';
+        unsavedGrid.innerHTML = '';
 
         if (savedCards.length)
             savedCards.forEach(function(c){ savedGrid.appendChild(c.cloneNode(true)); });
@@ -393,7 +456,7 @@
         document.getElementById('cnt-all').textContent     = allCards.length;
         document.getElementById('cnt-saved').textContent   = savedCards.length;
         document.getElementById('cnt-unsaved').textContent = unsavedCards.length;
-    });
+    }
 
     function switchTab(btn, id) {
         document.querySelectorAll('.vc-tab').forEach(function(t){ t.classList.remove('active'); });
@@ -401,6 +464,17 @@
         btn.classList.add('active');
         document.getElementById('tab-' + id).classList.add('active');
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        /* Auto-dismiss server-side toast */
+        ['t-ok','t-err'].forEach(function(id){
+            var el = document.getElementById(id);
+            if (!el) return;
+            setTimeout(function(){ el.style.transition='opacity .4s'; el.style.opacity='0';
+                setTimeout(function(){ el.remove(); }, 400); }, 3500);
+        });
+        rebuildTabs();
+    });
 </script>
 </body>
 </html>

@@ -8,7 +8,7 @@ import java.util.List;
 public class UserAddressDao {
     public List<UserAddress> findByUserId(int userId) {
         String sql = """
-                SELECT id,user_id as userId,address_detail as addressDetail,ward,district,province,is_default as isDefault
+                SELECT id,user_id as userId,address_detail as addressDetail,ward,district,province,is_default as isDefault,lat,lng
                 FROM user_address WHERE user_id = :userId
                 ORDER BY is_default DESC, id DESC
                 """;
@@ -58,6 +58,9 @@ public class UserAddressDao {
                    .execute()>0;
        });
     }
-
+    public void saveCoords(int id,double lat,double lng) {
+        String sql = "UPDATE user_address SET lat = :lat, lng = :lng WHERE id = :id ";
+        JdbiConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql).bind("lat", lat).bind("lng", lng).bind("id",id).execute());
+    }
 }
 

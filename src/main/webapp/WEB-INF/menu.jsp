@@ -14,7 +14,6 @@
     <link rel="icon" href="${pageContext.request.contextPath}/assets/picture/logo.png">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/home.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/menu.css">
 
     <!-- Google Font: Quicksand (đồng bộ với login/register) -->
@@ -134,7 +133,7 @@
                                                 <=0 ? 'disabled' : '' }>
                                             <c:choose>
                                                 <c:when test="${p.stockQuantity <= 0}"><i class="fas fa-ban"></i> Hết hàng</c:when>
-                                                <c:otherwise><i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng</c:otherwise>
+                                                <c:otherwise><i class="fas fa-shopping-cart"></i> Thêm vào giỏ</c:otherwise>
                                             </c:choose>
                                         </button>
                                     </form>

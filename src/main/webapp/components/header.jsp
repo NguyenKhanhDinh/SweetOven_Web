@@ -34,7 +34,7 @@
                            id="category-nav-link"
                            aria-haspopup="true"
                            aria-expanded="false">
-                           SẢN PHẨM
+                            SẢN PHẨM
                             <i class="fas fa-chevron-down nav-chevron" id="category-chevron"></i>
                         </a>
                         <div class="category-dropdown" id="category-dropdown" role="menu">
@@ -47,9 +47,6 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link ${param.activePage == 'introduce' ? 'active' : ''}" href="${contextPath}/introduce">GIỚI THIỆU</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link ${param.activePage == 'blog' ? 'active' : ''}" href="${contextPath}/blog.jsp">BLOG</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link ${param.activePage == 'contact' ? 'active' : ''}" href="${contextPath}/contact">LIÊN HỆ</a>
@@ -135,6 +132,15 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Tự động set padding-top body = chiều cao navbar thực tế
+        var nav = document.querySelector('.navbar');
+        if (nav) {
+            document.body.style.paddingTop = nav.offsetHeight + 'px';
+            window.addEventListener('resize', function() {
+                document.body.style.paddingTop = nav.offsetHeight + 'px';
+            });
+        }
+
         const searchWrapper  = document.getElementById('search-wrapper');
         const searchDropdown = document.getElementById('search-dropdown');
         const searchInput    = document.getElementById('search-input');

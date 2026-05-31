@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @WebServlet("/place-order")
 public class PlaceOrderController extends HttpServlet {
-    private static final BigDecimal SHIPPING_FEE = new BigDecimal("30000");
+    private static final BigDecimal DEFLAUT_SHIPPING_FEE = new BigDecimal("25000");
     private final OrderService orderService = new OrderService();
     private final UserDiscountService userDiscountService = new UserDiscountService();
     private final UserAddressService userAddressService = new UserAddressService();
@@ -50,6 +50,14 @@ public class PlaceOrderController extends HttpServlet {
         String district = trim(request.getParameter("district"));
         String province = trim(request.getParameter("province"));
         String note = trim(request.getParameter("note"));
+
+        BigDecimal shippingFee = DEFLAUT_SHIPPING_FEE;
+        try {
+            String feeStr = trim(request.getParameter("shippingFee"));
+            if (!feeStr.isEmpty()) {
+                shippingFee = new BigDecimal(feeStr);
+            }
+        }catch (Exception ignored){}
 
         String selectedAddrId = trim(request.getParameter("selectedAddrId"));
         if (user != null && selectedAddrId != null && !selectedAddrId.isEmpty()) {
@@ -98,7 +106,7 @@ public class PlaceOrderController extends HttpServlet {
             subTotal = subTotal.add(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
         }
         if (discountAmount.compareTo(subTotal) > 0) discountAmount = subTotal;
-        BigDecimal totalAmount = subTotal.subtract(discountAmount).add(SHIPPING_FEE);
+        BigDecimal totalAmount = subTotal.subtract(discountAmount).add(shippingFee);
 
         Order order = new Order();
         order.setOrderCode("ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
@@ -109,7 +117,7 @@ public class PlaceOrderController extends HttpServlet {
         order.setDiscountId(discountId);
         order.setSubTotal(subTotal);
         order.setDiscountAmount(discountAmount);
-        order.setShippingFee(SHIPPING_FEE);
+        order.setShippingFee(shippingFee);
         order.setTotalAmount(totalAmount);
         order.setNote(note);
         order.setPaymentMethod(paymentMethod);

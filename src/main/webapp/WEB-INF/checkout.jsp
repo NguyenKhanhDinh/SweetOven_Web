@@ -569,9 +569,13 @@
                             </div>
                             <div class="summary-row">
                                 <span class="lbl">Phí giao hàng</span>
-                                <span class="val">
-                                    <fmt:formatNumber value="${shippingFee}" type="number"/> VNĐ
-                                </span>
+                                <span class="val" id="shipping-fee-display">
+                                     <fmt:formatNumber value="${shippingFee}" type="number"/> VNĐ
+                                 </span>
+                            </div>
+                            <div class="summary-row" id="delivery-time-row" style="border:none; padding-top:0;">
+                                <span class="lbl" style="color:var(--muted); font-size:12px;">Thời gian giao</span>
+                                <span id="delivery-time-display" style="font-size:12px; color:#16a34a;"></span>
                             </div>
                             <div class="summary-row total-row">
                                 <span class="lbl">Tổng cộng</span>
@@ -790,6 +794,63 @@
             alert('Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại Việt Nam 10 chữ số.');
         }
     });
+
+            var SUBTOTAL    = ${checkoutTotal};
+            var SHIPPING    = ${shippingFee};
+            var FINAL_TOTAL = ${finalTotal};
+
+
+            function fetchShipping(addressId) {
+            if (!addressId) return;
+
+            var feeEl  = document.getElementById('shipping-fee-display');
+            var timeEl = document.getElementById('delivery-time-display');
+            if (feeEl)  feeEl.textContent  = 'Đang tính...';
+            if (timeEl) timeEl.textContent = '';
+
+            fetch('${pageContext.request.contextPath}/shipping-info?addressId=' + addressId)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+            if (data.error) {
+            console.warn('Shipping error:', data.error);
+            return;
+        }
+
+            SHIPPING = data.shippingFee;
+
+            if (feeEl) feeEl.textContent = formatMoney(data.shippingFee);
+
+            updateTotalDisplay();
+
+            if (timeEl) {
+            if (data.durationMin > 0) {
+            var km  = data.distanceKm;
+            var min = data.durationMin;
+            var eta = min < 60
+            ? min + ' phút'
+            : Math.floor(min / 60) + ' giờ ' + (min % 60) + ' phút';
+            timeEl.textContent = '🛵 Khoảng ' + eta + ' (' + km + ' km)';
+            timeEl.style.color = '#16a34a';
+        } else {
+            timeEl.textContent = '';
+        }
+        }
+        })
+            .catch(function(err) {
+            console.error('fetchShipping failed:', err);
+        });
+        }
+
+            var _origFillAddress = fillAddress;
+            fillAddress = function(addrId) {
+            _origFillAddress(addrId);
+            if (addrId) fetchShipping(addrId);
+        };
+
+            (function() {
+            var sel = document.getElementById('addr-select');
+            if (sel && sel.value) fetchShipping(sel.value);
+        })();
 </script>
 </body>
 </html>

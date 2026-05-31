@@ -117,7 +117,6 @@
                                     <img src="${pageContext.request.contextPath}/assets/picture/logo-voucher.png"
                                          alt="Sweet Oven" class="home-vc-logo-img"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                    <i class="fas fa-bread-slice home-vc-logo-fallback"></i>
                                     <div class="home-vc-logo-name">Sweet Oven<br>Bakery</div>
                                 </div>
 

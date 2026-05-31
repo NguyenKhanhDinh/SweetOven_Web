@@ -779,23 +779,16 @@
                                 <div class="icon-btn" title="Sửa" onclick="openEditModal(${a.id},'${a.addressDetail}','${a.province}','${a.district}','${a.ward}')">
                                     <i class="fa fa-pen"></i>
                                 </div>
-                                <form action="address" method="post" style="margin:0;" onsubmit="return confirm('Bạn có chắc muốn xóa địa chỉ này không?')">
-                                    <input type="hidden" name="action" value="delete">
-                                    <input type="hidden" name="id" value="${a.id}">
-                                    <button type="submit" class="icon-btn border-0 text-danger" title="Xóa"
-                                            style="background:transparent;">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                </form>
+                                <div class="icon-btn text-danger" title="Xóa" style="cursor:pointer;"
+                                     onclick="deleteAddress(${a.id})">
+                                    <i class="fa fa-trash"></i>
+                                </div>
                                 <c:if test="${!a.isDefault}">
-                                    <form action="address" method="post" style="margin:0;">
-                                        <input type="hidden" name="action" value="setDefault">
-                                        <input type="hidden" name="id" value="${a.id}">
-                                        <button type="submit" class="btn btn-sm btn-outline-warning" title="Đặt mặc định"
-                                                style="font-size:12px; padding:4px 10px; border-radius:20px;">
-                                            Đặt mặc định
-                                        </button>
-                                    </form>
+                                    <button class="btn btn-sm btn-outline-warning" title="Đặt mặc định"
+                                            style="font-size:12px; padding:4px 10px; border-radius:20px;"
+                                            onclick="setDefaultAddress(${a.id})">
+                                        Đặt mặc định
+                                    </button>
                                 </c:if>
                             </div>
                         </div>
@@ -861,7 +854,7 @@
 </div>
 <div class="modal fade" id="addressModal" tabindex="-1">
     <div class="modal-dialog">
-        <form action="address" method="post" class="modal-content">
+        <form action="address" method="post" class="modal-content" onsubmit="handleAddressSubmit(event)">
             <input type="hidden" name="action" id="addressAction" value="add">
             <input type="hidden" name="id" id="addressId" value="">
 
@@ -943,14 +936,11 @@
     provinceSelect.onchange = function() {
         const selectedOption = this.options[this.selectedIndex];
         const pCode = selectedOption.getAttribute("data-id");
-
         districtSelect.options.length = 0;
         districtSelect.options.add(new Option("Chọn quận / huyện", ""));
         wardSelect.options.length = 0;
         wardSelect.options.add(new Option("Chọn phường / xã", ""));
-
         if (!pCode) return;
-
         fetch("https://provinces.open-api.vn/api/p/" + pCode + "?depth=2")
             .then(res => res.json())
             .then(data => {
@@ -966,12 +956,9 @@
     districtSelect.onchange = function() {
         const selectedOption = this.options[this.selectedIndex];
         const dCode = selectedOption.getAttribute("data-id");
-
         wardSelect.options.length = 0;
         wardSelect.options.add(new Option("Chọn phường / xã", ""));
-
         if (!dCode) return;
-
         fetch("https://provinces.open-api.vn/api/d/" + dCode + "?depth=2")
             .then(res => res.json())
             .then(data => {
@@ -987,27 +974,22 @@
         document.getElementById("addressId").value = "";
         document.getElementById("addressDetail").value = "";
         document.getElementById("addressSubmitBtn").textContent = "Lưu địa chỉ";
-
-        // Reset dropdowns
         provinceSelect.value = "";
         districtSelect.options.length = 0;
         districtSelect.add(new Option("Chọn quận / huyện", ""));
         wardSelect.options.length = 0;
         wardSelect.add(new Option("Chọn phường / xã", ""));
     }
+
     function openEditModal(id, detail, province, district, ward) {
         document.getElementById("addressModalTitle").textContent = "Chỉnh sửa địa chỉ";
         document.getElementById("addressAction").value = "edit";
         document.getElementById("addressId").value = id;
         document.getElementById("addressDetail").value = detail;
         document.getElementById("addressSubmitBtn").textContent = "Cập nhật";
-
-        // Mở modal
         new bootstrap.Modal(document.getElementById("addressModal")).show();
 
-        // Chờ provinces load xong rồi set giá trị
         function setProvinceAndLoadDistricts() {
-            // Set province
             for (let i = 0; i < provinceSelect.options.length; i++) {
                 if (provinceSelect.options[i].value === province) {
                     provinceSelect.selectedIndex = i;
@@ -1016,13 +998,8 @@
             }
             const pOpt = provinceSelect.options[provinceSelect.selectedIndex];
             const pCode = pOpt ? pOpt.getAttribute("data-id") : null;
-            if (!pCode) {
-                // Thử lại sau 500ms nếu tỉnh chưa load xong
-                setTimeout(setProvinceAndLoadDistricts, 500);
-                return;
-            }
+            if (!pCode) { setTimeout(setProvinceAndLoadDistricts, 500); return; }
 
-            // Load huyện rồi set
             fetch("https://provinces.open-api.vn/api/p/" + pCode + "?depth=2")
                 .then(res => res.json())
                 .then(data => {
@@ -1033,41 +1010,32 @@
                         opt.setAttribute("data-id", d.code);
                         districtSelect.add(opt);
                     });
-                    // Set district
                     for (let i = 0; i < districtSelect.options.length; i++) {
                         if (districtSelect.options[i].value === district) {
-                            districtSelect.selectedIndex = i;
-                            break;
+                            districtSelect.selectedIndex = i; break;
                         }
                     }
                     const dOpt = districtSelect.options[districtSelect.selectedIndex];
                     const dCode = dOpt ? dOpt.getAttribute("data-id") : null;
                     if (!dCode) return;
-
-                    // Load xã rồi set
                     fetch("https://provinces.open-api.vn/api/d/" + dCode + "?depth=2")
                         .then(res => res.json())
                         .then(data2 => {
                             wardSelect.options.length = 0;
                             wardSelect.add(new Option("Chọn phường / xã", ""));
                             data2.wards.forEach(w => wardSelect.add(new Option(w.name, w.name)));
-                            // Set ward
                             for (let i = 0; i < wardSelect.options.length; i++) {
                                 if (wardSelect.options[i].value === ward) {
-                                    wardSelect.selectedIndex = i;
-                                    break;
+                                    wardSelect.selectedIndex = i; break;
                                 }
                             }
                         });
                 });
         }
-
-        if (provinceSelect.options.length > 1) {
-            setProvinceAndLoadDistricts();
-        } else {
-            setTimeout(setProvinceAndLoadDistricts, 800);
-        }
+        if (provinceSelect.options.length > 1) setProvinceAndLoadDistricts();
+        else setTimeout(setProvinceAndLoadDistricts, 800);
     }
+
     function useVoucher(code) {
         sessionStorage.setItem('pendingVoucherCode', code);
         window.location.href = '${pageContext.request.contextPath}/my-cart';
@@ -1083,11 +1051,102 @@
     document.addEventListener('DOMContentLoaded', function () {
         ['toast-success', 'toast-error'].forEach(function (id) {
             const el = document.getElementById(id);
-            if (el) {
-                setTimeout(() => closeToast(id), 3500);
-            }
+            if (el) setTimeout(() => closeToast(id), 3500);
         });
     });
+
+    // ── Hiển thị toast — dùng textContent tránh conflict JSP EL ──────────────
+    function showToast(message, type) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const id   = 'toast-dyn-' + Date.now();
+        const wrap = document.createElement('div');
+        wrap.className = 'toast-notify ' + type;
+        wrap.id = id;
+
+        const icon = document.createElement('span');
+        icon.className = 'toast-icon';
+        const i = document.createElement('i');
+        i.className = 'fa ' + (type === 'success' ? 'fa-circle-check' : 'fa-circle-xmark');
+        icon.appendChild(i);
+
+        const msg = document.createElement('span');
+        msg.className = 'toast-msg';
+        msg.textContent = message; // textContent tránh bị parse sai
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'toast-close';
+        closeBtn.innerHTML = '&#x2715;';
+        closeBtn.onclick = function() { closeToast(id); };
+
+        const progress = document.createElement('div');
+        progress.className = 'toast-progress';
+
+        wrap.appendChild(icon);
+        wrap.appendChild(msg);
+        wrap.appendChild(closeBtn);
+        wrap.appendChild(progress);
+        container.appendChild(wrap);
+
+        setTimeout(() => closeToast(id), 3500);
+    }
+
+    // ── AJAX submit form địa chỉ (add / edit) — không reload trang ───────────
+    function handleAddressSubmit(e) {
+        e.preventDefault();
+        const form    = e.target;
+        const btn     = document.getElementById('addressSubmitBtn');
+        const origTxt = btn.textContent;
+        btn.disabled    = true;
+        btn.textContent = 'Đang lưu...';
+
+        fetch('${pageContext.request.contextPath}/address', {
+            method: 'POST',
+            body: new URLSearchParams(new FormData(form))
+        })
+            .then(r => r.json())
+            .then(res => {
+                bootstrap.Modal.getInstance(document.getElementById('addressModal')).hide();
+                showToast(res.message, res.success ? 'success' : 'error');
+                if (res.success) setTimeout(() => location.reload(), 900);
+            })
+            .catch(() => showToast('Lỗi kết nối, vui lòng thử lại!', 'error'))
+            .finally(() => {
+                btn.disabled    = false;
+                btn.textContent = origTxt;
+            });
+    }
+
+    // ── AJAX xóa địa chỉ ──────────────────────────────────────────────────────
+    function deleteAddress(id) {
+        if (!confirm('Bạn có chắc muốn xóa địa chỉ này không?')) return;
+        fetch('${pageContext.request.contextPath}/address', {
+            method: 'POST',
+            body: new URLSearchParams({ action: 'delete', id: id })
+        })
+            .then(r => r.json())
+            .then(res => {
+                showToast(res.message, res.success ? 'success' : 'error');
+                if (res.success) setTimeout(() => location.reload(), 700);
+            })
+            .catch(() => showToast('Lỗi kết nối!', 'error'));
+    }
+
+    // ── AJAX đặt mặc định ─────────────────────────────────────────────────────
+    function setDefaultAddress(id) {
+        fetch('${pageContext.request.contextPath}/address', {
+            method: 'POST',
+            body: new URLSearchParams({ action: 'setDefault', id: id })
+        })
+            .then(r => r.json())
+            .then(res => {
+                showToast(res.message, res.success ? 'success' : 'error');
+                if (res.success) setTimeout(() => location.reload(), 700);
+            })
+            .catch(() => showToast('Lỗi kết nối!', 'error'));
+    }
 </script>
+
 </body>
 </html>

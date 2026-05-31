@@ -13,6 +13,8 @@ public class UserAddress implements Serializable {
     private boolean isDefault;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Double lat;
+    private Double lng;
 
     public UserAddress(int id, int userId, String addressDetail, String ward, String district, String province, boolean isDefault, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -82,4 +84,8 @@ public class UserAddress implements Serializable {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+    public Double getLat() {return lat;}
+    public void setLat(Double lat) {this.lat = lat;}
+    public Double getLng() {return lng;}
+    public void setLng(Double lng) {this.lng = lng;}
 }

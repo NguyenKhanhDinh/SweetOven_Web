@@ -1,6 +1,7 @@
 package controller.voucher;
 
 import dao.CartDao;
+import dao.OrderDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -11,6 +12,8 @@ import model.*;
 import service.OrderService;
 import service.UserAddressService;
 import service.UserDiscountService;
+import utils.EmailUtil;
+import utils.GHNUtil;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -20,11 +23,12 @@ import java.util.UUID;
 
 @WebServlet("/place-order")
 public class PlaceOrderController extends HttpServlet {
-    private static final BigDecimal DEFLAUT_SHIPPING_FEE = new BigDecimal("25000");
+    private static final BigDecimal DEFLAUT_SHIPPING_FEE = new BigDecimal("30000");
     private final OrderService orderService = new OrderService();
     private final UserDiscountService userDiscountService = new UserDiscountService();
     private final UserAddressService userAddressService = new UserAddressService();
     private final CartDao cartDao = new CartDao();
+    private final OrderDao orderDao = new OrderDao();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -35,7 +39,7 @@ public class PlaceOrderController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("uncheked")
         List<CartItem> checkOutItems = (List<CartItem>) session.getAttribute("checkOutItems");
         if (checkOutItems == null || checkOutItems.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/my-cart");
@@ -51,13 +55,33 @@ public class PlaceOrderController extends HttpServlet {
         String province = trim(request.getParameter("province"));
         String note = trim(request.getParameter("note"));
 
+        String guestEmail = "";
+        if (user == null) {
+            guestEmail = trim(request.getParameter("guestEmail"));
+            if (!guestEmail.isEmpty() && !guestEmail.matches("^[\\w.+\\-]+@[a-zA-z0-9.\\-]+\\[a-zA-Z](.+){2,}$")) {
+                session.setAttribute("error", "Email không hợp lệ. Vui lòng kiểm tra lại!");
+                response.sendRedirect(request.getContextPath() + "/checkout");
+                return;
+            }
+        }
+
+        int ghnDistrictId = 0;
+        String ghnWardCode = "";
+        try {
+            String dId = trim(request.getParameter("ghnDistrictId"));
+            String wc = trim(request.getParameter("ghnWardCode"));
+            if (!dId.isEmpty()) ghnDistrictId = Integer.parseInt(dId);
+            if (!wc.isEmpty()) ghnWardCode = wc;
+        } catch (Exception ignored) {
+        }
         BigDecimal shippingFee = DEFLAUT_SHIPPING_FEE;
         try {
             String feeStr = trim(request.getParameter("shippingFee"));
             if (!feeStr.isEmpty()) {
                 shippingFee = new BigDecimal(feeStr);
             }
-        }catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
 
         String selectedAddrId = trim(request.getParameter("selectedAddrId"));
         if (user != null && selectedAddrId != null && !selectedAddrId.isEmpty()) {
@@ -84,6 +108,11 @@ public class PlaceOrderController extends HttpServlet {
 
         if (fullName.isEmpty() || phone.isEmpty() || addrDetail.isEmpty() || province.isEmpty()) {
             session.setAttribute("errorMsg", "Vui lòng điền đầy đủ thông tin nhận hàng!");
+            response.sendRedirect(request.getContextPath() + "/checkout");
+            return;
+        }
+        if (user == null && guestEmail.isEmpty()) {
+            session.setAttribute("errorMsg", "Vui lòng nhập lại email để nhận hóa đơn đặt hàng!");
             response.sendRedirect(request.getContextPath() + "/checkout");
             return;
         }
@@ -137,6 +166,42 @@ public class PlaceOrderController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/checkout");
             return;
         }
+        order.setId(orderId);
+        String ghnOrderCode = null;
+        try {
+            long codAmount = (paymentMethod == 1) ? totalAmount.longValue() : 0L;
+            if (ghnDistrictId == 0 && !province.isEmpty()) {
+                ghnDistrictId = GHNUtil.getDistrictId(province, district);
+                if (ghnDistrictId != -1 && !ward.isEmpty()) {
+                    ghnWardCode = nvl(GHNUtil.getWardCode(ghnDistrictId, ward));
+                }
+            }
+            if (ghnDistrictId > 0) {
+                ghnOrderCode = GHNUtil.createOrder(fullName, phone, fullAddr.toString(), ghnDistrictId, ghnWardCode.isEmpty() ? null : ghnWardCode, codAmount, note);
+                if (ghnOrderCode != null) {
+                    session.setAttribute("lastghnOrderCode_"+ orderId,ghnOrderCode);
+                }
+                }
+        } catch (Exception e) {
+            System.err.println("[GHN] Lỗi tạo vận đơn(order đã được lưu): " + e.getMessage());
+        }
+        if(user==null && !guestEmail.isEmpty()){
+            final String finalGhnCode = ghnOrderCode;
+            final List<CartItem> itemCopy = checkOutItems;
+            final Order orderCopy = order;
+            final String emailTo = guestEmail;
+
+            new Thread(() -> {
+               try {
+                   EmailUtil.sendOrderInvoice(emailTo,orderCopy,itemCopy,finalGhnCode);
+                   System.out.println("[EMAIL] Đã gửi hóa đơn tới: "+emailTo + "cho order #" +orderCopy.getOrderCode());
+               }catch (Exception e){
+                   System.err.println("[EMAIL] Lỗi hóa đơn: " + e.getMessage());
+               }
+            }).start();
+            session.setAttribute("invoiceEmailSent", guestEmail);
+        }
+
         if (user != null && discountId > 0) {
             try {
                 userDiscountService.markAsUsed(user.getId(), discountId);
@@ -170,8 +235,7 @@ public class PlaceOrderController extends HttpServlet {
         session.removeAttribute("appliedDiscountId");
         session.removeAttribute("appliedDiscountAmount");
 
-        response.sendRedirect(request.getContextPath() + "/order-detail? id=" + orderId);
-
+        response.sendRedirect(request.getContextPath() + "/order-detail?id=" + orderId);
 
     }
 

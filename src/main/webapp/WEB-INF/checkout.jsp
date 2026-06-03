@@ -298,6 +298,9 @@
                         <input type="hidden" name="selectedProductIds" value="${selectedProductIds}">
                         <!-- Hidden: ID địa chỉ đã lưu được chọn (rỗng nếu nhập mới) -->
                         <input type="hidden" id="selected-address-id" name="selectedAddressId" value="">
+                        <input type="hidden" id="shippingFee" name="shippingFee" value="${shippingFee}">
+                        <input type="hidden" id="ghnDistrictId" name="ghnDistrictId" value="0">
+                        <input type="hidden" id="ghnWardCode" name="ghnWardCode" value="">
 
                         <!-- ── Auto-fill địa chỉ mặc định (hidden select, logged-in only) ── -->
                         <c:if test="${not empty sessionScope.user and not empty userAddresses}">
@@ -349,7 +352,7 @@
                             <c:if test="${empty sessionScope.user}">
                                 <div class="form-group">
                                     <label>Email <span class="req">*</span></label>
-                                    <input type="email" id="field-email" name="email"
+                                    <input type="email" id="field-email" name="guestEmail"
                                            class="form-control-custom"
                                            placeholder="example@email.com"
                                            required>
@@ -811,7 +814,10 @@
                 if (ghnWard)     ghnWard.value     = data.wardCode   || '';
 
                 if (timeEl) {
-                    if (data.durationMin > 0) {
+                    if (data.expectedDelivery) {
+                        timeEl.textContent = '📦 Dự kiến giao: ' + data.expectedDelivery;
+                        timeEl.style.color = '#16a34a';
+                    } else if (data.durationMin > 0) {
                         var km  = data.distanceKm;
                         var min = data.durationMin;
                         var eta = min < 60

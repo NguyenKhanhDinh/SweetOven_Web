@@ -26,7 +26,7 @@ public class OrderService {
     }
     public int createOrder(Order order,List<CartItem> items) {
         int orderId = orderDao.insertOrder(order);
-        if (orderId <0) return 0;
+        if (orderId <=0) return 0;
         for (CartItem item : items) {
             OrderDetail detail = new OrderDetail();
             detail.setOrderId(orderId);

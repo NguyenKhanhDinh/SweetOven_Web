@@ -87,6 +87,8 @@ public class ShippingInfoController extends HttpServlet {
                 json.addProperty("shippingFee", fee);
                 json.addProperty("districtId", districtId);
                 json.addProperty("wardCode", wardCode != null ? wardCode : "");
+                String eta1 =(districtId !=-1)?GHNUtil.getExpectedDeliveryTime(districtId, wardCode):null;
+                if (eta1 != null) json.addProperty("expectedDelivery", eta1);
 
             } else if (province != null &&!province.isEmpty()) {
                 int districtId = GHNUtil.getDistrictId(province, district);
@@ -97,6 +99,8 @@ public class ShippingInfoController extends HttpServlet {
                 json.addProperty("shippingFee", fee);
                 json.addProperty("districtId", districtId);
                 json.addProperty("wardCode", wardCode != null ? wardCode : "");
+                String eta2 =(districtId != -1)?GHNUtil.getExpectedDeliveryTime(districtId, wardCode):null;
+                if (eta2 != null) json.addProperty("expectedDelivery", eta2);
 
             } else {
                 json.addProperty("error", "Thiếu thông tin địa chỉ!");

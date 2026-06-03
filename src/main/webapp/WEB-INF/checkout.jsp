@@ -62,35 +62,7 @@
         }
         .card-section h2 i { color: var(--primary); font-size: 16px; }
 
-        /* ── Address selector (logged-in) ── */
-        .addr-select-wrap {
-            background: #fdf5ee;
-            border: 1px solid #f0dece;
-            border-radius: 10px;
-            padding: 14px 16px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .addr-select-wrap label {
-            font-size: 13px; font-weight: 600;
-            color: var(--primary); white-space: nowrap;
-            margin: 0;
-        }
-        .addr-select-wrap select {
-            flex: 1;
-            border: 1.5px solid #e0d5cc;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 13px;
-            font-family: 'Quicksand', sans-serif;
-            color: var(--brand);
-            background: #fff;
-            cursor: pointer;
-            outline: none;
-        }
-        .addr-select-wrap select:focus { border-color: var(--primary); }
+        /* .addr-select-wrap removed — auto-fill only */
 
         /* ── Form fields ── */
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -327,48 +299,15 @@
                         <!-- Hidden: ID địa chỉ đã lưu được chọn (rỗng nếu nhập mới) -->
                         <input type="hidden" id="selected-address-id" name="selectedAddressId" value="">
 
-                        <!-- ── Address picker (logged-in only) ── -->
-                        <c:if test="${not empty sessionScope.user}">
-                            <div class="card-section">
-                                <h2><i class="fas fa-map-marker-alt"></i> Địa chỉ đã lưu</h2>
-
-                                <c:choose>
-                                    <c:when test="${not empty userAddresses}">
-                                        <div class="addr-select-wrap">
-                                            <label for="addr-select">
-                                                <i class="fas fa-location-dot me-1"></i>Chọn địa chỉ:
-                                            </label>
-                                            <select id="addr-select" onchange="fillAddress(this.value)">
-                                                <c:forEach var="addr" items="${userAddresses}">
-                                                    <option value="${addr.id}"
-                                                        ${addr.isDefault ? 'selected' : ''}>
-                                                            ${addr.addressDetail},
-                                                            ${not empty addr.ward ? addr.ward.concat(', ') : ''}
-                                                            ${not empty addr.district ? addr.district.concat(', ') : ''}
-                                                            ${addr.province}
-                                                            ${addr.isDefault ? '(Mặc định)' : ''}
-                                                    </option>
-                                                </c:forEach>
-                                                <option value="">-- Nhập địa chỉ mới --</option>
-                                            </select>
-                                        </div>
-                                        <!-- Badge trạng thái địa chỉ -->
-                                        <div id="addr-mode-badge" style="font-size:12px; color:var(--primary); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-                                            <i class="fas fa-lock"></i>
-                                            <span>Đang dùng địa chỉ đã lưu — chọn <strong>"Nhập địa chỉ mới"</strong> để nhập thủ công</span>
-                                        </div>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <p style="font-size:13px; color:var(--muted); margin:0 0 4px;">
-                                            Bạn chưa có địa chỉ đã lưu.
-                                            <a href="${pageContext.request.contextPath}/profile"
-                                               style="color:var(--primary); font-weight:600;">
-                                                Thêm địa chỉ
-                                            </a>
-                                        </p>
-                                    </c:otherwise>
-                                </c:choose>
-                            </div>
+                        <!-- ── Auto-fill địa chỉ mặc định (hidden select, logged-in only) ── -->
+                        <c:if test="${not empty sessionScope.user and not empty userAddresses}">
+                            <c:forEach var="addr" items="${userAddresses}">
+                                <c:if test="${addr.isDefault}">
+                                    <select id="addr-select" style="display:none;">
+                                        <option value="${addr.id}" selected></option>
+                                    </select>
+                                </c:if>
+                            </c:forEach>
                         </c:if>
 
                         <!-- ── Guest notice ── -->
@@ -407,6 +346,16 @@
                                 </div>
                             </div>
 
+                            <c:if test="${empty sessionScope.user}">
+                                <div class="form-group">
+                                    <label>Email <span class="req">*</span></label>
+                                    <input type="email" id="field-email" name="email"
+                                           class="form-control-custom"
+                                           placeholder="example@email.com"
+                                           required>
+                                </div>
+                            </c:if>
+
                             <div class="form-group">
                                 <label>Địa chỉ chi tiết <span class="req">*</span></label>
                                 <input type="text" id="field-address" name="addressDetail"
@@ -415,27 +364,54 @@
                                        required>
                             </div>
 
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Phường / Xã</label>
-                                    <input type="text" id="field-ward" name="ward"
-                                           class="form-control-custom"
-                                           placeholder="Phường / Xã">
-                                </div>
-                                <div class="form-group">
-                                    <label>Quận / Huyện</label>
-                                    <input type="text" id="field-district" name="district"
-                                           class="form-control-custom"
-                                           placeholder="Quận / Huyện">
-                                </div>
-                            </div>
-
                             <div class="form-group">
                                 <label>Tỉnh / Thành phố <span class="req">*</span></label>
-                                <input type="text" id="field-province" name="province"
-                                       class="form-control-custom"
-                                       placeholder="TP. Hồ Chí Minh"
-                                       required>
+                                <c:choose>
+                                    <c:when test="${empty sessionScope.user}">
+                                        <select id="field-province" name="province" class="form-control-custom" required>
+                                            <option value="">Chọn Tỉnh/Thành phố</option>
+                                        </select>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <input type="text" id="field-province" name="province"
+                                               class="form-control-custom"
+                                               placeholder="TP. Hồ Chí Minh"
+                                               required>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Quận / Huyện</label>
+                                    <c:choose>
+                                        <c:when test="${empty sessionScope.user}">
+                                            <select id="field-district" name="district" class="form-control-custom">
+                                                <option value="">Chọn Quận/Huyện</option>
+                                            </select>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <input type="text" id="field-district" name="district"
+                                                   class="form-control-custom"
+                                                   placeholder="Quận / Huyện">
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+                                <div class="form-group">
+                                    <label>Phường / Xã</label>
+                                    <c:choose>
+                                        <c:when test="${empty sessionScope.user}">
+                                            <select id="field-ward" name="ward" class="form-control-custom">
+                                                <option value="">Chọn Phường/Xã</option>
+                                            </select>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <input type="text" id="field-ward" name="ward"
+                                                   class="form-control-custom"
+                                                   placeholder="Phường / Xã">
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
                             </div>
 
                             <div class="form-group" style="margin-bottom:0;">
@@ -795,62 +771,140 @@
         }
     });
 
-            var SUBTOTAL    = ${checkoutTotal};
-            var SHIPPING    = ${shippingFee};
-            var FINAL_TOTAL = ${finalTotal};
+    // ─── contextPath ──────────────────────────────────────────────────────
+    var contextPath = '${pageContext.request.contextPath}';
 
+    // ─── Tính phí ship ────────────────────────────────────────────────────
+    function setShippingFee(fee) {
+        SHIPPING = fee;
+        var el = document.getElementById('shippingFee');
+        if (el) el.value = fee;
+        var display = document.getElementById('shipping-fee-display');
+        if (display) display.textContent = new Intl.NumberFormat('vi-VN').format(fee) + ' VNĐ';
+        updateTotalDisplay();
+    }
 
-            function fetchShipping(addressId) {
-            if (!addressId) return;
+    function fetchShippingFee(params) {
+        var feeEl  = document.getElementById('shipping-fee-display');
+        var timeEl = document.getElementById('delivery-time-display');
+        if (feeEl)  feeEl.textContent = 'Đang tính...';
+        if (timeEl) timeEl.textContent = '';
 
-            var feeEl  = document.getElementById('shipping-fee-display');
-            var timeEl = document.getElementById('delivery-time-display');
-            if (feeEl)  feeEl.textContent  = 'Đang tính...';
-            if (timeEl) timeEl.textContent = '';
+        var url = new URL(window.location.origin + contextPath + '/shipping-info');
+        Object.keys(params).forEach(function(k) {
+            if (params[k]) url.searchParams.append(k, params[k]);
+        });
 
-            fetch('${pageContext.request.contextPath}/shipping-info?addressId=' + addressId)
+        fetch(url.toString())
             .then(function(r) { return r.json(); })
             .then(function(data) {
-            if (data.error) {
-            console.warn('Shipping error:', data.error);
-            return;
-        }
+                if (data.error) {
+                    console.warn('[GHN]', data.error);
+                    setShippingFee(30000);
+                    return;
+                }
+                setShippingFee(data.shippingFee);
 
-            SHIPPING = data.shippingFee;
+                var ghnDistrict = document.getElementById('ghnDistrictId');
+                var ghnWard     = document.getElementById('ghnWardCode');
+                if (ghnDistrict) ghnDistrict.value = data.districtId || 0;
+                if (ghnWard)     ghnWard.value     = data.wardCode   || '';
 
-            if (feeEl) feeEl.textContent = formatMoney(data.shippingFee);
-
-            updateTotalDisplay();
-
-            if (timeEl) {
-            if (data.durationMin > 0) {
-            var km  = data.distanceKm;
-            var min = data.durationMin;
-            var eta = min < 60
-            ? min + ' phút'
-            : Math.floor(min / 60) + ' giờ ' + (min % 60) + ' phút';
-            timeEl.textContent = '🛵 Khoảng ' + eta + ' (' + km + ' km)';
-            timeEl.style.color = '#16a34a';
-        } else {
-            timeEl.textContent = '';
-        }
-        }
-        })
+                if (timeEl) {
+                    if (data.durationMin > 0) {
+                        var km  = data.distanceKm;
+                        var min = data.durationMin;
+                        var eta = min < 60
+                            ? min + ' phút'
+                            : Math.floor(min / 60) + ' giờ ' + (min % 60) + ' phút';
+                        timeEl.textContent = '🛵 Khoảng ' + eta + ' (' + km + ' km)';
+                        timeEl.style.color = '#16a34a';
+                    } else {
+                        timeEl.textContent = '';
+                    }
+                }
+            })
             .catch(function(err) {
-            console.error('fetchShipping failed:', err);
-        });
-        }
+                console.error('fetchShipping failed:', err);
+                setShippingFee(30000);
+            });
+    }
 
-            var _origFillAddress = fillAddress;
-            fillAddress = function(addrId) {
-            _origFillAddress(addrId);
-            if (addrId) fetchShipping(addrId);
+    function fetchShipping(addressId) {
+        if (!addressId) return;
+        fetchShippingFee({ addressId: addressId });
+    }
+
+    // Override fillAddress để tự tính phí ship sau khi điền địa chỉ
+    var _origFillAddress = fillAddress;
+    fillAddress = function(addrId) {
+        _origFillAddress(addrId);
+        if (addrId) fetchShipping(addrId);
+    };
+
+    // Gọi ngay khi load trang nếu có địa chỉ mặc định
+    (function() {
+        var sel = document.getElementById('addr-select');
+        if (sel && sel.value) fetchShipping(sel.value);
+    })();
+
+    // ─── Load tỉnh/huyện/xã từ GHN cho form nhập mới ─────────────────────
+    var provSel = document.getElementById('field-province');
+    var distSel = document.getElementById('field-district');
+    var wardSel = document.getElementById('field-ward');
+
+    // Chỉ load GHN dropdown nếu là thẻ select (khách chưa đăng nhập)
+    if (provSel && provSel.tagName === 'SELECT') {
+        fetch(contextPath + '/ghn-location?type=province')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (!Array.isArray(data)) return;
+                data.forEach(function(p) {
+                    var opt = new Option(p.ProvinceName, p.ProvinceName);
+                    opt.setAttribute('data-id', p.ProvinceID);
+                    provSel.add(opt);
+                });
+            });
+
+        provSel.onchange = function() {
+            var pId = this.options[this.selectedIndex].getAttribute('data-id');
+            distSel.options.length = 1;
+            wardSel.options.length = 1;
+            if (!pId) return;
+            fetch(contextPath + '/ghn-location?type=district&province_id=' + pId)
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    data.forEach(function(d) {
+                        var opt = new Option(d.DistrictName, d.DistrictName);
+                        opt.setAttribute('data-id', d.DistrictID);
+                        distSel.add(opt);
+                    });
+                });
+            fetchShippingFee({ province: provSel.value });
         };
 
-            (function() {
-            var sel = document.getElementById('addr-select');
-            if (sel && sel.value) fetchShipping(sel.value);
-        })();
+        distSel.onchange = function() {
+            var dId = this.options[this.selectedIndex].getAttribute('data-id');
+            wardSel.options.length = 1;
+            if (!dId) return;
+            fetch(contextPath + '/ghn-location?type=ward&district_id=' + dId)
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    data.forEach(function(w) {
+                        wardSel.add(new Option(w.WardName, w.WardName));
+                    });
+                });
+            fetchShippingFee({ province: provSel.value, district: distSel.value });
+        };
+
+        wardSel.onchange = function() {
+            fetchShippingFee({
+                province: provSel.value,
+                district: distSel.value,
+                ward:     wardSel.value
+            });
+        };
+    }
 </script>
 </body>
 </html>

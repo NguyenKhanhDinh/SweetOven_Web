@@ -26,5 +26,5 @@ public class UserAddressService {
     public void clearDefaultUserAddress(int userId) {
         userAddressDao.clearDefaultUserAddress(userId);
     }
-    public void saveCoords(int id,double lat,double lng) {userAddressDao.saveCoords(id,lat,lng);}
+    public void saveGhnData(int addressId,int ghnDistrictId,String ghnWardCode) {userAddressDao.saveGhnData(addressId,ghnDistrictId,ghnWardCode);}
 }

@@ -1,6 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -8,126 +8,127 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Trang cá nhân | Sweet Oven Bakery</title>
-    <meta name="description" content="Tiệm bánh ngọt & đồ nướng thủ công - Sweet Oven Bakery" />
+    <meta name="description" content="Tiệm bánh ngọt & đồ nướng thủ công - Sweet Oven Bakery"/>
     <link rel="icon" href="${pageContext.request.contextPath}/assets/picture/logo.png">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
-        body{
-            background:#F9F6F0;
-            font-family:'Segoe UI',sans-serif;
+        body {
+            background: #F9F6F0;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        .profile-container{
-            margin-top:100px;
-            margin-bottom:50px;
-            max-width:1350px;
+        .profile-container {
+            margin-top: 100px;
+            margin-bottom: 50px;
+            max-width: 1350px;
         }
 
-        .card-box{
-            background:#fff;
-            border-radius:20px;
-            box-shadow:0 8px 25px rgba(0,0,0,.06);
-            padding:22px;
+        .card-box {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, .06);
+            padding: 22px;
         }
 
-        .main-grid{
-            display:grid;
+        .main-grid {
+            display: grid;
             grid-template-columns:360px 1fr;
-            gap:20px;
+            gap: 20px;
         }
 
-        .bottom-grid{
-            display:grid;
+        .bottom-grid {
+            display: grid;
             grid-template-columns:1fr 1fr;
-            gap:20px;
-            margin-top:20px;
+            gap: 20px;
+            margin-top: 20px;
             min-width: 0;
         }
+
         .bottom-grid > .card-box {
             min-width: 0;
             overflow: hidden;
         }
 
-        @media(max-width:992px){
-            .main-grid,.bottom-grid{
+        @media (max-width: 992px) {
+            .main-grid, .bottom-grid {
                 grid-template-columns:1fr;
             }
         }
 
-        .avatar-box{
-            width:140px;
-            margin:auto;
-            position:relative;
+        .avatar-box {
+            width: 140px;
+            margin: auto;
+            position: relative;
         }
 
-        .avatar{
-            width:140px;
-            height:140px;
-            border-radius:50%;
-            object-fit:cover;
-            border:4px solid #d9a45e;
+        .avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #d9a45e;
         }
 
-        .avatar-upload{
-            position:absolute;
-            right:0;
-            bottom:0;
-            width:38px;
-            height:38px;
-            border-radius:50%;
-            background:#c97b21;
-            color:#fff;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            cursor:pointer;
+        .avatar-upload {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #c97b21;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
 
-        .avatar-upload:hover{
-            background:#a96414;
+        .avatar-upload:hover {
+            background: #a96414;
         }
 
-        .section-title{
-            font-size:20px;
-            font-weight:700;
-            margin-bottom:15px;
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
         }
 
-        .scroll-box{
-            max-height:380px;
-            overflow-y:auto;
-            padding-right:4px;
+        .scroll-box {
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 4px;
         }
 
-        .scroll-box::-webkit-scrollbar{
-            width:6px;
+        .scroll-box::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .scroll-box::-webkit-scrollbar-thumb{
-            background:#d9a45e;
-            border-radius:20px;
+        .scroll-box::-webkit-scrollbar-thumb {
+            background: #d9a45e;
+            border-radius: 20px;
         }
 
-        .orders-header,.order-row{
-            display:grid;
+        .orders-header, .order-row {
+            display: grid;
             grid-template-columns:1.2fr 1fr 1fr 1fr 60px;
-            gap:10px;
-            align-items:center;
-            padding:12px;
+            gap: 10px;
+            align-items: center;
+            padding: 12px;
         }
 
-        .orders-header{
-            background:#c97b21;
-            color:#fff;
-            border-radius:10px;
-            font-weight:600;
+        .orders-header {
+            background: #c97b21;
+            color: #fff;
+            border-radius: 10px;
+            font-weight: 600;
         }
 
-        .order-row{
-            border-bottom:1px solid #eee;
+        .order-row {
+            border-bottom: 1px solid #eee;
         }
 
         .card-box .favorite-grid {
@@ -146,15 +147,18 @@
             padding-bottom: 8px;
             min-width: 0;
         }
+
         .favorite-scroll-wrapper::-webkit-scrollbar {
             height: 6px;
         }
+
         .card-box .favorite-grid {
             display: flex;
             flex-wrap: nowrap;
             gap: 12px;
             width: max-content;
         }
+
         .favorite-item {
             border: 1px solid #eee;
             border-radius: 14px;
@@ -194,20 +198,20 @@
             font-size: 14px;
         }
 
-        .remove-fav{
-            position:absolute;
-            top:5px;
-            right:5px;
-            width:24px;
-            height:24px;
-            border-radius:50%;
-            background:#dc3545;
-            color:#fff;
-            font-size:14px;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            cursor:pointer;
+        .remove-fav {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: #fff;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
         }
 
         /* ── VOUCHER LIST: scroll ngang ── */
@@ -220,8 +224,15 @@
             scrollbar-width: thin;
             scrollbar-color: #d9a45e transparent;
         }
-        .voucher-list::-webkit-scrollbar { height: 4px; }
-        .voucher-list::-webkit-scrollbar-thumb { background: #d9a45e; border-radius: 20px; }
+
+        .voucher-list::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .voucher-list::-webkit-scrollbar-thumb {
+            background: #d9a45e;
+            border-radius: 20px;
+        }
 
         /* Card wrapper — Shopee-style, width ~2/3 (280px thay vì full) */
         .voucher-card {
@@ -234,25 +245,34 @@
             flex-shrink: 0;
             width: 550px;
         }
+
         .voucher-card:hover {
-            box-shadow: 0 4px 22px rgba(139,69,19,.13);
+            box-shadow: 0 4px 22px rgba(139, 69, 19, .13);
             border-color: #ffffff;
             transform: translateY(-2px);
         }
+
         /* Shopee notch */
         .voucher-card::before,
         .voucher-card::after {
             content: '';
             position: absolute;
             left: 92px;
-            width: 16px; height: 16px;
+            width: 16px;
+            height: 16px;
             background: #F9F6F0;
             border: 1px solid #e9ddd0;
             border-radius: 50%;
             z-index: 3;
         }
-        .voucher-card::before { top: -8px; }
-        .voucher-card::after  { bottom: -8px; }
+
+        .voucher-card::before {
+            top: -8px;
+        }
+
+        .voucher-card::after {
+            bottom: -8px;
+        }
 
         /* LEFT: Logo panel */
         .vc-logo-panel {
@@ -267,26 +287,43 @@
             gap: 4px;
             position: relative;
         }
+
         .vc-logo-panel::after {
             content: '';
             position: absolute;
-            right: 0; top: 10px; bottom: 10px;
-            border-right: 2px dashed rgba(255,255,255,.22);
+            right: 0;
+            top: 10px;
+            bottom: 10px;
+            border-right: 2px dashed rgba(255, 255, 255, .22);
         }
+
         .vc-logo-panel .logo-img {
-            width: 38px; height: 38px;
-            object-fit: contain; display: block;
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
+            display: block;
         }
+
         .vc-logo-panel .logo-fallback-icon {
-            font-size: 22px; color: #fff; opacity: .85; display: none;
+            font-size: 22px;
+            color: #fff;
+            opacity: .85;
+            display: none;
         }
+
         .vc-logo-panel .logo-label {
-            color: #fff; font-size: 9px; font-weight: 700;
-            text-align: center; line-height: 1.3; opacity: .88;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.3;
+            opacity: .88;
         }
 
         /* Divider không cần nữa */
-        .vc-divider { display: none; }
+        .vc-divider {
+            display: none;
+        }
 
         /* Body */
         .vc-body {
@@ -297,56 +334,117 @@
             flex-direction: column;
             justify-content: space-between;
         }
+
         .vc-header {
-            display: flex; align-items: center;
-            justify-content: space-between; gap: 6px; margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 3px;
         }
+
         .vc-code-tag {
-            font-size: 12px; font-weight: 700;
-            color: #3C2F27; background: #FFF3E0;
+            font-size: 12px;
+            font-weight: 700;
+            color: #3C2F27;
+            background: #FFF3E0;
             border: 1px dashed #D4A76A;
-            padding: 1px 7px; font-family: monospace;
-            letter-spacing: .5px; white-space: nowrap;
+            padding: 1px 7px;
+            font-family: monospace;
+            letter-spacing: .5px;
+            white-space: nowrap;
         }
+
         .vc-status-badge {
-            font-size: 9px; font-weight: 700;
-            padding: 2px 7px; white-space: nowrap;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 7px;
+            white-space: nowrap;
         }
-        .badge-valid    { background: #dcfce7; color: #15803d; }
-        .badge-expiring { background: #fef3c7; color: #b45309; }
+
+        .badge-valid {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-expiring {
+            background: #fef3c7;
+            color: #b45309;
+        }
 
         .vc-desc {
-            font-size: 13px; font-weight: 700; color: #3C2F27;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            margin: 1px 0 4px; line-height: 1.3;
+            font-size: 13px;
+            font-weight: 700;
+            color: #3C2F27;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin: 1px 0 4px;
+            line-height: 1.3;
         }
+
         .vc-meta {
-            display: flex; gap: 8px; flex-wrap: wrap;
-            font-size: 10.5px; color: #9ca3af;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 10.5px;
+            color: #9ca3af;
         }
-        .vc-meta span { display: flex; align-items: center; gap: 3px; }
-        .vc-meta b { color: #8B4513; font-weight: 600; }
+
+        .vc-meta span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .vc-meta b {
+            color: #8B4513;
+            font-weight: 600;
+        }
 
         /* Footer: expire + action */
         .vc-footer-row {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-top: 7px; padding-top: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 7px;
+            padding-top: 6px;
             border-top: 1px dashed #e9ddd0;
         }
-        .vc-expire { font-size: 10px; color: #aaa; display: flex; align-items: center; gap: 3px; }
+
+        .vc-expire {
+            font-size: 10px;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
 
         /* Action */
-        .vc-action { display: none; } /* hidden, replaced by footer row */
+        .vc-action {
+            display: none;
+        }
+
+        /* hidden, replaced by footer row */
         .btn-use-now {
-            background: #fff; color: #16a34a; border: 1px solid #16a34a;
-            padding: 4px 12px; font-size: 11px; font-weight: 700;
-            cursor: pointer; white-space: nowrap;
-            display: inline-flex; align-items: center; gap: 4px;
+            background: #fff;
+            color: #16a34a;
+            border: 1px solid #16a34a;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             transition: background .15s;
             font-family: 'Quicksand', sans-serif;
         }
+
         .btn-use-now:hover {
-            background: #f0fdf4; color: #16a34a;
+            background: #f0fdf4;
+            color: #16a34a;
         }
 
         /* Empty state */
@@ -355,56 +453,74 @@
             padding: 30px 16px;
             color: #bbb;
         }
-        .vc-empty-state i { font-size: 38px; margin-bottom: 10px; display: block; }
-        .vc-empty-state p { font-size: 13px; margin: 0 0 10px; }
-        .vc-empty-state a { font-size: 13px; color: #8B4513; font-weight: 600; }
-        .address-item{
-            border:1px solid #eee;
-            border-radius:14px;
-            padding:14px;
-            margin-bottom:12px;
+
+        .vc-empty-state i {
+            font-size: 38px;
+            margin-bottom: 10px;
+            display: block;
         }
 
-        .icon-btn{
-            width:34px;
-            height:34px;
-            border-radius:50%;
-            border:1px solid #ddd;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            cursor:pointer;
+        .vc-empty-state p {
+            font-size: 13px;
+            margin: 0 0 10px;
         }
 
-        .icon-btn:hover{
-            background:#c97b21;
-            color:#fff;
+        .vc-empty-state a {
+            font-size: 13px;
+            color: #8B4513;
+            font-weight: 600;
         }
 
-        .btn-main{
-            background: linear-gradient(135deg,#e89b3c,#c46b12);
-            border:none;
-            color:#fff;
-            font-weight:600;
-            border-radius:10px;
-            padding:10px 18px;
-            box-shadow:0 6px 14px rgba(196,107,18,.25);
-            transition:0.25s;
+        .address-item {
+            border: 1px solid #eee;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
         }
 
-        .btn-main:hover{
-            background: linear-gradient(135deg,#d98424,#a85a10);
-            transform:translateY(-2px);
-            color:#fff;
+        .icon-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
+
+        .icon-btn:hover {
+            background: #c97b21;
+            color: #fff;
+        }
+
+        .btn-main {
+            background: linear-gradient(135deg, #e89b3c, #c46b12);
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 10px 18px;
+            box-shadow: 0 6px 14px rgba(196, 107, 18, .25);
+            transition: 0.25s;
+        }
+
+        .btn-main:hover {
+            background: linear-gradient(135deg, #d98424, #a85a10);
+            transform: translateY(-2px);
+            color: #fff;
+        }
+
         #addressModal select,
         #addressModal select option {
             color: #333 !important;
             background-color: #fff !important;
         }
+
         #addressModal .form-control {
             color: #333 !important;
         }
+
         #toast-container {
             position: fixed;
             top: 76px;
@@ -424,23 +540,34 @@
             display: flex;
             align-items: center;
             gap: 9px;
-            box-shadow: 0 4px 16px rgba(0,0,0,.12);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
             border-left: 4px solid #ccc;
             pointer-events: all;
-            animation: slideInRight .28s cubic-bezier(.22,.68,0,1.2) forwards;
+            animation: slideInRight .28s cubic-bezier(.22, .68, 0, 1.2) forwards;
             position: relative;
             overflow: hidden;
         }
 
-        .toast-notify.success { border-left-color: #2e9e5b; }
-        .toast-notify.error   { border-left-color: #e04040; }
+        .toast-notify.success {
+            border-left-color: #2e9e5b;
+        }
+
+        .toast-notify.error {
+            border-left-color: #e04040;
+        }
 
         .toast-notify .toast-icon {
             font-size: 15px;
             flex-shrink: 0;
         }
-        .toast-notify.success .toast-icon { color: #2e9e5b; }
-        .toast-notify.error   .toast-icon { color: #e04040; }
+
+        .toast-notify.success .toast-icon {
+            color: #2e9e5b;
+        }
+
+        .toast-notify.error .toast-icon {
+            color: #e04040;
+        }
 
         .toast-notify .toast-msg {
             flex: 1;
@@ -462,17 +589,27 @@
             border-radius: 4px;
             transition: color .15s;
         }
-        .toast-notify .toast-close:hover { color: #555; }
+
+        .toast-notify .toast-close:hover {
+            color: #555;
+        }
 
         .toast-notify .toast-progress {
             position: absolute;
-            bottom: 0; left: 0;
+            bottom: 0;
+            left: 0;
             height: 2px;
             border-radius: 0 0 0 10px;
             animation: toastProgress 3.5s linear forwards;
         }
-        .toast-notify.success .toast-progress { background: #2e9e5b; }
-        .toast-notify.error   .toast-progress { background: #e04040; }
+
+        .toast-notify.success .toast-progress {
+            background: #2e9e5b;
+        }
+
+        .toast-notify.error .toast-progress {
+            background: #e04040;
+        }
     </style>
 </head>
 
@@ -519,7 +656,8 @@
                                 <img src="${sessionScope.user.avatar}" class="avatar">
                             </c:when>
                             <c:otherwise>
-                                <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar">
+                                <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}"
+                                     class="avatar">
                             </c:otherwise>
                         </c:choose>
                     </c:when>
@@ -723,11 +861,13 @@
                                             <div class="vc-desc">${v.description}</div>
                                             <div class="vc-meta">
                                                 <span><i class="fa fa-receipt"></i>Từ <b>${v.displayMinOrder}</b></span>
-                                                <span><i class="fa fa-clock"></i>HSD: <b>${v.formattedEndDate}</b></span>
+                                                <span><i
+                                                        class="fa fa-clock"></i>HSD: <b>${v.formattedEndDate}</b></span>
                                             </div>
                                         </div>
                                         <div class="vc-footer-row">
-                                            <span class="vc-expire"><i class="fa fa-clock"></i>&nbsp;HSD: <b style="color:#8B4513;">${v.formattedEndDate}</b></span>
+                                            <span class="vc-expire"><i class="fa fa-clock"></i>&nbsp;HSD: <b
+                                                    style="color:#8B4513;">${v.formattedEndDate}</b></span>
                                             <button class="btn-use-now" onclick="useVoucher('${v.code}')">
                                                 <i class="fa fa-cart-shopping"></i>Dùng ngay
                                             </button>
@@ -776,7 +916,8 @@
                                     ${a.ward}, ${a.district}, ${a.province}
                             </div>
                             <div class="d-flex gap-2 mt-2 align-items-center">
-                                <div class="icon-btn" title="Sửa" onclick="openEditModal(${a.id},'${a.addressDetail}','${a.province}','${a.district}','${a.ward}')">
+                                <div class="icon-btn" title="Sửa"
+                                     onclick="openEditModal(${a.id},'${a.addressDetail}','${a.province}','${a.district}','${a.ward}')">
                                     <i class="fa fa-pen"></i>
                                 </div>
                                 <div class="icon-btn text-danger" title="Xóa" style="cursor:pointer;"
@@ -919,55 +1060,77 @@
     const districtSelect = document.getElementById("district");
     const wardSelect = document.getElementById("ward");
 
-    // 1. Load Tỉnh/Thành
-    fetch("https://provinces.open-api.vn/api/p/")
-        .then(res => res.json())
-        .then(data => {
-            provinceSelect.options.length = 0;
-            provinceSelect.options.add(new Option("Chọn tỉnh / thành", ""));
-            data.forEach(p => {
-                let option = new Option(p.name, p.name);
-                option.setAttribute("data-id", p.code);
-                provinceSelect.options.add(option);
-            });
-        });
+    const CTX = '${pageContext.request.contextPath}';
 
-    // 2. Khi chọn Tỉnh -> Load Huyện
-    provinceSelect.onchange = function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const pCode = selectedOption.getAttribute("data-id");
+    // ── 1. Load Tỉnh/Thành từ GHN qua backend proxy ──────────────────────────────
+    function loadProvinces() {
+        fetch(CTX + '/ghn-location?type=province')
+            .then(r => {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.json();
+            })
+            .then(data => {
+                if (!Array.isArray(data)) throw new Error('Dữ liệu không hợp lệ');
+                provinceSelect.options.length = 0;
+                provinceSelect.options.add(new Option("Chọn tỉnh / thành", ""));
+                data.forEach(p => {
+                    let opt = new Option(p.ProvinceName, p.ProvinceName);
+                    opt.setAttribute("data-id", p.ProvinceID);
+                    provinceSelect.options.add(opt);
+                });
+            })
+            .catch(err => {
+                console.error('[GHN] Không load được danh sách tỉnh:', err);
+                provinceSelect.options.length = 0;
+                provinceSelect.options.add(new Option("⚠ Không tải được, thử lại", ""));
+            });
+    }
+    loadProvinces();
+    document.getElementById('addressModal').addEventListener('show.bs.modal', function () {
+        if (provinceSelect.options.length <= 1) {
+            loadProvinces();
+        }
+    });
+
+    // ── 2. Khi chọn Tỉnh → Load Huyện ────────────────────────────────────────────
+    provinceSelect.onchange = function () {
+        const opt = this.options[this.selectedIndex];
+        const pId = opt ? opt.getAttribute("data-id") : null;
         districtSelect.options.length = 0;
         districtSelect.options.add(new Option("Chọn quận / huyện", ""));
         wardSelect.options.length = 0;
         wardSelect.options.add(new Option("Chọn phường / xã", ""));
-        if (!pCode) return;
-        fetch("https://provinces.open-api.vn/api/p/" + pCode + "?depth=2")
-            .then(res => res.json())
+        if (!pId) return;
+        fetch(CTX + '/ghn-location?type=district&province_id=' + pId)
+            .then(r => r.json())
             .then(data => {
-                data.districts.forEach(d => {
-                    let option = new Option(d.name, d.name);
-                    option.setAttribute("data-id", d.code);
-                    districtSelect.options.add(option);
+                data.forEach(d => {
+                    let opt = new Option(d.DistrictName, d.DistrictName);
+                    opt.setAttribute("data-id", d.DistrictID);
+                    districtSelect.options.add(opt);
                 });
-            });
-    }
+            })
+            .catch(() => console.error('[GHN] Không load được danh sách huyện'));
+    };
 
-    // 3. Khi chọn Huyện -> Load Xã
-    districtSelect.onchange = function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const dCode = selectedOption.getAttribute("data-id");
+    // ── 3. Khi chọn Huyện → Load Xã ──────────────────────────────────────────────
+    districtSelect.onchange = function () {
+        const opt = this.options[this.selectedIndex];
+        const dId = opt ? opt.getAttribute("data-id") : null;
         wardSelect.options.length = 0;
         wardSelect.options.add(new Option("Chọn phường / xã", ""));
-        if (!dCode) return;
-        fetch("https://provinces.open-api.vn/api/d/" + dCode + "?depth=2")
-            .then(res => res.json())
+        if (!dId) return;
+        fetch(CTX + '/ghn-location?type=ward&district_id=' + dId)
+            .then(r => r.json())
             .then(data => {
-                data.wards.forEach(w => {
-                    wardSelect.options.add(new Option(w.name, w.name));
+                data.forEach(w => {
+                    wardSelect.options.add(new Option(w.WardName, w.WardName));
                 });
-            });
-    }
+            })
+            .catch(() => console.error('[GHN] Không load được danh sách xã'));
+    };
 
+    // ── 4. Mở modal Thêm địa chỉ ─────────────────────────────────────────────────
     function openAddModal() {
         document.getElementById("addressModalTitle").textContent = "Thêm địa chỉ giao hàng";
         document.getElementById("addressAction").value = "add";
@@ -981,6 +1144,7 @@
         wardSelect.add(new Option("Chọn phường / xã", ""));
     }
 
+    // ── 5. Mở modal Sửa địa chỉ ─────────────────────────────────────────────────
     function openEditModal(id, detail, province, district, ward) {
         document.getElementById("addressModalTitle").textContent = "Chỉnh sửa địa chỉ";
         document.getElementById("addressAction").value = "edit";
@@ -989,7 +1153,7 @@
         document.getElementById("addressSubmitBtn").textContent = "Cập nhật";
         new bootstrap.Modal(document.getElementById("addressModal")).show();
 
-        function setProvinceAndLoadDistricts() {
+        function trySetProvince() {
             for (let i = 0; i < provinceSelect.options.length; i++) {
                 if (provinceSelect.options[i].value === province) {
                     provinceSelect.selectedIndex = i;
@@ -997,43 +1161,50 @@
                 }
             }
             const pOpt = provinceSelect.options[provinceSelect.selectedIndex];
-            const pCode = pOpt ? pOpt.getAttribute("data-id") : null;
-            if (!pCode) { setTimeout(setProvinceAndLoadDistricts, 500); return; }
+            const pId = pOpt ? pOpt.getAttribute("data-id") : null;
+            if (!pId) {
+                setTimeout(trySetProvince, 400);
+                return;
+            }
 
-            fetch("https://provinces.open-api.vn/api/p/" + pCode + "?depth=2")
-                .then(res => res.json())
+            fetch(CTX + '/ghn-location?type=district&province_id=' + pId)
+                .then(r => r.json())
                 .then(data => {
                     districtSelect.options.length = 0;
                     districtSelect.add(new Option("Chọn quận / huyện", ""));
-                    data.districts.forEach(d => {
-                        let opt = new Option(d.name, d.name);
-                        opt.setAttribute("data-id", d.code);
+                    data.forEach(d => {
+                        let opt = new Option(d.DistrictName, d.DistrictName);
+                        opt.setAttribute("data-id", d.DistrictID);
                         districtSelect.add(opt);
                     });
                     for (let i = 0; i < districtSelect.options.length; i++) {
                         if (districtSelect.options[i].value === district) {
-                            districtSelect.selectedIndex = i; break;
+                            districtSelect.selectedIndex = i;
+                            break;
                         }
                     }
                     const dOpt = districtSelect.options[districtSelect.selectedIndex];
-                    const dCode = dOpt ? dOpt.getAttribute("data-id") : null;
-                    if (!dCode) return;
-                    fetch("https://provinces.open-api.vn/api/d/" + dCode + "?depth=2")
-                        .then(res => res.json())
+                    const dId = dOpt ? dOpt.getAttribute("data-id") : null;
+                    if (!dId) return;
+
+                    fetch(CTX + '/ghn-location?type=ward&district_id=' + dId)
+                        .then(r => r.json())
                         .then(data2 => {
                             wardSelect.options.length = 0;
                             wardSelect.add(new Option("Chọn phường / xã", ""));
-                            data2.wards.forEach(w => wardSelect.add(new Option(w.name, w.name)));
+                            data2.forEach(w => wardSelect.add(new Option(w.WardName, w.WardName)));
                             for (let i = 0; i < wardSelect.options.length; i++) {
                                 if (wardSelect.options[i].value === ward) {
-                                    wardSelect.selectedIndex = i; break;
+                                    wardSelect.selectedIndex = i;
+                                    break;
                                 }
                             }
                         });
                 });
         }
-        if (provinceSelect.options.length > 1) setProvinceAndLoadDistricts();
-        else setTimeout(setProvinceAndLoadDistricts, 800);
+
+        if (provinceSelect.options.length > 1) trySetProvince();
+        else setTimeout(trySetProvince, 600);
     }
 
     function useVoucher(code) {
@@ -1060,7 +1231,7 @@
         const container = document.getElementById('toast-container');
         if (!container) return;
 
-        const id   = 'toast-dyn-' + Date.now();
+        const id = 'toast-dyn-' + Date.now();
         const wrap = document.createElement('div');
         wrap.className = 'toast-notify ' + type;
         wrap.id = id;
@@ -1078,7 +1249,9 @@
         const closeBtn = document.createElement('button');
         closeBtn.className = 'toast-close';
         closeBtn.innerHTML = '&#x2715;';
-        closeBtn.onclick = function() { closeToast(id); };
+        closeBtn.onclick = function () {
+            closeToast(id);
+        };
 
         const progress = document.createElement('div');
         progress.className = 'toast-progress';
@@ -1095,10 +1268,10 @@
     // ── AJAX submit form địa chỉ (add / edit) — không reload trang ───────────
     function handleAddressSubmit(e) {
         e.preventDefault();
-        const form    = e.target;
-        const btn     = document.getElementById('addressSubmitBtn');
+        const form = e.target;
+        const btn = document.getElementById('addressSubmitBtn');
         const origTxt = btn.textContent;
-        btn.disabled    = true;
+        btn.disabled = true;
         btn.textContent = 'Đang lưu...';
 
         fetch('${pageContext.request.contextPath}/address', {
@@ -1113,7 +1286,7 @@
             })
             .catch(() => showToast('Lỗi kết nối, vui lòng thử lại!', 'error'))
             .finally(() => {
-                btn.disabled    = false;
+                btn.disabled = false;
                 btn.textContent = origTxt;
             });
     }
@@ -1123,7 +1296,7 @@
         if (!confirm('Bạn có chắc muốn xóa địa chỉ này không?')) return;
         fetch('${pageContext.request.contextPath}/address', {
             method: 'POST',
-            body: new URLSearchParams({ action: 'delete', id: id })
+            body: new URLSearchParams({action: 'delete', id: id})
         })
             .then(r => r.json())
             .then(res => {
@@ -1137,7 +1310,7 @@
     function setDefaultAddress(id) {
         fetch('${pageContext.request.contextPath}/address', {
             method: 'POST',
-            body: new URLSearchParams({ action: 'setDefault', id: id })
+            body: new URLSearchParams({action: 'setDefault', id: id})
         })
             .then(r => r.json())
             .then(res => {

@@ -33,15 +33,15 @@ public class PlaceOrderController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession(true);
 
         if (session == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
         @SuppressWarnings("uncheked")
-        List<CartItem> checkOutItems = (List<CartItem>) session.getAttribute("checkOutItems");
-        if (checkOutItems == null || checkOutItems.isEmpty()) {
+        List<CartItem> checkoutItems = (List<CartItem>) session.getAttribute("checkoutItems");
+        if (checkoutItems == null || checkoutItems.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/my-cart");
             return;
         }
@@ -58,7 +58,7 @@ public class PlaceOrderController extends HttpServlet {
         String guestEmail = "";
         if (user == null) {
             guestEmail = trim(request.getParameter("guestEmail"));
-            if (!guestEmail.isEmpty() && !guestEmail.matches("^[\\w.+\\-]+@[a-zA-z0-9.\\-]+\\[a-zA-Z](.+){2,}$")) {
+            if (!guestEmail.isEmpty() && !guestEmail.matches("^[\\w.+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z](.+){2,}$")) {
                 session.setAttribute("error", "Email không hợp lệ. Vui lòng kiểm tra lại!");
                 response.sendRedirect(request.getContextPath() + "/checkout");
                 return;
@@ -83,7 +83,7 @@ public class PlaceOrderController extends HttpServlet {
         } catch (Exception ignored) {
         }
 
-        String selectedAddrId = trim(request.getParameter("selectedAddrId"));
+        String selectedAddrId = trim(request.getParameter("selectedAddressId"));
         if (user != null && selectedAddrId != null && !selectedAddrId.isEmpty()) {
             try {
                 int addrId = Integer.parseInt(selectedAddrId);
@@ -121,17 +121,17 @@ public class PlaceOrderController extends HttpServlet {
             paymentMethod = Integer.parseInt(request.getParameter("paymentMethod"));
         } catch (Exception ignored) {
         }
-        int discountId = 0;
+        Integer discountId = null;
         BigDecimal discountAmount = BigDecimal.ZERO;
         try {
             String dIdStr = request.getParameter("discountId");
             String dAmtStr = request.getParameter("discountAmount");
-            if (dIdStr != null && !dIdStr.isEmpty()) discountId = Integer.parseInt(dIdStr);
+            if (dIdStr != null && !dIdStr.isEmpty()) discountId = Integer.parseInt(dIdStr) > 0 ? Integer.parseInt(dIdStr):null;
             if (dAmtStr != null && !dAmtStr.isEmpty()) discountAmount = new BigDecimal(dAmtStr);
         } catch (Exception ignored) {
         }
         BigDecimal subTotal = BigDecimal.ZERO;
-        for (CartItem item : checkOutItems) {
+        for (CartItem item : checkoutItems) {
             subTotal = subTotal.add(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
         }
         if (discountAmount.compareTo(subTotal) > 0) discountAmount = subTotal;
@@ -139,7 +139,7 @@ public class PlaceOrderController extends HttpServlet {
 
         Order order = new Order();
         order.setOrderCode("ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        order.setUserId(user != null ? user.getId() : 0);
+        order.setUserId(user != null ? user.getId() :null);
         order.setFullName(fullName);
         order.setPhoneNumber(phone);
         order.setAddress(fullAddr.toString());
@@ -154,7 +154,7 @@ public class PlaceOrderController extends HttpServlet {
 
         int orderId;
         try {
-            orderId = orderService.createOrder(order, checkOutItems);
+            orderId = orderService.createOrder(order, checkoutItems);
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("errorMsg", "Đặt hàng thất bại. Vui lòng thử lại!");
@@ -187,7 +187,7 @@ public class PlaceOrderController extends HttpServlet {
         }
         if(user==null && !guestEmail.isEmpty()){
             final String finalGhnCode = ghnOrderCode;
-            final List<CartItem> itemCopy = checkOutItems;
+            final List<CartItem> itemCopy = checkoutItems;
             final Order orderCopy = order;
             final String emailTo = guestEmail;
 
@@ -202,7 +202,7 @@ public class PlaceOrderController extends HttpServlet {
             session.setAttribute("invoiceEmailSent", guestEmail);
         }
 
-        if (user != null && discountId > 0) {
+        if (user != null && discountId != null) {
             try {
                 userDiscountService.markAsUsed(user.getId(), discountId);
             } catch (Exception e) {
@@ -210,7 +210,7 @@ public class PlaceOrderController extends HttpServlet {
             }
         }
         try {
-            String selectedIdsRaw = (String) session.getAttribute("checkedOutSelectedIds");
+            String selectedIdsRaw = (String) session.getAttribute("checkoutSelectedIds");
             Cart cart = (Cart) session.getAttribute("cart");
             if (cart != null && selectedIdsRaw != null) {
                 for (String part : selectedIdsRaw.split(",")) {

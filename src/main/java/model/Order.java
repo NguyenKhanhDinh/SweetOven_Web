@@ -10,11 +10,11 @@ import java.util.Locale;
 public class Order implements Serializable {
     private int id;
     private String orderCode;
-    private int userId;
+    private Integer userId;
     private String fullName;
     private String phoneNumber;
     private String address;
-    private int discountId;
+    private Integer discountId;
     private BigDecimal subTotal;
     private BigDecimal discountAmount;
     private BigDecimal shippingFee;
@@ -25,7 +25,7 @@ public class Order implements Serializable {
     private LocalDateTime orderDate;
     private  LocalDateTime updatedAt;
 
-    public Order(int id,String orderCode,int userId,String fullName,String phoneNumber,String address,int discountId,BigDecimal subTotal
+    public Order(int id,String orderCode,Integer userId,String fullName,String phoneNumber,String address,Integer discountId,BigDecimal subTotal
     ,BigDecimal discountAmount,BigDecimal shippingFee,BigDecimal totalAmount,String note,int paymentMethod,int orderStatus,LocalDateTime orderDate,LocalDateTime updatedAt){
         this.id = id;
         this.orderCode = orderCode;
@@ -58,10 +58,10 @@ public class Order implements Serializable {
     public void setOrderCode(String orderCode) {
         this.orderCode = orderCode;
     }
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
     public String getFullName() {
@@ -82,10 +82,10 @@ public class Order implements Serializable {
     public void setAddress(String address) {
         this.address = address;
     }
-    public int getDiscountId() {
+    public Integer getDiscountId() {
         return discountId;
     }
-    public void setDiscountId(int discountId) {
+    public void setDiscountId(Integer discountId) {
         this.discountId = discountId;
     }
     public BigDecimal getSubTotal() {

@@ -10,23 +10,18 @@ import jakarta.servlet.http.HttpSession;
 import model.User;
 import model.UserAddress;
 import service.UserAddressService;
-import utils.NominatimUtil;
-import utils.ORSUtil;
+import utils.GHNUtil;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @WebServlet("/shipping-info")
 public class ShippingInfoController extends HttpServlet {
-    private static final double SHOP_LAT = 10.8706;
-    private static final double SHOP_LNG = 106.8031;
-
-    private static final long FEE_TIER1 = 15_000;
-    private static final long FEE_TIER2 = 25_000;
-    private static final long FEE_TIER3 = 35_000;
-    private static final long FEE_TIER4 = 50_000;
-
+    private static final long SHIPPING_FEE_DEFAULT = 30_000L;
     private static final UserAddressService userAddressService = new UserAddressService();
+    private static final Map<Integer, Object[]> addressGhnCache = new ConcurrentHashMap<>();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -37,11 +32,9 @@ public class ShippingInfoController extends HttpServlet {
 
         try {
             String addrIdStr = request.getParameter("addressId");
-            String addressDetail = request.getParameter("addressDetail");
-            String ward = request.getParameter("ward");
-            String district = request.getParameter("district");
             String province = request.getParameter("province");
-
+            String district = request.getParameter("district");
+            String ward = request.getParameter("ward");
 
             if (addrIdStr != null && !addrIdStr.isEmpty()) {
                 HttpSession session = request.getSession(false);
@@ -59,69 +52,67 @@ public class ShippingInfoController extends HttpServlet {
                     response.getWriter().write(json.toString());
                     return;
                 }
-                double[] cached = ORSUtil.getCached(addrId);
-                if (cached != null) {
-                    json.addProperty("shippingFee", calcFee(cached[0]));
-                    json.addProperty("distanceKm", Math.round(cached[0] * 10.0) / 10.0);
-                    json.addProperty("durationMin", Math.round(cached[1]));
-                    response.getWriter().write(json.toString());
-                    return;
-                }
-                Double lat = addr.getLat();
-                Double lng = addr.getLng();
 
-                if (lat == null || lng == null) {
-                    json.addProperty("shippingFee", FEE_TIER2);
-                    json.addProperty("durationMin", -1);
-                    json.addProperty("distanceKm", -1);
-                    json.addProperty("note", "Chưa có tọa độ, dùng phí mặc định!");
-                    response.getWriter().write(json.toString());
-                    return;
+                int districtId;
+                String wardCode;
+
+                if (addr.hasGhnData()) {
+                    districtId = addr.getGhnDistrictId();
+                    wardCode = addr.getGhnWardCode();
+                    System.out.println("[GHN] dùng GHN data từ DB cho address" + addrId + "- districtId = " + districtId + ", ward code " + wardCode);
+                } else {
+                    Object[] cached = addressGhnCache.get(addrId);
+                    if (cached != null) {
+                        districtId = (int) cached[0];
+                        wardCode = (String) cached[1];
+                    } else {
+                        districtId = GHNUtil.getDistrictId(addr.getProvince(), addr.getDistrict());
+                        wardCode = (districtId != -1) ? GHNUtil.getWardCode(districtId, addr.getWard()) : null;
+                        addressGhnCache.put(addrId, new Object[]{districtId, wardCode});
+
+                        if (districtId != -1) {
+                            try {
+                                userAddressService.saveGhnData(addrId, districtId, wardCode != null ? wardCode : "");
+                                System.out.println("[GHN] Đã lưu GHN data vào DB cho address" +addrId);
+                            } catch (Exception e) {
+                                System.err.println("[GHN] Không thể lưu GHN data: "+e.getMessage());
+                            }
+                        }
+                    }
                 }
-                double[] route = ORSUtil.getRoute(addrId, SHOP_LAT, SHOP_LNG, lat, lng);
-                if (route == null) {
-                    json.addProperty("error", "Không thể tính tuyến đường!");
-                    response.getWriter().write(json.toString());
-                    return;
-                }
-                json.addProperty("shippingFee", calcFee(route[0]));
-                json.addProperty("distanceKm",Math.round(route[0] * 10.0) / 10.0);
-                json.addProperty("durationMin",Math.round(route[1]) );
-            } else if (province != null && !province.isEmpty()) {
-                double[] coords = NominatimUtil.geocode(addressDetail != null ? addressDetail : "",
-                        ward != null ? ward : "",
-                        district != null ? district : "",
-                        province);
-                if (coords == null) {
-                    json.addProperty("error", "Không tìm thấy tọa độ địa chỉ!");
-                    response.getWriter().write(json.toString());
-                    return;
-                }
-                double[] route = ORSUtil.getRoute(-1, SHOP_LAT, SHOP_LNG, coords[0], coords[1]);
-                if (route == null) {
-                    json.addProperty("error", "Không thể tính tuyến đường!");
-                    response.getWriter().write(json.toString());
-                    return;
-                }
-                json.addProperty("shippingFee", calcFee(route[0]));
-                json.addProperty("distanceKm", Math.round(route[0] * 10.0) / 10.0);
-                json.addProperty("durationMin", Math.round(route[1]));
+
+                long fee = (districtId != -1) ? GHNUtil.calculateFee(districtId, wardCode) : SHIPPING_FEE_DEFAULT;
+                if (fee < 0) fee = SHIPPING_FEE_DEFAULT;
+
+                json.addProperty("shippingFee", fee);
+                json.addProperty("districtId", districtId);
+                json.addProperty("wardCode", wardCode != null ? wardCode : "");
+
+            } else if (province != null &&!province.isEmpty()) {
+                int districtId = GHNUtil.getDistrictId(province, district);
+                String wardCode =(districtId !=-1 && ward != null && !ward.isEmpty()) ? GHNUtil.getWardCode(districtId, ward) : null;
+                long fee = GHNUtil.calculateFeeByAddress(province, district, ward);
+                if (fee < 0) fee = SHIPPING_FEE_DEFAULT;
+
+                json.addProperty("shippingFee", fee);
+                json.addProperty("districtId", districtId);
+                json.addProperty("wardCode", wardCode != null ? wardCode : "");
+
             } else {
                 json.addProperty("error", "Thiếu thông tin địa chỉ!");
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             json.addProperty("error", "Lỗi server: " + e.getMessage());
         }
+        write(response, json);
+    }
+
+    private void write(HttpServletResponse response, JsonObject json) throws IOException {
         response.getWriter().write(json.toString());
     }
 
-    private long calcFee(double km) {
-        if (km < 3) return FEE_TIER1;
-        else if (km < 7) return FEE_TIER2;
-        else if (km < 15) return FEE_TIER3;
-        return FEE_TIER4;
-    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

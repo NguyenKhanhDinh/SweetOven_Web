@@ -13,8 +13,8 @@ public class UserAddress implements Serializable {
     private boolean isDefault;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Double lat;
-    private Double lng;
+    private Integer ghnDistrictId;
+    private String ghnWardCode;
 
     public UserAddress(int id, int userId, String addressDetail, String ward, String district, String province, boolean isDefault, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -84,8 +84,12 @@ public class UserAddress implements Serializable {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-    public Double getLat() {return lat;}
-    public void setLat(Double lat) {this.lat = lat;}
-    public Double getLng() {return lng;}
-    public void setLng(Double lng) {this.lng = lng;}
+    public Integer getGhnDistrictId() {return ghnDistrictId;}
+    public void setGhnDistrictId(Integer ghnDistrictId) {this.ghnDistrictId = ghnDistrictId;}
+    public String getGhnWardCode() {return ghnWardCode;}
+    public void setGhnWardCode(String ghnWardCode) {this.ghnWardCode = ghnWardCode;}
+
+    public boolean hasGhnData() {
+        return ghnDistrictId != null && ghnDistrictId >0;
+    }
 }

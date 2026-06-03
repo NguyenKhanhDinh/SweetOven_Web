@@ -39,5 +39,9 @@ public class OrderDao {
                         .executeAndReturnGeneratedKeys("id")
                         .mapTo(Integer.class).findFirst().orElse(0));
     }
+    public void updateGhnOrderCode(int orderId,String ghnOrderCode) {
+        String sql = " UPDATE `order` SET order_code = :ghnOrderCorde WHERE id = :orderId ";
+        JdbiConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql).bind("orderCode",ghnOrderCode).bind("orderId", orderId)).execute();
+    }
 
 }

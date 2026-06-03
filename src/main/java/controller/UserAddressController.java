@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpSession;
 import model.User;
 import model.UserAddress;
 import service.UserAddressService;
-import utils.NominatimUtil;
 
 import java.io.IOException;
 import java.util.List;
@@ -58,18 +57,6 @@ public class UserAddressController extends HttpServlet {
                     boolean added = userAddressService.addUserAddress(userAddress);
 
                     if (added) {
-                        List<UserAddress> list = userAddressService.getUserAddressByUserId(user.getId());
-                        if (list != null && !list.isEmpty()) {
-                            int newId = list.get(0).getId();
-                            try {
-                                double[] coords = NominatimUtil.geocode(addresssDetail, ward, district, province);
-                                if (coords != null) {
-                                    userAddressService.saveCoords(newId, coords[0], coords[1]);
-                                }
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
-                        }
                         json.addProperty("success", true);
                         json.addProperty("message", "Đã thêm địa chỉ thành công!");
                     } else {
@@ -96,13 +83,6 @@ public class UserAddressController extends HttpServlet {
                     boolean updated = userAddressService.updateUserAddress(userAddress);
 
                     if (updated) {
-
-                        try{
-                            double[] coords = NominatimUtil.geocode(addressDetail, ward, district, province);
-                            if (coords != null) userAddressService.saveCoords(id, coords[0], coords[1]);
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
                         json.addProperty("success", true);
                         json.addProperty("message", "Đã cập nhật địa chỉ thành công!");
                     } else {

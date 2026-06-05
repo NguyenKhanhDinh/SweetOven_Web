@@ -14,6 +14,7 @@ import service.UserAddressService;
 import service.UserDiscountService;
 import utils.EmailUtil;
 import utils.GHNUtil;
+import utils.MomoUtil;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -126,7 +127,8 @@ public class PlaceOrderController extends HttpServlet {
         try {
             String dIdStr = request.getParameter("discountId");
             String dAmtStr = request.getParameter("discountAmount");
-            if (dIdStr != null && !dIdStr.isEmpty()) discountId = Integer.parseInt(dIdStr) > 0 ? Integer.parseInt(dIdStr):null;
+            if (dIdStr != null && !dIdStr.isEmpty())
+                discountId = Integer.parseInt(dIdStr) > 0 ? Integer.parseInt(dIdStr) : null;
             if (dAmtStr != null && !dAmtStr.isEmpty()) discountAmount = new BigDecimal(dAmtStr);
         } catch (Exception ignored) {
         }
@@ -137,20 +139,46 @@ public class PlaceOrderController extends HttpServlet {
         if (discountAmount.compareTo(subTotal) > 0) discountAmount = subTotal;
         BigDecimal totalAmount = subTotal.subtract(discountAmount).add(shippingFee);
 
-        Order order = new Order();
-        order.setOrderCode("ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        order.setUserId(user != null ? user.getId() :null);
-        order.setFullName(fullName);
-        order.setPhoneNumber(phone);
-        order.setAddress(fullAddr.toString());
-        order.setDiscountId(discountId);
-        order.setSubTotal(subTotal);
-        order.setDiscountAmount(discountAmount);
-        order.setShippingFee(shippingFee);
-        order.setTotalAmount(totalAmount);
-        order.setNote(note);
-        order.setPaymentMethod(paymentMethod);
-        order.setOrderStatus(1);
+        if (paymentMethod == 2) {
+            String orderCode = "ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+            String sessionKey = "momo_pending" + orderCode;
+
+            MomoPendingOrder pending = new MomoPendingOrder();
+            pending.orderCode = orderCode;
+            pending.user = user;
+            pending.guestEmail = guestEmail;
+            pending.fullName = fullName;
+            pending.phone = phone;
+            pending.fullAddr = fullAddr.toString();
+            pending.ward = nvl(ward);
+            pending.district = nvl(district);
+            pending.province = nvl(province);
+            pending.note = note;
+            pending.ghnDistrictId = ghnDistrictId;
+            pending.ghnWardCode = ghnWardCode;
+            pending.discountId = discountId;
+            pending.subTotal = subTotal;
+            pending.discountAmount = discountAmount;
+            pending.shippingFee = shippingFee;
+            pending.totalAmount = totalAmount;
+            pending.checkoutItems = checkoutItems;
+            pending.checkoutSelectedIds = (String) session.getAttribute("checkoutSelectedIds");
+
+            session.setAttribute(sessionKey, pending);
+
+            try {
+                String momoPayUrl = MomoUtil.createPaymentUrl(sessionKey, totalAmount, orderCode);
+            } catch (Exception e) {
+                System.err.println("[MoMo] Lỗi tạo link thanh toán:" + e.getMessage());
+                session.removeAttribute(sessionKey);
+                session.setAttribute("errorMsg", "Không thể kết nối MoMo. Vui lòng chọn phương thức thanh toán khác!");
+                response.sendRedirect(request.getContextPath() + "/checkout");
+                return;
+            }
+        }
+
+        Order order = buildOrder(null, user, fullName, phone, fullAddr.toString(), discountId, subTotal, discountAmount, shippingFee, totalAmount, note, paymentMethod);
+
 
         int orderId;
         try {
@@ -167,41 +195,77 @@ public class PlaceOrderController extends HttpServlet {
             return;
         }
         order.setId(orderId);
-        String ghnOrderCode = null;
-        try {
-            long codAmount = (paymentMethod == 1) ? totalAmount.longValue() : 0L;
-            if (ghnDistrictId == 0 && !province.isEmpty()) {
-                ghnDistrictId = GHNUtil.getDistrictId(province, district);
-                if (ghnDistrictId != -1 && !ward.isEmpty()) {
-                    ghnWardCode = nvl(GHNUtil.getWardCode(ghnDistrictId, ward));
-                }
-            }
-            if (ghnDistrictId > 0) {
-                ghnOrderCode = GHNUtil.createOrder(fullName, phone, fullAddr.toString(), ghnDistrictId, ghnWardCode.isEmpty() ? null : ghnWardCode, codAmount, note);
-                if (ghnOrderCode != null) {
-                    session.setAttribute("lastghnOrderCode_"+ orderId,ghnOrderCode);
-                }
-                }
-        } catch (Exception e) {
-            System.err.println("[GHN] Lỗi tạo vận đơn(order đã được lưu): " + e.getMessage());
-        }
-        if(user==null && !guestEmail.isEmpty()){
+        String ghnOrderCode = createGhnOrder(fullName, phone, fullAddr.toString(), ghnDistrictId, ghnWardCode, province, district, ward, totalAmount, note, orderId, session);
+
+        if (user == null && !guestEmail.isEmpty()) {
             final String finalGhnCode = ghnOrderCode;
             final List<CartItem> itemCopy = checkoutItems;
             final Order orderCopy = order;
             final String emailTo = guestEmail;
 
             new Thread(() -> {
-               try {
-                   EmailUtil.sendOrderInvoice(emailTo,orderCopy,itemCopy,finalGhnCode);
-                   System.out.println("[EMAIL] Đã gửi hóa đơn tới: "+emailTo + "cho order #" +orderCopy.getOrderCode());
-               }catch (Exception e){
-                   System.err.println("[EMAIL] Lỗi hóa đơn: " + e.getMessage());
-               }
+                try {
+                    EmailUtil.sendOrderInvoice(emailTo, orderCopy, itemCopy, finalGhnCode);
+                    System.out.println("[EMAIL] Đã gửi hóa đơn tới: " + emailTo + "cho order #" + orderCopy.getOrderCode());
+                } catch (Exception e) {
+                    System.err.println("[EMAIL] Lỗi hóa đơn: " + e.getMessage());
+                }
             }).start();
             session.setAttribute("invoiceEmailSent", guestEmail);
         }
 
+        markDiscountUsed(user, discountId);
+        cleanCart(session, user, checkoutItems);
+
+        response.sendRedirect(request.getContextPath() + "/order-detail?id=" + orderId);
+
+    }
+
+    public static String createGhnOrder(String fullName, String phone, String fullAddr, int ghnDistrictId, String ghnWardCode, String province, String district, String ward, BigDecimal totalAmount, String note, int orderId, HttpSession session) {
+        String ghnOrderCode = null;
+        try {
+            long codAmount = totalAmount.longValue();
+            if (ghnDistrictId == 0 && !province.isEmpty()) {
+                ghnDistrictId = GHNUtil.getDistrictId(province, district);
+                if (ghnDistrictId != -1 && !ward.isEmpty()) {
+                    ghnWardCode = nvlStatic(GHNUtil.getWardCode(ghnDistrictId, ward));
+                }
+            }
+            if (ghnDistrictId > 0) {
+                ghnOrderCode = GHNUtil.createOrder(fullName, phone, fullAddr.toString(), ghnDistrictId, ghnWardCode.isEmpty() ? null : ghnWardCode, codAmount, note);
+                if (ghnOrderCode != null) {
+                    session.setAttribute("lastghnOrderCode_" + orderId, ghnOrderCode);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("[GHN] Lỗi tạo vận đơn(order đã được lưu): " + e.getMessage());
+        }
+        return ghnOrderCode;
+    }
+
+    private static String nvlStatic(String s) {
+        return s == null ? "" : s;
+    }
+
+    public static Order buildOrder(String orderCode, User user, String fullName, String phone, String fullAddr, Integer discountId, BigDecimal subTotal, BigDecimal discountAmount, BigDecimal shippingFee, BigDecimal totalAmount, String note, int paymentMethod) {
+        Order order = new Order();
+        order.setOrderCode(orderCode != null ? orderCode : "ORD_" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        order.setUserId(user != null ? user.getId() : null);
+        order.setFullName(fullName);
+        order.setPhoneNumber(phone);
+        order.setAddress(fullAddr);
+        order.setDiscountId(discountId);
+        order.setSubTotal(subTotal);
+        order.setDiscountAmount(discountAmount);
+        order.setShippingFee(shippingFee);
+        order.setTotalAmount(totalAmount);
+        order.setNote(note);
+        order.setPaymentMethod(paymentMethod);
+        order.setOrderStatus(1);
+        return order;
+    }
+
+    public void markDiscountUsed(User user, Integer discountId) {
         if (user != null && discountId != null) {
             try {
                 userDiscountService.markAsUsed(user.getId(), discountId);
@@ -209,14 +273,16 @@ public class PlaceOrderController extends HttpServlet {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void cleanCart(HttpSession session, User user, List<CartItem> checkoutItems) {
         try {
             String selectedIdsRaw = (String) session.getAttribute("checkoutSelectedIds");
             Cart cart = (Cart) session.getAttribute("cart");
             if (cart != null && selectedIdsRaw != null) {
                 for (String part : selectedIdsRaw.split(",")) {
                     try {
-                        int pid = Integer.parseInt(part.trim());
-                        cart.removeItem(pid);
+                        cart.removeItem(Integer.parseInt(part.trim()));
                     } catch (Exception ignored) {
                     }
                 }
@@ -234,9 +300,6 @@ public class PlaceOrderController extends HttpServlet {
         session.removeAttribute("appliedDiscount");
         session.removeAttribute("appliedDiscountId");
         session.removeAttribute("appliedDiscountAmount");
-
-        response.sendRedirect(request.getContextPath() + "/order-detail?id=" + orderId);
-
     }
 
     private String nvl(String s) {

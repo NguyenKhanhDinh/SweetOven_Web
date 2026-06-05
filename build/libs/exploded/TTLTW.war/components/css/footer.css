@@ -1,0 +1,203 @@
+/* ================================================================
+   1. HỆ THỐNG LAYOUT TỔNG THỂ (FIX LỖI FOOTER CHÈN NỘI DUNG)
+   ================================================================ */
+/* Thiết lập body thành Flexbox để đẩy Footer xuống đáy trang */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    padding-top: 100px; /* Khoảng cách để không bị Header đè */
+    background-color: #ffffff;
+    font-family: "Quicksand", sans-serif;
+}
+
+/* Thẻ main đóng vai trò là "lò xo" giãn ra chiếm hết khoảng trống */
+main {
+    flex: 1 0 auto;
+}
+
+/* ================================================================
+   2. CHI TIẾT FOOTER
+   ================================================================ */
+footer {
+    background-color: #3c2f27; /* Màu nâu đậm Sweet Oven */
+    color: #fdf6e3;
+    padding: 60px 0 20px;
+    border-top: 5px solid #e0b680; /* Đường kẻ vàng đồng điểm nhấn */
+}
+
+.footer-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+}
+
+/* --- Khối giới thiệu --- */
+.footer-about .footer-logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #e0b680;
+    margin-bottom: 15px;
+    display: block;
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.footer-about p {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: #d4a76a;
+}
+
+/* --- Tiêu đề cột --- */
+.footer-column h4 {
+    color: #e0b680;
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+    position: relative;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.footer-column h4::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 40px;
+    height: 2px;
+    background-color: #e0b680;
+}
+
+/* --- Danh sách liên kết --- */
+.footer-column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-column ul li {
+    margin-bottom: 12px;
+}
+
+.footer-column ul li a {
+    color: #fdf6e3;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.footer-column ul li a:hover {
+    color: #e0b680;
+    padding-left: 8px;
+}
+
+/* --- Liên hệ & Mạng xã hội --- */
+.footer-contact p {
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.footer-contact i {
+    color: #e0b680;
+    width: 20px;
+    font-size: 1.1rem;
+}
+
+/* --- SOCIAL LINKS (ĐÃ PHÓNG TO & ĐÚNG MÀU NỀN TẢNG) --- */
+.social-links {
+    margin-top: 25px;
+    display: flex;
+    gap: 15px;
+}
+
+.social-links a {
+    width: 45px; /* Kích thước nút to hơn */
+    height: 45px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #e0b680;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-decoration: none;
+    font-size: 1.4rem; /* Icon to rõ */
+    border: 1px solid rgba(224, 182, 128, 0.2);
+}
+
+/* Hiệu ứng hover chung */
+.social-links a:hover {
+    color: #fff;
+    transform: translateY(-5px) scale(1.1);
+    border-color: transparent;
+}
+
+/* Màu đặc trưng từng nền tảng khi di chuột vào */
+.social-links a.facebook:hover {
+    background-color: #1877F2;
+    box-shadow: 0 5px 15px rgba(24, 119, 242, 0.4);
+}
+
+.social-links a.instagram:hover {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    box-shadow: 0 5px 15px rgba(214, 36, 159, 0.4);
+}
+
+.social-links a.youtube:hover {
+    background-color: #FF0000;
+    box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+}
+
+.social-links a.tiktok:hover {
+    background-color: #000000;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    border: 1px solid #fe2c55;
+}
+
+/* --- Bản quyền --- */
+.footer-bottom {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(224, 182, 128, 0.1);
+}
+
+.footer-bottom p {
+    font-size: 0.85rem;
+    color: #85756b;
+}
+
+/* ================================================================
+   3. RESPONSIVE (GIAO DIỆN DI ĐỘNG)
+   ================================================================ */
+@media (max-width: 768px) {
+    footer {
+        padding: 40px 0 20px;
+        text-align: center;
+    }
+
+    .footer-column h4::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .footer-contact p {
+        justify-content: center;
+    }
+
+    .social-links {
+        justify-content: center;
+    }
+
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+}

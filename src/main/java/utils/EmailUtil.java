@@ -104,7 +104,9 @@ public class EmailUtil {
                 .append("<td style='color:#3C2F27;'>").append(escHtml(order.getPhoneNumber())).append("</td></tr>")
                 .append("<tr><td style='color:#85756b;padding:4px 0;'>Thanh toán</td>")
                 .append("<td style='color:#3C2F27;'>").append(order.getPaymentMethod() == 1 ? "Thanh toán khi nhận hàng (COD)" :
-                        order.getPaymentMethod() == 2 ? "Ví MoMo" : "VNPay").append("</td></tr>");
+                        order.getPaymentMethod() == 2 ? "Ví MoMo" : "VNPay").append("</td></tr>")
+                .append("<tr><td style='color:#85756b;padding:4px 0;'>Trạng thái</td>").append("</td>")
+                .append("<td>").append(buildStatusBadge(order.getOrderStatus())).append("</td></tr>");
         if(ghnCode != null && !ghnCode.isEmpty()){
             sb.append("<tr><td style='color:#85756b;padding:4px 0;'>Mã vận đơn</td>")
                     .append("<td><a href='https://donhang.ghn.vn/?order_code=").append(escHtml(ghnCode))
@@ -153,6 +155,20 @@ public class EmailUtil {
         return s.replace("&","&amp;").replace("<","&lt;")
                 .replace(">","&gt;").replace("\"","&quot;")
                 .replace("'","&#39");
+    }
+    private static String buildStatusBadge(int status) {
+        String label;
+        String color;
+        String bg;
+        switch (status) {
+            case 1 -> {label = "Chờ xác nhận" ; color = "#92400e" ; bg = "#fef3c7" ;}
+            case 2 -> {label = "Chờ lấy hàng" ; color = "#92400e" ; bg = "#fef3c7" ;}
+            case 3 -> {label = "Đang giao";color = "#1e40af" ; bg = "#dbeafe" ;}
+            case 4 ->{label = "Đã giao"; color = "#065f46" ; bg = "#d1fae5" ;}
+            case 5 -> {label= "Đã hủy"; color = "#991b1b" ; bg = "#fee2e2" ;}
+            default -> {label = "Không xác định";color = "#374151" ; bg = "#f3f4f6" ;}
+        }
+        return "<span style='background:"+bg+";color:"+ color+";"+"padding :3px 10px;border-radius:20px;font-weigh:700;'>"+label+"</span>";
     }
 
 }

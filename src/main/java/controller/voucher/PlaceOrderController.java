@@ -195,7 +195,7 @@ public class PlaceOrderController extends HttpServlet {
             return;
         }
         order.setId(orderId);
-        String ghnOrderCode = createGhnOrder(fullName, phone, fullAddr.toString(), ghnDistrictId, ghnWardCode, province, district, ward, totalAmount, note, orderId, session);
+        String ghnOrderCode = null;
 
         if (user == null && !guestEmail.isEmpty()) {
             final String finalGhnCode = ghnOrderCode;

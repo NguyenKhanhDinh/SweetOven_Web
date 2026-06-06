@@ -94,15 +94,15 @@ public class MoMoReturnController extends HttpServlet {
             return;
         }
         order.setId(orderId);
-        String ghnOrderCode = PlaceOrderController.createGhnOrder(pending.fullName, pending.phone
-                , pending.fullAddr, pending.ghnDistrictId, pending.ghnWardCode, pending.province
-                , pending.district, pending.ward, pending.totalAmount, pending.note, orderId, session);
+        String ghnOrderCode = null;
 
         if (pending.user == null && pending.guestEmail != null && !pending.guestEmail.isEmpty()) {
             final String emailTo = pending.guestEmail;
             final String finalGhn = ghnOrderCode;
             final Order orderCopy = order;
             final var items = pending.checkoutItems;
+
+            Order orderSave = orderDao.getOrderByOrderId(orderId);
             new Thread(() -> {
                 try {
                     EmailUtil.sendOrderInvoice(emailTo, orderCopy, items, finalGhn);

@@ -19,165 +19,256 @@
 
 
     <style>
+        /* ============================================================
+           DESIGN TOKENS — đồng bộ với home.css & header.css
+        ============================================================ */
         :root {
-            --primary: #8B4513;
-            --secondary: #D4A76A;
-            --accent: #8A4B24;
-            --muted: #85756b;
-            --border: #f2e7de;
-            --bg: #fffdfb;
-            --radius: 14px;
-            --brand: #3c2f27;
+            --primary:        #3C2F27;
+            --primary-hover:  #4a3728;
+            --accent:         #C9A96E;
+            --accent-light:   #e8d5b0;
+            --bg-color:       #F9F6F0;
+            --white:          #ffffff;
+            --light:          #F5F3EF;
+            --text-main:      #2C2218;
+            --text-muted:     #8a8580;
+            --border-soft:    #E8E2D9;
+            --shadow-card:    0 2px 16px rgba(44, 34, 24, 0.07);
+            --radius-card:    8px;
+            --radius-btn:     4px;
+            --transition:     all 0.25s ease;
         }
 
-        /* --- SỬA LỖI LAYOUT BẰNG FLEXBOX --- */
+        /* Layout */
         body {
             padding-top: 100px;
             font-family: 'Quicksand', sans-serif;
-            background: var(--bg);
-            color: var(--brand);
+            background: var(--bg-color);
+            color: var(--text-main);
             margin: 0;
-            /* Cấu trúc Flexbox giúp đẩy footer xuống đáy */
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
 
         main {
-            padding: 20px 0 60px 0;
-            /* Bắt buộc main giãn ra để lấp đầy khoảng trống */
+            padding: 36px 0 72px 0;
             flex: 1 0 auto;
         }
-        /* ------------------------------------ */
 
-        /* Đổi h1 thành class để tránh ảnh hưởng đến h1 của Header/Footer */
-        .cart-title {
+        /* ---- Page header ---- */
+        .cart-page-header {
             text-align: center;
             margin-bottom: 40px;
-            font-size: 32px;
-            color: var(--brand);
-            letter-spacing: 0.5px;
-            font-weight: 700;
         }
 
+        .cart-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+            line-height: 1;
+        }
+
+        .cart-title::after {
+            content: "";
+            position: absolute;
+            width: 32px;
+            height: 2px;
+            background: var(--accent);
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -10px;
+        }
+
+        .cart-page-label {
+            display: block;
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        /* ---- Table ---- */
         .content {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
-            background: white;
-            border-radius: var(--radius);
-            box-shadow: 0 6px 18px rgba(92, 44, 22, 0.05);
+            margin-bottom: 24px;
+            background: var(--white);
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-card);
             overflow: hidden;
         }
 
         .content th {
-            background: #faf7f4;
-            color: var(--brand);
+            background: #F5F0E8;
+            color: var(--text-muted);
             text-align: left;
-            padding: 16px 20px;
-            font-size: 15px;
+            padding: 14px 20px;
+            font-size: 11px;
             font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-soft);
         }
 
         .content td {
             padding: 20px;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid var(--border-soft);
             vertical-align: middle;
         }
-        .th-check, .td-check {
-            width: 52px; text-align: center !important;
-            padding-left: 16px !important; padding-right: 8px !important;
-        }
-        .cart-checkbox {
-            width: 20px; height: 20px;
-            cursor: pointer; accent-color: var(--primary);
-        }
-        tr.row-selected > td { background: #fdf5ee; }
-        tr.row-out-of-stock .cart-checkbox { opacity: 0.35; cursor: not-allowed; }
 
+        .th-check, .td-check {
+            width: 52px;
+            text-align: center !important;
+            padding-left: 16px !important;
+            padding-right: 8px !important;
+        }
+
+        .cart-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        tr.row-selected > td {
+            background: #FBF5E8;
+        }
+
+        tr.row-out-of-stock .cart-checkbox {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* ---- Product cell ---- */
         .san-pham {
             display: flex;
             align-items: center;
             gap: 16px;
         }
 
-        .san-pham img {
-            width: 100px;
-            height: 100px;
-            border-radius: 10px;
-            border: 1px solid #eee;
-            object-fit: cover;
-        }
-
         .img-container {
             position: relative;
-            width: 100px;
-            height: 100px;
+            width: 96px;
+            height: 96px;
+            flex-shrink: 0;
+        }
+
+        .san-pham img {
+            width: 96px;
+            height: 96px;
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border-soft);
+            object-fit: cover;
         }
 
         .out-of-stock-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
+            inset: 0;
+            background: rgba(44, 34, 24, 0.62);
+            color: #F5E8D8;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            border-radius: 10px;
+            border-radius: var(--radius-card);
             z-index: 2;
         }
 
         .stock-warning {
-            color: #d9534f;
-            font-size: 12px;
+            color: #b94040;
+            font-size: 11.5px;
             margin-top: 5px;
             display: block;
+            font-weight: 500;
         }
 
         .product-info h2 {
-            font-size: 16px;
-            color: var(--brand);
-            margin: 0;
-            font-weight: 600;
+            font-size: 15px;
+            color: var(--primary);
+            margin: 0 0 3px;
+            font-weight: 700;
+            line-height: 1.4;
         }
 
         .product-info p {
-            font-size: 13px;
-            color: var(--muted);
-            margin: 4px 0;
+            font-size: 12.5px;
+            color: var(--text-muted);
+            margin: 0;
         }
 
+        /* ---- Price cell ---- */
+        .price-cell {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+
+        .price-original {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-decoration: line-through;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .price-discount-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            background: #C9A96E22;
+            color: var(--accent);
+            border: 1px solid var(--accent-light);
+            border-radius: 3px;
+            padding: 1px 5px;
+            letter-spacing: 0.3px;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        .total-cell {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+
+        /* ---- Qty control ---- */
         .qty-control {
             display: inline-flex;
             align-items: center;
-            gap: 0;
-            border: 1.5px solid #e0d5cc;
-            border-radius: 8px;
+            border: 1.5px solid var(--border-soft);
+            border-radius: var(--radius-card);
             overflow: hidden;
-            background: #fff;
+            background: var(--white);
             transition: border-color 0.2s;
         }
 
         .qty-control:focus-within {
-            border-color: var(--primary);
+            border-color: var(--accent);
         }
 
         .qty-control button {
             background: transparent;
-            color: var(--primary);
+            color: #3C2F27;
             border: none;
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: 400;
-            line-height: 1;
+            font-size: 12px;
             transition: background 0.15s, color 0.15s;
             display: flex;
             align-items: center;
@@ -187,7 +278,7 @@
 
         .qty-control button:hover:not(:disabled) {
             background: var(--primary);
-            color: #fff;
+            color: var(--white);
         }
 
         .qty-control button:disabled {
@@ -196,17 +287,18 @@
         }
 
         .qty-control input.qty-input {
-            width: 44px;
-            height: 34px;
+            width: 42px;
+            height: 32px;
             border: none;
-            border-left: 1px solid #eee;
-            border-right: 1px solid #eee;
+            border-left: 1px solid var(--border-soft);
+            border-right: 1px solid var(--border-soft);
             text-align: center;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--brand);
-            background: #fafafa;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            background: #FAFAF8;
             outline: none;
+            font-family: 'Quicksand', sans-serif;
             -moz-appearance: textfield;
         }
 
@@ -217,19 +309,82 @@
         }
 
         .qty-control input.qty-input:focus {
-            background: #fff;
+            background: var(--white);
         }
+
+        /* ---- Delete button ---- */
+        .btn-remove {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: var(--radius-btn);
+            transition: color 0.2s, background 0.2s;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-remove:hover {
+            color: #b94040;
+            background: #fdf0f0;
+        }
+
+        /* ---- Empty cart ---- */
+        .empty-cart-cell {
+            text-align: center;
+            padding: 64px 20px !important;
+            color: var(--text-muted);
+        }
+
+        .empty-cart-cell i {
+            color: var(--accent-light);
+            display: block;
+            margin-bottom: 14px;
+        }
+
+        .empty-cart-cell span {
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        /* ---- Cart footer ---- */
         .cart-footer {
             display: flex;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: space-between;
             gap: 24px;
-            margin-top: 24px;
+            margin-top: 8px;
             padding: 20px 28px;
-            background: #fff;
-            border-radius: 14px;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 16px rgba(92, 44, 22, 0.06);
+            background: var(--white);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border-soft);
+            box-shadow: var(--shadow-card);
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .select-count-badge {
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .select-count-badge strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
         }
 
         .cart-summary {
@@ -240,60 +395,96 @@
         }
 
         .cart-summary .label {
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--muted);
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.6px;
+            letter-spacing: 2px;
         }
 
         .cart-summary .amount {
-            font-size: 26px;
+            font-size: 22px;
             font-weight: 800;
-            color: var(--primary);
-            letter-spacing: -0.5px;
+            color: var(--accent);
+            letter-spacing: -0.3px;
         }
 
         .divider-v {
             width: 1px;
-            height: 44px;
-            background: var(--border);
+            height: 40px;
+            background: var(--border-soft);
             flex-shrink: 0;
         }
 
+        /* Checkout button — matches .btn-featured-all from home.css */
         .btn-checkout {
-            height: 48px;
-            padding: 0 32px;
-            background: linear-gradient(135deg, var(--primary), #A0522D);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            height: 46px;
+            padding: 0 28px;
+            background: #3C2F27;
+            color: var(--white);
+            border: 2px solid #3C2F27;
+            border-radius: 8px;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 13px;
             font-weight: 700;
-            letter-spacing: 0.8px;
-            cursor: pointer;
-            transition: all 0.25s;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.22s ease, color 0.22s ease;
             white-space: nowrap;
         }
 
         .btn-checkout:hover:not(:disabled) {
-            background: linear-gradient(135deg, #A0522D, var(--secondary));
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(139, 69, 19, 0.25);
+            background: transparent;
+            color: var(--primary);
+        }
+
+        .btn-checkout i {
+            transition: transform 0.22s ease;
+        }
+
+        .btn-checkout:hover:not(:disabled) i {
+            transform: translateX(4px);
         }
 
         .btn-checkout:disabled {
-            background: #e0d5cc;
-            color: #a89080;
+            background: #EDEBE8;
+            color: #A89890;
+            border-color: #EDEBE8;
             cursor: not-allowed;
         }
 
+        /* Out-of-stock warning footer */
         .stock-warning-footer {
-            font-size: 12px;
-            color: #c0392b;
+            font-size: 11.5px;
+            color: #b94040;
             text-align: right;
-            margin-top: 8px;
+            margin-top: 10px;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+        }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 768px) {
+            .content th,
+            .content td {
+                padding: 14px 12px;
+            }
+
+            .san-pham {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .img-container,
+            .san-pham img {
+                width: 76px;
+                height: 76px;
+            }
         }
 
         @media (max-width: 576px) {
@@ -303,37 +494,26 @@
                 gap: 16px;
                 padding: 16px;
             }
-            .cart-summary {
-                align-items: flex-start;
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-            .divider-v { display: none; }
-            .btn-checkout { width: 100%; }
-        }
 
-
-            .content th,
-            .content td {
-                padding: 12px 15px;
-            }
-
-            .san-pham {
+            .footer-right {
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
+                align-items: stretch;
+                gap: 12px;
             }
 
-            .san-pham img {
-                width: 80px;
-                height: 80px;
+            .cart-summary {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
             }
+
+            .divider-v { display: none; }
 
             .btn-checkout {
                 width: 100%;
+                justify-content: center;
             }
-
+        }
     </style>
 </head>
 
@@ -343,8 +523,11 @@
 
 <main>
     <div class="container">
-        <!-- Đã sửa thành class .cart-title -->
-        <h1 class="cart-title">GIỎ HÀNG</h1>
+        <!-- Page header đồng bộ với section-title trên trang chủ -->
+        <div class="cart-page-header">
+            <h1 class="cart-title">Giỏ hàng</h1>
+            <span class="cart-page-label">Sweet Oven Bakery</span>
+        </div>
 
         <table class="content" aria-label="Giỏ hàng">
             <thead>
@@ -362,9 +545,9 @@
             <tbody>
             <c:if test="${empty cart.items}">
                 <tr>
-                    <td colspan="5" style="text-align:center; padding: 40px; color: #888;">
-                        <i class="fas fa-shopping-basket fa-3x mb-3" style="color: #ddd;"></i><br>
-                        Giỏ hàng của bạn đang trống
+                    <td colspan="6" class="empty-cart-cell">
+                        <i class="fas fa-shopping-basket fa-3x"></i>
+                        <span>Giỏ hàng của bạn đang trống</span>
                     </td>
                 </tr>
             </c:if>
@@ -389,7 +572,7 @@
                     <td class="san-pham">
                         <div class="img-container">
                             <a href="${pageContext.request.contextPath}/product?id=${item.product.id}">
-                              <img src="${item.imageUrl}" alt="${item.product.name}">
+                                <img src="${item.imageUrl}" alt="${item.product.name}">
                             </a>
                             <c:if test="${item.product.stockQuantity <= 0}">
                                 <div class="out-of-stock-overlay">Hết hàng</div>
@@ -403,14 +586,25 @@
                         </div>
                     </td>
 
-                    <td>
-                        <fmt:formatNumber value="${item.product.displayPrice}" type="number" /> VNĐ
+                    <td class="price-cell">
+                        <c:choose>
+                            <c:when test="${item.product.discountPrice != null && item.product.discountPrice > 0}">
+                                <span class="price-original">
+                                    <fmt:formatNumber value="${item.product.originalPrice}" type="number" /> VNĐ
+                                </span>
+                                <fmt:formatNumber value="${item.product.discountPrice}" type="number" /> VNĐ
+                                <span class="price-discount-badge">SALE</span>
+                            </c:when>
+                            <c:otherwise>
+                                <fmt:formatNumber value="${item.product.originalPrice}" type="number" /> VNĐ
+                            </c:otherwise>
+                        </c:choose>
                     </td>
 
                     <td>
                         <div class="qty-control" data-product-id="${item.product.id}">
                             <button type="button" class="btn-decrease" title="Giảm">
-                                <i class="fas fa-minus" style="font-size:11px;"></i>
+                                <i class="fas fa-minus" style="font-size:10px;"></i>
                             </button>
                             <input type="number"
                                    class="qty-input"
@@ -419,17 +613,17 @@
                                    max="${item.product.stockQuantity}"
                                    data-original="${item.quantity}">
                             <button type="button" class="btn-increase" title="Tăng">
-                                <i class="fas fa-plus" style="font-size:11px;"></i>
+                                <i class="fas fa-plus" style="font-size:10px;"></i>
                             </button>
                         </div>
                     </td>
 
-                    <td class="item-total-${item.product.id}">
+                    <td class="total-cell item-total-${item.product.id}">
                         <fmt:formatNumber value="${item.product.displayPrice * item.quantity}" type="number" /> VNĐ
                     </td>
 
                     <td style="text-align:center">
-                        <button class="btn btn-link text-danger" title="Xóa sản phẩm"
+                        <button class="btn-remove" title="Xóa sản phẩm"
                                 onclick="removeItem(${item.product.id})">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
@@ -459,7 +653,7 @@
                         <input type="hidden" name="selectedProductIds" id="selected-ids-input" value="">
                         <button type="submit" id="btn-checkout" class="btn-checkout" disabled
                                 title="Vui lòng chọn ít nhất một sản phẩm để thanh toán">
-                            Thanh toán <i class="fas fa-arrow-right ms-2" style="font-size:13px;"></i>
+                            Thanh toán <i class="fas fa-arrow-right" style="font-size:12px;"></i>
                         </button>
                     </form>
                 </div>
@@ -469,8 +663,7 @@
                     <i class="fas fa-exclamation-circle me-1"></i>
                     Sản phẩm <strong>Hết hàng</strong> không thể chọn để thanh toán.
                 </p>
-            </c:if>
-        </c:if>
+            </c:if>        </c:if>
 
     </div>
 </main>
@@ -686,9 +879,10 @@
                             var tbody = document.querySelector('tbody');
                             var remaining = tbody.querySelectorAll('tr.cart-row');
                             if (remaining.length === 0) {
-                                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:#888;">'
-                                    + '<i class="fas fa-shopping-basket fa-3x mb-3" style="color:#ddd;display:block;margin-bottom:12px;"></i>'
-                                    + 'Giỏ hàng của bạn đang trống</td></tr>';
+                                tbody.innerHTML = '<tr><td colspan="6" class="empty-cart-cell">'
+                                    + '<i class="fas fa-shopping-basket fa-3x"></i>'
+                                    + '<span>Giỏ hàng của bạn đang trống</span>'
+                                    + '</td></tr>';
                                 // Ẩn footer
                                 var footer = document.querySelector('.cart-footer');
                                 if (footer) footer.style.display = 'none';

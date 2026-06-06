@@ -107,15 +107,18 @@
             <div>
                 <c:choose>
                     <c:when test="${order.orderStatus == '1'}">
-                        <span class="status status-pending">Đang xử lý</span>
+                        <span class="status status-pending">Chờ xác nhận</span>
                     </c:when>
                     <c:when test="${order.orderStatus == '2'}">
-                        <span class="status status-delivering">Đang giao</span>
+                        <span class="status status-pending">Chờ lấy hàng</span>
                     </c:when>
                     <c:when test="${order.orderStatus == '3'}">
-                        <span class="status status-completed">Hoàn thành</span>
+                        <span class="status status-delivering">Đang giao</span>
                     </c:when>
                     <c:when test="${order.orderStatus == '4'}">
+                        <span class="status status-completed">Đã giao</span>
+                    </c:when>
+                    <c:when test="${order.orderStatus == '5'}">
                         <span class="status status-cancelled">Đã hủy</span>
                     </c:when>
                 </c:choose>

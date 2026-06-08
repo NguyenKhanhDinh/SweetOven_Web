@@ -8,6 +8,17 @@
 
     <display-name>Sweet Oven Bakery</display-name>
 
+    <!-- FIX: Cấu hình session cookie để không bị mất khi redirect qua VNPay/MoMo (cross-site) -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+        <cookie-config>
+            <http-only>true</http-only>
+            <!-- Bật dòng dưới nếu server chạy HTTPS (production với ngrok đã là HTTPS) -->
+            <!-- <secure>true</secure> -->
+        </cookie-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>

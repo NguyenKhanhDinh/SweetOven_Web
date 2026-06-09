@@ -909,9 +909,6 @@
                 }
             });
     }
-    if (typeof window.showGlobalToast === 'function') {
-        window.showGlobalToast('success', 'Đã cập nhật số lượng');
-    }
     recalcSelectedTotal();
     function goToProductDetail(productId) {
         sessionStorage.setItem('selectedProductId', productId);

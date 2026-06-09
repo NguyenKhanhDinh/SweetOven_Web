@@ -1,5 +1,3 @@
-
-
 function goToProductDetail(productId) {
     if (productId) {
         sessionStorage.setItem('selectedProductId', productId);
@@ -14,38 +12,40 @@ function addToCartAsync(productId, quantity, buttonElement) {
     buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
     buttonElement.disabled = true;
 
-    fetch('add-cart', {
+    // FIX: dùng window._contextPath (set bởi header.jsp) - URL tương đối 'add-cart' bị sai khi ở /menu, /product, v.v.
+    var ctxPath = (window._contextPath !== undefined ? window._contextPath : '');
+    fetch(ctxPath + '/add-cart', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: 'productId=' + productId + '&quantity=' + (quantity || 1)
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            buttonElement.innerHTML = '<i class="fas fa-check"></i> Đã thêm!';
-            updateCartBadge(data.cartTotalQuantity);
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                buttonElement.innerHTML = '<i class="fas fa-check"></i> Đã thêm!';
+                updateCartBadge(data.cartTotalQuantity);
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalText;
+                    buttonElement.disabled = false;
+                }, 2000);
+            } else {
+                buttonElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Thất bại';
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalText;
+                    buttonElement.disabled = false;
+                }, 2000);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            buttonElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Lỗi';
             setTimeout(() => {
                 buttonElement.innerHTML = originalText;
                 buttonElement.disabled = false;
             }, 2000);
-        } else {
-            buttonElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Thất bại';
-            setTimeout(() => {
-                buttonElement.innerHTML = originalText;
-                buttonElement.disabled = false;
-            }, 2000);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        buttonElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Lỗi';
-        setTimeout(() => {
-            buttonElement.innerHTML = originalText;
-            buttonElement.disabled = false;
-        }, 2000);
-    });
+        });
 }
 
 function updateCartBadge(totalQuantity) {

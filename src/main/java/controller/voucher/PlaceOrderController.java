@@ -15,6 +15,7 @@ import service.UserDiscountService;
 import utils.EmailUtil;
 import utils.GHNUtil;
 import utils.MomoUtil;
+import utils.VNPayUtil;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -34,7 +35,7 @@ public class PlaceOrderController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession(true);
+        HttpSession session = request.getSession(false);
 
         if (session == null) {
             response.sendRedirect(request.getContextPath() + "/login");
@@ -168,13 +169,53 @@ public class PlaceOrderController extends HttpServlet {
 
             try {
                 String momoPayUrl = MomoUtil.createPaymentUrl(sessionKey, totalAmount, orderCode);
+                response.sendRedirect(momoPayUrl);
             } catch (Exception e) {
                 System.err.println("[MoMo] Lỗi tạo link thanh toán:" + e.getMessage());
                 session.removeAttribute(sessionKey);
                 session.setAttribute("errorMsg", "Không thể kết nối MoMo. Vui lòng chọn phương thức thanh toán khác!");
                 response.sendRedirect(request.getContextPath() + "/checkout");
-                return;
             }
+            return;
+        }
+        if (paymentMethod == 3) {
+            String orderCode = "ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+            String sessionKey = "vnpay_pending" + orderCode;
+
+            VNPayPendingOrder pending = new VNPayPendingOrder();
+            pending.orderCode = orderCode;
+            pending.user = user;
+            pending.guestEmail = guestEmail;
+            pending.fullName = fullName;
+            pending.phone = phone;
+            pending.fullAddr = fullAddr.toString();
+            pending.ward = nvl(ward);
+            pending.district = nvl(district);
+            pending.province = nvl(province);
+            pending.note = note;
+            pending.ghnDistrictId = ghnDistrictId;
+            pending.ghnWardCode = ghnWardCode;
+            pending.discountId = discountId;
+            pending.subTotal = subTotal;
+            pending.discountAmount = discountAmount;
+            pending.shippingFee = shippingFee;
+            pending.totalAmount = totalAmount;
+            pending.checkoutItems = checkoutItems;
+            pending.checkoutSelectedIds = (String) session.getAttribute("checkoutSelectedIds");
+
+            session.setAttribute(sessionKey, pending);
+            try {
+                String ipAdress = request.getHeader("X-Forwarded-For");
+                if (ipAdress == null) ipAdress = request.getRemoteAddr();
+                String vnpayUrl = VNPayUtil.createPaymentUrl(sessionKey, totalAmount.longValue(), orderCode,ipAdress);
+                response.sendRedirect(vnpayUrl);
+            } catch (Exception e) {
+                System.err.println("[VNPay] Lỗi link thanh toán: " + e.getMessage());
+                session.removeAttribute(sessionKey);
+                session.setAttribute("errorMsg","Không thể kết nối VNPay. Vui lòng chọn phương thức thanh toán khác!");
+                response.sendRedirect(request.getContextPath() + "/checkout");
+            }
+            return;
         }
 
         Order order = buildOrder(null, user, fullName, phone, fullAddr.toString(), discountId, subTotal, discountAmount, shippingFee, totalAmount, note, paymentMethod);

@@ -31,6 +31,12 @@ public class VoucherController extends HttpServlet {
             try {
                 List<Integer> savedDiscountIds = userDiscountService.getSavedDiscountIds(user.getId());
                 request.setAttribute("savedDiscountIds", savedDiscountIds);
+
+                List<Integer> usedDiscountIds = userDiscountService.getUsedDiscountIds(user.getId());
+                request.setAttribute("usedDiscountIds", usedDiscountIds);
+
+                long savedActiveCount = userDiscountService.getSavedActiveDiscounts(user.getId()).size();
+                request.setAttribute("savedActiveCount", savedActiveCount);
             } catch (Exception e) {
                 e.printStackTrace();
             }

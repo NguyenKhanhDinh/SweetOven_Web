@@ -60,6 +60,12 @@ public Cart mergeDBCartIntoSession(int userId, Cart sessionCart){
         int productId = dbItem.getProduct().getId();
         if(!sessionCart.getData().containsKey(productId)){
             sessionCart.getData().put(productId, dbItem);
+        }else {
+            CartItem sessionItem = sessionCart.getData().get(productId);
+            int mergedQty = sessionItem.getQuantity() + dbItem.getQuantity();
+            int stock = dbItem.getProduct().getStockQuantity();
+            if(mergedQty > stock) mergedQty = stock;
+            sessionItem.setQuantity(mergedQty);
         }
     }
     return sessionCart;

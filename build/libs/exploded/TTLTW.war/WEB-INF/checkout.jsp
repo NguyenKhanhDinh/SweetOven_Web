@@ -427,38 +427,136 @@
                         <!-- ── Mã giảm giá ── -->
                         <div class="card-section">
                             <h2><i class="fas fa-tag"></i> Mã giảm giá</h2>
-                            <div style="display:flex; gap:10px; align-items:center;">
-                                <input type="text" id="discount-code-input"
-                                       class="form-control-custom" style="flex:1; text-transform:uppercase;"
-                                       placeholder="Nhập mã giảm giá..."
-                                       oninput="this.value=this.value.toUpperCase()">
-                                <button type="button" onclick="applyDiscount()"
-                                        style="background:var(--primary); color:#fff; border:none; border-radius:9px;
-                                               padding:10px 18px; font-size:13px; font-weight:700; cursor:pointer;
-                                               white-space:nowrap; transition:background .2s;"
-                                        onmouseover="this.style.background='#A0522D'"
-                                        onmouseout="this.style.background='var(--primary)'">
-                                    Áp dụng
-                                </button>
-                            </div>
-                            <!-- Thông báo kết quả -->
-                            <div id="discount-msg" style="display:none; margin-top:10px; font-size:13px;
-                                 border-radius:8px; padding:9px 13px;"></div>
-                            <!-- Nút xoá mã (hiện khi đã áp dụng) -->
-                            <div id="discount-applied-row" style="display:none; margin-top:10px;
-                                 font-size:13px; display:none; align-items:center; gap:8px;">
-                                <i class="fas fa-check-circle" style="color:#16a34a;"></i>
-                                <span id="discount-applied-label" style="color:#16a34a; font-weight:600;"></span>
-                                <button type="button" onclick="removeDiscount()"
-                                        style="margin-left:auto; background:none; border:none; color:#e05c5c;
-                                               font-size:12px; cursor:pointer; font-weight:700;">
-                                    ✕ Xoá
-                                </button>
-                            </div>
+
+                            <c:choose>
+                                <c:when test="${empty sessionScope.user}">
+                                    <%-- Guest: hiện thông báo yêu cầu đăng nhập --%>
+                                    <div style="background:#fef9ec; border:1px solid #fcd34d; border-radius:10px;
+                                                padding:12px 16px; font-size:13px; color:#92400e; display:flex;
+                                                align-items:center; gap:10px;">
+                                        <i class="fas fa-lock" style="font-size:16px;"></i>
+                                        <span>Vui lòng <a href="${pageContext.request.contextPath}/login"
+                                                          style="color:var(--primary); font-weight:700; text-decoration:underline;">đăng nhập</a>
+                                              để sử dụng mã giảm giá.</span>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <%-- Logged-in user: ô nhập + nút chọn voucher đã lưu --%>
+                                    <div style="display:flex; gap:10px; align-items:center;">
+                                        <div style="position:relative; flex:1;">
+                                            <input type="text" id="discount-code-input"
+                                                   class="form-control-custom"
+                                                   style="width:100%; text-transform:uppercase; padding-right:42px;"
+                                                   placeholder="Nhập mã giảm giá..."
+                                                   oninput="this.value=this.value.toUpperCase()">
+                                            <c:if test="${not empty savedVouchers}">
+                                                <button type="button" onclick="openVoucherDialog()"
+                                                        title="Chọn voucher đã lưu"
+                                                        style="position:absolute; right:6px; top:50%; transform:translateY(-50%);
+                                                               background:none; border:none; cursor:pointer; padding:4px 6px;
+                                                               color:var(--primary); font-size:15px; display:flex; align-items:center;">
+                                                    <i class="fas fa-chevron-down"></i>
+                                                </button>
+                                            </c:if>
+                                        </div>
+                                        <button type="button" onclick="applyDiscount()"
+                                                style="background:var(--primary); color:#fff; border:none; border-radius:9px;
+                                                       padding:10px 18px; font-size:13px; font-weight:700; cursor:pointer;
+                                                       white-space:nowrap; transition:background .2s;"
+                                                onmouseover="this.style.background='#A0522D'"
+                                                onmouseout="this.style.background='var(--primary)'">
+                                            Áp dụng
+                                        </button>
+                                    </div>
+
+                                    <!-- Thông báo kết quả -->
+                                    <div id="discount-msg" style="display:none; margin-top:10px; font-size:13px;
+                                         border-radius:8px; padding:9px 13px;"></div>
+                                    <!-- Nút xoá mã (hiện khi đã áp dụng) -->
+                                    <div id="discount-applied-row" style="display:none; margin-top:10px;
+                                         font-size:13px; align-items:center; gap:8px;">
+                                        <i class="fas fa-check-circle" style="color:#16a34a;"></i>
+                                        <span id="discount-applied-label" style="color:#16a34a; font-weight:600;"></span>
+                                        <button type="button" onclick="removeDiscount()"
+                                                style="margin-left:auto; background:none; border:none; color:#e05c5c;
+                                                       font-size:12px; cursor:pointer; font-weight:700;">
+                                            ✕ Xoá
+                                        </button>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+
                             <!-- Hidden fields gửi kèm form -->
                             <input type="hidden" id="applied-discount-id" name="discountId" value="0">
                             <input type="hidden" id="applied-discount-amount" name="discountAmount" value="0">
                         </div>
+
+                        <!-- ── Dialog chọn voucher đã lưu ── -->
+                        <c:if test="${not empty sessionScope.user and not empty savedVouchers}">
+                            <div id="voucher-dialog-overlay"
+                                 style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45);
+                                    z-index:9999; justify-content:center; align-items:center;">
+                                <div style="background:#fff; border-radius:16px; width:min(500px,92vw);
+                                        max-height:80vh; display:flex; flex-direction:column;
+                                        box-shadow:0 8px 32px rgba(0,0,0,.18); overflow:hidden;">
+                                    <!-- Header dialog -->
+                                    <div style="padding:16px 20px; border-bottom:1px solid #f2e7de;
+                                            display:flex; align-items:center; justify-content:space-between;">
+                                    <span style="font-size:15px; font-weight:700; color:var(--brand);">
+                                        <i class="fas fa-ticket-alt" style="color:var(--primary); margin-right:6px;"></i>
+                                        Voucher của tôi
+                                    </span>
+                                        <button type="button" onclick="closeVoucherDialog()"
+                                                style="background:none; border:none; font-size:18px; color:#999;
+                                                   cursor:pointer; line-height:1;">✕</button>
+                                    </div>
+                                    <!-- Danh sách voucher -->
+                                    <div style="overflow-y:auto; padding:12px 16px; display:flex; flex-direction:column; gap:10px;">
+                                        <c:forEach var="v" items="${savedVouchers}">
+                                            <div style="border:1px solid #f2e7de; border-radius:12px; padding:12px 14px;
+                                                    display:flex; align-items:center; justify-content:space-between;
+                                                    gap:10px; background:#fffdfb;
+                                                    ${v.used or not v.valid ? 'opacity:0.55;' : ''}">
+                                                <div style="display:flex; flex-direction:column; gap:3px; flex:1; min-width:0;">
+                                                <span style="font-size:14px; font-weight:700; color:var(--primary);
+                                                             letter-spacing:.5px; white-space:nowrap; overflow:hidden;
+                                                             text-overflow:ellipsis;">
+                                                    <i class="fas ${v.iconClass}" style="margin-right:5px;"></i>
+                                                    ${v.code}
+                                                </span>
+                                                    <span style="font-size:12px; color:var(--muted);">${v.description}</span>
+                                                    <span style="font-size:11px; color:#888;">
+                                                    Giảm: <b style="color:var(--primary);">${v.displayValue}</b>
+                                                    &nbsp;|&nbsp; Đơn tối thiểu: ${v.displayMinOrder}
+                                                    &nbsp;|&nbsp; HSD: ${v.formattedEndDate}
+                                                </span>
+                                                </div>
+                                                <c:choose>
+                                                    <c:when test="${v.used}">
+                                                        <span style="font-size:11px; color:#999; white-space:nowrap;">Đã dùng</span>
+                                                    </c:when>
+                                                    <c:when test="${not v.valid}">
+                                                        <span style="font-size:11px; color:#e05c5c; white-space:nowrap;">Hết hạn</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <button type="button"
+                                                                onclick="selectVoucher('${v.code}')"
+                                                                style="background:var(--primary); color:#fff; border:none;
+                                                                   border-radius:8px; padding:7px 14px; font-size:12px;
+                                                                   font-weight:700; cursor:pointer; white-space:nowrap;
+                                                                   transition:background .2s;"
+                                                                onmouseover="this.style.background='#A0522D'"
+                                                                onmouseout="this.style.background='var(--primary)'">
+                                                            Chọn
+                                                        </button>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
+                                        </c:forEach>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:if>
 
                         <!-- ── Phương thức thanh toán ── -->
                         <div class="card-section">
@@ -630,6 +728,27 @@
         document.getElementById('payment-method-val').value = PM_VALUES[method];
         document.getElementById('btn-place-order-text').textContent = PM_LABELS[method];
     }
+
+    // ─── Dialog chọn voucher đã lưu ──────────────────────────────────────
+    function openVoucherDialog() {
+        var overlay = document.getElementById('voucher-dialog-overlay');
+        if (overlay) { overlay.style.display = 'flex'; }
+    }
+    function closeVoucherDialog() {
+        var overlay = document.getElementById('voucher-dialog-overlay');
+        if (overlay) { overlay.style.display = 'none'; }
+    }
+    function selectVoucher(code) {
+        var inp = document.getElementById('discount-code-input');
+        if (inp) { inp.value = code.toUpperCase(); }
+        closeVoucherDialog();
+        applyDiscount();
+    }
+    // Đóng dialog khi click ngoài
+    document.addEventListener('click', function(e) {
+        var overlay = document.getElementById('voucher-dialog-overlay');
+        if (overlay && e.target === overlay) { closeVoucherDialog(); }
+    });
 
     // ─── Mã giảm giá ──────────────────────────────────────────────────────
     function applyDiscount() {

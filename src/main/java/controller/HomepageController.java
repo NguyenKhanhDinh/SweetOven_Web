@@ -11,6 +11,7 @@ import service.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @WebServlet(name = "HomepageController", value = {"/home",""})
@@ -47,6 +48,12 @@ import java.util.List;
             try {
                 List<Integer> savedDiscountIds = userDiscountService.getSavedDiscountIds(user.getId());
                 request.setAttribute("savedDiscountIds", savedDiscountIds);
+
+                List<Integer> usedDiscountIds = userDiscountService.getUsedDiscountIds(user.getId());
+                if (!usedDiscountIds.isEmpty()) {
+                    discounts = discounts.stream().filter(d -> !usedDiscountIds.contains(d.getId())).collect(java.util.stream.Collectors.toList());
+                    request.setAttribute("discounts", discounts);
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }

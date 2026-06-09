@@ -840,7 +840,7 @@
                         <c:forEach var="v" items="${vouchers}">
                             <c:if test="${!v.used && v.valid}">
                                 <div class="voucher-card">
-                                        <%-- LEFT: Logo panel (đồng nhất với trang /vouchers) --%>
+                                        <%-- LEFT: Logo panel --%>
                                     <div class="vc-logo-panel">
                                         <img src="${pageContext.request.contextPath}/assets/picture/logo-voucher.png"
                                              alt="Sweet Oven" class="logo-img"
@@ -861,8 +861,7 @@
                                             <div class="vc-desc">${v.description}</div>
                                             <div class="vc-meta">
                                                 <span><i class="fa fa-receipt"></i>Từ <b>${v.displayMinOrder}</b></span>
-                                                <span><i
-                                                        class="fa fa-clock"></i>HSD: <b>${v.formattedEndDate}</b></span>
+                                                <span><i class="fa fa-clock"></i>HSD: <b>${v.formattedEndDate}</b></span>
                                             </div>
                                         </div>
                                         <div class="vc-footer-row">

@@ -30,5 +30,13 @@ public class UserDiscountService {
     public boolean markAsUsed(int userId, int discountId) {
         return userDiscountDao.markAsUsed(userId, discountId);
     }
-
+    public List<UserDiscount> getSavedActiveDiscounts(int userId) {
+        return userDiscountDao.getSavedActiveDiscounts(userId);
+    }
+    public boolean isAlreadyUsed(int userId, int discountId) {
+        return userDiscountDao.isAlreadyUsed(userId, discountId);
+    }
+    public List<Integer> getUsedDiscountIds(int userId) {
+        return userDiscountDao.getUsedDiscountIds(userId);
+    }
 }

@@ -6,11 +6,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Cart;
-import model.CartItem;
-import model.User;
-import model.UserAddress;
+import model.*;
 import service.UserAddressService;
+import service.UserDiscountService;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -22,6 +20,7 @@ import java.util.Set;
 @WebServlet("/checkout")
 public class CheckOutController extends HttpServlet {
     private final UserAddressService userAddressService = new UserAddressService();
+    private final UserDiscountService userDiscountService = new UserDiscountService();
     private static final BigDecimal SHIPPING_FEE = new BigDecimal("30000");
 
     @Override
@@ -77,6 +76,12 @@ public class CheckOutController extends HttpServlet {
             } catch (Exception e) {
                 System.err.println("[CheckOutController] Lỗi tải địa chỉ: " + e.getMessage());
             }
+            try {
+                List<UserDiscount> savedVouchers = userDiscountService.getSavedActiveDiscounts(user.getId());
+                request.setAttribute("savedVouchers", savedVouchers);
+            } catch (Exception e) {
+                System.err.println("[CheckOutController] Lỗi tải voucher: " + e.getMessage());
+            }
         }
         BigDecimal finalTotal = subtotal.add(SHIPPING_FEE);
         request.setAttribute("checkoutItems", checkoutItems);
@@ -88,46 +93,52 @@ public class CheckOutController extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/checkout.jsp").forward(request, response);
     }
 
-private Set<Integer> parseIds(String raw) {
-    Set<Integer> ids = new HashSet<>();
-    for (String part : raw.split(",")) {
-        try {
-            ids.add(Integer.parseInt(part.trim()));
-        } catch (NumberFormatException ignored) {
-        }
-    }
-    return ids;
-}
-
-@Override
-protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    HttpSession session = request.getSession(false);
-
-    if (session != null && session.getAttribute("checkoutItems") != null) {
-        User user = (User) session.getAttribute("user");
-        if (user != null) {
+    private Set<Integer> parseIds(String raw) {
+        Set<Integer> ids = new HashSet<>();
+        for (String part : raw.split(",")) {
             try {
-                List<UserAddress> addresses = userAddressService.getUserAddressByUserId(user.getId());
-                request.setAttribute("userAddresses", addresses);
-            } catch (Exception e) {
-                System.err.println("[CheckOutController] GET - Lỗi tải địa chỉ: " + e.getMessage());
+                ids.add(Integer.parseInt(part.trim()));
+            } catch (NumberFormatException ignored) {
             }
         }
-        BigDecimal subtotal = (BigDecimal) session.getAttribute("checkoutTotal");
-        if (subtotal == null) {
-            subtotal = BigDecimal.ZERO;
-        }
-        BigDecimal finalTotal = subtotal.add(SHIPPING_FEE);
-
-        request.setAttribute("checkoutItems", session.getAttribute("checkoutItems"));
-        request.setAttribute("checkoutTotal", subtotal);
-        request.setAttribute("shippingFee", SHIPPING_FEE);
-        request.setAttribute("finalTotal", finalTotal);
-        request.setAttribute("selectedProductIds", session.getAttribute("checkoutSelectedIds"));
-
-        request.getRequestDispatcher("/WEB-INF/checkout.jsp").forward(request, response);
-        return;
+        return ids;
     }
-    response.sendRedirect(request.getContextPath() + "/my-cart");
-}
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+
+        if (session != null && session.getAttribute("checkoutItems") != null) {
+            User user = (User) session.getAttribute("user");
+            if (user != null) {
+                try {
+                    List<UserAddress> addresses = userAddressService.getUserAddressByUserId(user.getId());
+                    request.setAttribute("userAddresses", addresses);
+                } catch (Exception e) {
+                    System.err.println("[CheckOutController] GET - Lỗi tải địa chỉ: " + e.getMessage());
+                }
+                try {
+                    List<UserDiscount> savedVouchers = userDiscountService.getSavedActiveDiscounts(user.getId());
+                    request.setAttribute("savedVouchers", savedVouchers);
+                } catch (Exception e) {
+                    System.err.println("[CheckOutController] GET-Lỗi tải voucher: " + e.getMessage());
+                }
+            }
+            BigDecimal subtotal = (BigDecimal) session.getAttribute("checkoutTotal");
+            if (subtotal == null) {
+                subtotal = BigDecimal.ZERO;
+            }
+            BigDecimal finalTotal = subtotal.add(SHIPPING_FEE);
+
+            request.setAttribute("checkoutItems", session.getAttribute("checkoutItems"));
+            request.setAttribute("checkoutTotal", subtotal);
+            request.setAttribute("shippingFee", SHIPPING_FEE);
+            request.setAttribute("finalTotal", finalTotal);
+            request.setAttribute("selectedProductIds", session.getAttribute("checkoutSelectedIds"));
+
+            request.getRequestDispatcher("/WEB-INF/checkout.jsp").forward(request, response);
+            return;
+        }
+        response.sendRedirect(request.getContextPath() + "/my-cart");
+    }
 }

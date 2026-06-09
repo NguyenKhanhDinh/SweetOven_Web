@@ -7,7 +7,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Discount;
+import model.User;
 import service.DiscountService;
+import service.UserDiscountService;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,6 +18,7 @@ import java.math.BigDecimal;
 @WebServlet("/apply-discount")
 public class ApplyDiscountController extends HttpServlet {
     private final DiscountService discountService = new DiscountService();
+    private final UserDiscountService userDiscountService = new UserDiscountService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -23,6 +26,12 @@ public class ApplyDiscountController extends HttpServlet {
         response.setContentType("application/json;charset=UTF-8");
 
         HttpSession session = request.getSession(false);
+        User user = session != null ? (User) session.getAttribute("user") : null;
+        if (user == null) {
+            writeJson(response, false, 0, 0, "Vui lòng đăng nhập để sử dụng mã giảm giá!");
+            return;
+        }
+
         String action = request.getParameter("action");
         if ("remove".equals(action)) {
             if (session != null) {
@@ -60,6 +69,15 @@ public class ApplyDiscountController extends HttpServlet {
             writeJson(response, false, 0, 0, "Mã giảm giá đã hết hạn hoặc chưa bắt đầu!");
             return;
         }
+        boolean alreadySaved = userDiscountService.isAlreadySaved(user.getId(), discount.getId());
+
+        if (userDiscountService.isAlreadyUsed(user.getId(), discount.getId())) {
+            writeJson(response, false, 0, 0, "Tài khoản của bạn đã sử dụng mã này rồi!");
+            return;
+        }
+        if (!alreadySaved){
+            userDiscountService.saveDiscount(user.getId(), discount.getId());
+        }
         if (discount.getMinValueOrder() != null && subtotal.compareTo(discount.getMinValueOrder()) < 0) {
             String minStr = String.format("%,.0f", discount.getMinValueOrder());
             writeJson(response, false, 0, 0, "Đơn hàng chưa đạt giá trị tối thiểu" + minStr + " VNĐ để áp dụng mã này!");
@@ -81,7 +99,7 @@ public class ApplyDiscountController extends HttpServlet {
 
     private void writeJson(HttpServletResponse response, boolean success, int discountId, long discountAmount, String message) throws IOException {
         String escaped = message.replaceAll("\"", "\\\"");
-        String json = String.format("{\"success\":%b,\"discountAmount\":%d,\"message\":\"%s\"}", success, discountId, discountAmount, escaped);
+        String json = String.format("{\"success\":%b,\"discountId\":%d,\"discountAmount\":%d,\"message\":\"%s\"}", success, discountId, discountAmount, escaped);
         PrintWriter out = response.getWriter();
         out.print(json);
         out.flush();

@@ -45,7 +45,7 @@ public class ProfileController extends HttpServlet {
         }
         List<model.UserDiscount> vouchers = new ArrayList<>();
         try {
-            vouchers = userDiscountService.getSavedDiscounts(user.getId());
+            vouchers = userDiscountService.getSavedActiveDiscounts(user.getId());
         }catch(Exception e){
             e.printStackTrace();
         }

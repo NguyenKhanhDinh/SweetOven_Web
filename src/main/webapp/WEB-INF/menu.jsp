@@ -102,6 +102,13 @@
                                     <a href="${pageContext.request.contextPath}/product?id=${p.id}">
                                         <img src="${p.image}" alt="${p.name}">
                                     </a>
+                                    <button type="button"
+                                            class="btn-favorite ${not empty favoriteProductIds and favoriteProductIds.contains(p.id) ? 'active' : ''}"
+                                            data-product-id="${p.id}"
+                                            onclick="toggleFavorite(this, ${p.id})"
+                                            title="Thêm vào yêu thích">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
                                 </div>
                                 <div class="product-content">
                                     <h3>${p.name}</h3>
@@ -189,5 +196,31 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/menu.js"></script>
 
+<script>
+    (function () {
+        const contextPath = (document.querySelector('meta[name="contextPath"]') || {}).content || '';
+        window.toggleFavorite = function (btn, productId) {
+            event && event.stopPropagation();
+            fetch(contextPath + '/toggle-favorite', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'productId=' + productId
+            })
+                .then(res => {
+                    if (res.status === 401) { window.location.href = contextPath + '/login'; return null; }
+                    return res.json();
+                })
+                .then(data => {
+                    if (!data) return;
+                    if (data.isFavorite) { btn.classList.add('active'); }
+                    else { btn.classList.remove('active'); }
+                    btn.classList.remove('heart-pop');
+                    void btn.offsetWidth;
+                    btn.classList.add('heart-pop');
+                })
+                .catch(err => console.error('Favorite error:', err));
+        };
+    })();
+</script>
 </body>
 </html>

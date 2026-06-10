@@ -8,8 +8,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.Product;
 import model.ProductImage;
+import model.User;
+import service.UserFavoriteService;
 
 import java.io.IOException;
 import java.util.List;
@@ -54,9 +57,20 @@ public class ProductController extends HttpServlet {
             rp.setListImages(rpImages);
         }
 
-        // 3. Truyền dữ liệu sang JSP
         request.setAttribute("product", product);
         request.setAttribute("relatedProducts", relatedProducts);
+
+        HttpSession session = request.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+        if(user != null){
+            try{
+                UserFavoriteService favoriteService = new UserFavoriteService();
+                List<Integer> favoiteProductIds = favoriteService.getFavoriteProductIds(user.getId());
+                request.setAttribute("favoriteProductIds", favoiteProductIds);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
 
         request.getRequestDispatcher("/WEB-INF/product_detail.jsp").forward(request, response);
     }

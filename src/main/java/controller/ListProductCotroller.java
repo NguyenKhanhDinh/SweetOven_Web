@@ -5,10 +5,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.Category;
 import model.Product;
+import model.User;
 import service.CategoryService;
 import service.ProductService;
+import service.UserFavoriteService;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,6 +21,7 @@ public class ListProductCotroller extends HttpServlet {
 
     private ProductService productService = new ProductService();
     private CategoryService categoryService = new CategoryService();
+    private UserFavoriteService userFavoriteService = new UserFavoriteService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -83,6 +87,18 @@ public class ListProductCotroller extends HttpServlet {
         request.setAttribute("sort", sort);
         request.setAttribute("categoryList", categories);
         request.setAttribute("currentCategory", currentCategory);
+
+        HttpSession session = request.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+        if (user != null) {
+            try {
+                List<Integer> favoriteProductIds = userFavoriteService.getFavoriteProductIds(user.getId());
+                request.setAttribute("favoriteProductIds", favoriteProductIds);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
 
         request.getRequestDispatcher("/WEB-INF/menu.jsp")
                 .forward(request, response);

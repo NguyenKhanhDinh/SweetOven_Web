@@ -21,12 +21,14 @@ import java.util.stream.Collectors;
     private DiscountService discountService;
     private CategoryService categoryService;
     private UserDiscountService userDiscountService;
+    private UserFavoriteService userFavoriteService;
     public void init() {
         this.productService = new ProductService();
         this.bannerService = new BannerService();
         this.discountService = new DiscountService();
         this.categoryService = new CategoryService();
         this.userDiscountService = new UserDiscountService();
+        this.userFavoriteService = new UserFavoriteService();
     }
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //for featured products
@@ -54,6 +56,8 @@ import java.util.stream.Collectors;
                     discounts = discounts.stream().filter(d -> !usedDiscountIds.contains(d.getId())).collect(java.util.stream.Collectors.toList());
                     request.setAttribute("discounts", discounts);
                 }
+                List<Integer> favoriteProductIds = userFavoriteService.getFavoriteProductIds(user.getId());
+                request.setAttribute("favoriteProductIds", favoriteProductIds);
             }catch (Exception e){
                 e.printStackTrace();
             }

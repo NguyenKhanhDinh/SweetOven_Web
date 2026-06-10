@@ -10,3 +10,20 @@ target/
 # OS specific files
 .DS_Store
 Thumbs.db
+# Gradle
+.gradle/
+
+# Build output
+build/
+
+# IntelliJ
+.idea/
+*.iml
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# VS Code
+.vscode/

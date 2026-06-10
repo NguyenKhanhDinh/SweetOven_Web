@@ -67,7 +67,16 @@
             <%-- RIGHT: Info Panel --%>
             <div class="pd-info">
 
-                <h1 class="pd-name">${product.name}</h1>
+                <div class="pd-name-row">
+                    <h1 class="pd-name">${product.name}</h1>
+                    <button type="button"
+                            class="btn-favorite pd-fav-btn ${not empty favoriteProductIds and favoriteProductIds.contains(product.id) ? 'active' : ''}"
+                            data-product-id="${product.id}"
+                            onclick="toggleFavorite(this, ${product.id});"
+                            title="Thêm vào yêu thích">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                </div>
 
                 <%-- Price --%>
                 <div class="pd-price-block">
@@ -206,6 +215,13 @@
                                 <c:if test="${not empty rp.listImages}">
                                     <img src="${rp.listImages[0].imageUrl}" alt="${rp.name}">
                                 </c:if>
+                                <button type="button"
+                                        class="btn-favorite ${not empty favoriteProductIds and favoriteProductIds.contains(rp.id) ? 'active' : ''}"
+                                        data-product-id="${rp.id}"
+                                        onclick="event.stopPropagation(); toggleFavorite(this, ${rp.id});"
+                                        title="Thêm vào yêu thích">
+                                    <i class="fas fa-heart"></i>
+                                </button>
                             </div>
 
                             <div class="pd-related-body">

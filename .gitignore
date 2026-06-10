@@ -16,10 +16,6 @@ Thumbs.db
 # Build output
 build/
 
-# IntelliJ
-.idea/
-*.iml
-
 # Eclipse
 .classpath
 .project

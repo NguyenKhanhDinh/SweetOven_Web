@@ -1000,3 +1000,138 @@ body {
     }
     .about-title { font-size: 1.35rem; }
 }
+/* Đảm bảo product-card có position relative (đã có sẵn trong hầu hết card) */
+.product-card {
+    position: relative;
+}
+
+/* Nút trái tim */
+.btn-favorite {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.25s ease, transform 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    padding: 0;
+    line-height: 1;
+}
+
+.btn-favorite i {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    transition: color 0.25s ease, transform 0.2s ease;
+    pointer-events: none;
+}
+
+/* Hover khi chưa yêu thích */
+.btn-favorite:not(.active):hover {
+    background: rgba(255, 255, 255, 0.55);
+}
+
+.btn-favorite:not(.active):hover i {
+    color: #e53935;
+    transform: scale(1.15);
+}
+
+/* Trạng thái đã yêu thích (active) */
+.btn-favorite.active {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.btn-favorite.active i {
+    color: #e53935;
+}
+
+/* Animation khi click */
+.btn-favorite.heart-pop i {
+    animation: heartPop 0.35s ease;
+}
+
+@keyframes heartPop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.4); }
+    70%  { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+/* ================================================================
+   FAVORITE HEART BUTTON
+   ================================================================ */
+
+.btn-favorite {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    padding: 0;
+    line-height: 1;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.btn-favorite i {
+    font-size: 15px;
+    color: #ccc;
+    transition: color 0.2s ease, transform 0.15s ease;
+    pointer-events: none;
+}
+
+.btn-favorite:not(.active):hover {
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(229, 57, 53, 0.2);
+    transform: scale(1.1);
+}
+
+.btn-favorite:not(.active):hover i {
+    color: #e53935;
+}
+
+.btn-favorite.active {
+    background: #fff1f1;
+    box-shadow: 0 2px 10px rgba(229, 57, 53, 0.25);
+}
+
+.btn-favorite.active i {
+    color: #e53935;
+}
+
+.btn-favorite:active {
+    transform: scale(0.92) !important;
+}
+
+.btn-favorite.heart-pop i {
+    animation: heartPop 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes heartPop {
+    0%   { transform: scale(1); }
+    20%  { transform: scale(0.8); }
+    50%  { transform: scale(1.45); }
+    75%  { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}

@@ -22,6 +22,7 @@ public class Order implements Serializable {
     private String note;
     private int paymentMethod;
     private int orderStatus;
+    private String cancelReason;
     private LocalDateTime orderDate;
     private  LocalDateTime updatedAt;
 
@@ -130,6 +131,8 @@ public class Order implements Serializable {
     public void setOrderStatus(int orderStatus) {
         this.orderStatus = orderStatus;
     }
+    public String getCancelReason() {return cancelReason;}
+    public void setCancelReason(String cancelReason) {this.cancelReason = cancelReason;}
     public LocalDateTime getOrderDate() {
         return orderDate;
     }

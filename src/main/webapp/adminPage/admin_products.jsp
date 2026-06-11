@@ -199,9 +199,24 @@
                         <tr class="${stockClass}">
                             <td class="id-col">${p.id}</td>
                             <td>
-                                <img src="${pageContext.request.contextPath}${p.image != null ? p.image : '/assets/images/default-product.png'}"
-                                     class="product-img"
-                                     onerror="this.src='${pageContext.request.contextPath}/assets/images/default-product.png'">
+                                <c:choose>
+                                    <c:when test="${not empty p.image && (p.image.startsWith('http://') || p.image.startsWith('https://'))}">
+                                        <img src="${p.image}"
+                                             class="product-img"
+                                             onerror="this.src='${pageContext.request.contextPath}/assets/images/default-product.png'">
+                                    </c:when>
+
+                                    <c:when test="${not empty p.image}">
+                                        <img src="${pageContext.request.contextPath}${p.image}"
+                                             class="product-img"
+                                             onerror="this.src='${pageContext.request.contextPath}/assets/images/default-product.png'">
+                                    </c:when>
+
+                                    <c:otherwise>
+                                        <img src="${pageContext.request.contextPath}/assets/images/default-product.png"
+                                             class="product-img">
+                                    </c:otherwise>
+                                </c:choose>
                             </td>
                             <td><span class="fw-semibold text-primary">${p.productCode}</span></td>
                             <td>

@@ -34,8 +34,12 @@ public class OrderService {
             detail.setQuantity(item.getQuantity());
             detail.setBuyPrice(item.getPrice());
             BigDecimal total = item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+            detail.setTotalPrice(total);
             detailDao.insertOrderDetail(detail);
         }
         return orderId;
+    }
+    public void cancelOrder(int orderId,String reason) {
+        orderDao.cancleOrder(orderId,reason);
     }
 }

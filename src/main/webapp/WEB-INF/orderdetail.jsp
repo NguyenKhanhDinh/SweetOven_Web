@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="service.ProductReviewService" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
@@ -679,6 +680,21 @@
             color: var(--white);
         }
 
+        .reviewed-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #2e7d32;
+            font-weight: 600;
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            border-radius: 20px;
+            padding: 5px 12px;
+            white-space: nowrap;
+        }
+        .reviewed-badge i { font-size: 13px; }
+
         /* ── Cancel Dialog ── */
         .modal-overlay {
             display: none;
@@ -1164,10 +1180,26 @@
                         <div class="prod-qty">×${item.quantity}</div>
                         <div class="prod-total">${item.totalPriceFormatted}</div>
                         <div class="prod-review">
-                            <a href="${pageContext.request.contextPath}/product?id=${item.productId}"
-                               class="review-btn">
-                                <i class="fa fa-star"></i> Viết đánh giá
-                            </a>
+                            <%
+                                ProductReviewService _rvSvc = new ProductReviewService();
+                                model.OrderDetail _it = (model.OrderDetail) pageContext.getAttribute("item");
+                                model.Order _order = (model.Order) request.getAttribute("order");
+                                boolean _reviewed = _rvSvc.hasReviewed(_it.getProductId(), _order.getId());
+                                pageContext.setAttribute("_reviewed", _reviewed);
+                            %>
+                            <c:choose>
+                                <c:when test="${_reviewed}">
+                                    <span class="reviewed-badge">
+                                        <i class="fa fa-check-circle"></i> Đã đánh giá
+                                    </span>
+                                </c:when>
+                                <c:otherwise>
+                                    <a href="${pageContext.request.contextPath}/product?id=${item.productId}&orderId=${order.id}#pd-comment"
+                                       class="review-btn">
+                                        <i class="fa fa-star"></i> Viết đánh giá
+                                    </a>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
                 </c:when>

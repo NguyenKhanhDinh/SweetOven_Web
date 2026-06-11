@@ -2,16 +2,25 @@ package service;
 
 import dao.ProductDao;
 import model.Product;
-
 import java.util.List;
 
 public class ProductService {
 
     private ProductDao productDao = new ProductDao();
 
-    //featured products for homepage
+    // Đếm tổng số sản phẩm
+    public int countAllProducts() {
+        return productDao.countAll();
+    }
+
+    // featured products for homepage
     public List<Product> getFeaturedProducts() {
         return productDao.getFeaturedProducts();
+    }
+
+    // lấy tất cả sản phẩm
+    public List<Product> getListProduct() {
+        return productDao.getListProduct();
     }
 
     // tìm sản phẩm theo category
@@ -63,7 +72,67 @@ public class ProductService {
                 featured
         );
     }
+
     public List<Product> searchByKeyword(String keyword, int limit) {
-        return productDao.findAllWithFilters(keyword,null,1,null,null,1,limit);
+        return productDao.findAllWithFilters(keyword, null, 1, null, null, 1, limit);
+    }
+
+    // Thêm sản phẩm mới
+    public int addProduct(Product product) {
+        return productDao.addProduct(product);
+    }
+
+    // Cập nhật sản phẩm
+    public boolean updateProduct(Product product) {
+        try {
+            productDao.update(product);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Xóa sản phẩm theo ID
+    public boolean deleteProductById(int id) {
+        try {
+            productDao.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Cập nhật trạng thái sản phẩm
+    public boolean updateProductStatus(int productId, int status) {
+        try {
+            productDao.updateStatus(productId, status);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Lấy số sequence tiếp theo cho mã sản phẩm
+    public int getNextProductSequence() {
+        return productDao.getNextProductSequence();
+    }
+
+    // Kiểm tra mã sản phẩm đã tồn tại chưa
+    public boolean isProductCodeExists(String productCode) {
+        return productDao.isProductCodeExists(productCode);
+    }
+
+    // Lấy danh sách ảnh của sản phẩm
+    public List<String> getProductImages(int productId) {
+        return productDao.getProductImages(productId);
+    }
+
+    // Tạo mã sản phẩm tự động
+    public String generateProductCode() {
+        int nextSeq = getNextProductSequence();
+        return String.format("SP%06d", nextSeq);
     }
 }

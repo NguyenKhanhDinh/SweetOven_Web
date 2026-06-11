@@ -185,11 +185,24 @@
                                 <td class="fw-bold text-center">${loop.index + 1}</td>
                                 <td>
                                     <c:choose>
-                                        <c:when test="${not empty c.thumbnail}">
-                                            <img src="${pageContext.request.contextPath}/${c.thumbnail}" class="thumbnail-img" alt="${c.name}" onerror="this.src='${pageContext.request.contextPath}/assets/picture/logo.png'">
+                                        <c:when test="${not empty c.thumbnail && (c.thumbnail.startsWith('http://') || c.thumbnail.startsWith('https://'))}">
+                                            <img src="${c.thumbnail}"
+                                                 class="thumbnail-img"
+                                                 alt="${c.name}"
+                                                 onerror="this.src='${pageContext.request.contextPath}/assets/picture/logo.png'">
                                         </c:when>
+
+                                        <c:when test="${not empty c.thumbnail}">
+                                            <img src="${pageContext.request.contextPath}/${c.thumbnail}"
+                                                 class="thumbnail-img"
+                                                 alt="${c.name}"
+                                                 onerror="this.src='${pageContext.request.contextPath}/assets/picture/logo.png'">
+                                        </c:when>
+
                                         <c:otherwise>
-                                            <img src="${pageContext.request.contextPath}/assets/picture/logo.png" class="thumbnail-img" alt="Default">
+                                            <img src="${pageContext.request.contextPath}/assets/picture/logo.png"
+                                                 class="thumbnail-img"
+                                                 alt="Default">
                                         </c:otherwise>
                                     </c:choose>
                                 </td>

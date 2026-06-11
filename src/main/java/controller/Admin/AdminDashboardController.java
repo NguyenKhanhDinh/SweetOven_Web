@@ -1,6 +1,6 @@
 package controller.Admin;
 
-import dao.DashboardDao;
+import service.DashboardService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -11,11 +11,18 @@ import model.DashboardData;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Year;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @WebServlet("/admin/dashboard")
 public class AdminDashboardController extends HttpServlet {
 
-    private final DashboardDao dashboardDao = new DashboardDao();
+    private DashboardService dashboardService;
+
+    @Override
+    public void init() throws ServletException {
+        dashboardService = new DashboardService();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -32,92 +39,40 @@ public class AdminDashboardController extends HttpServlet {
         int month = (monthParam != null && !monthParam.isEmpty())
                 ? Integer.parseInt(monthParam)
                 : LocalDate.now().getMonthValue();
-        // Doanh thu so sánh
-        int previousMonth = month - 1;
-        int previousMonthYear = year;
-        if (previousMonth < 1) {
-            previousMonth = 12;
-            previousMonthYear = year - 1;
-        }
+
+        // Xử lý in báo cáo
         if ("print".equals(action)) {
-            handlePrint(request, response);
+            handlePrint(request, response, year, month);
             return;
         }
-        DashboardData dashboard = new DashboardData();
-        dashboard.setPreviousMonthRevenue(dashboardDao.getRevenueByMonth(previousMonthYear, previousMonth));
-        dashboard.setCurrentYearRevenue(dashboardDao.getRevenueByYear(year));
-        dashboard.setPreviousYearRevenue(dashboardDao.getRevenueByYear(year - 1));
-        dashboard.setYearlyRevenue(dashboardDao.getYearlyRevenue());
-        // Thống kê tổng quan
-        dashboard.setTotalOrders(dashboardDao.getTotalOrders());
-        dashboard.setTotalRevenue(dashboardDao.getTotalRevenue());
-        dashboard.setTotalProducts(dashboardDao.getTotalProducts());
-        dashboard.setTotalUsers(dashboardDao.getTotalUsers());
 
-        // Doanh thu theo tháng
-        dashboard.setMonthlyRevenue(dashboardDao.getMonthlyRevenue(year));
+        // Lấy dữ liệu dashboard qua service
+        DashboardData dashboard = dashboardService.getDashboardData(year, month);
 
-        // Doanh thu theo tháng được chọn
-        dashboard.setCurrentMonthRevenue(
-                dashboardDao.getRevenueByMonth(year, month)
-        );
-
-        //Top 10 sản ohaarm bán chạy nhất
-        dashboard.setTopSellingProducts(
-                dashboardDao.getTopSellingProducts(10)
-        );
-
-        //Top 10 sản pẩm bán chậm
-        dashboard.setSlowMovingProducts(
-                dashboardDao.getSlowMovingProducts(10)
-        );
-
+        // Set attributes cho JSP
         request.setAttribute("dashboard", dashboard);
         request.setAttribute("selectedYear", year);
         request.setAttribute("selectedMonth", month);
-        request.setAttribute("years", dashboardDao.getAvailableYears());
+        request.setAttribute("years", dashboardService.getAvailableYears());
 
         request.getRequestDispatcher("/adminPage/admin_dashboard.jsp")
                 .forward(request, response);
     }
-    private void handlePrint(HttpServletRequest request, HttpServletResponse response)
+
+    private void handlePrint(HttpServletRequest request, HttpServletResponse response, int year, int month)
             throws ServletException, IOException {
 
-        String yearParam = request.getParameter("year");
-        String monthParam = request.getParameter("month");
+        // Lấy dữ liệu báo cáo in qua service
+        DashboardData dashboard = dashboardService.getPrintReportData(year, month);
 
-        int year = (yearParam != null && !yearParam.isEmpty())
-                ? Integer.parseInt(yearParam)
-                : Year.now().getValue();
+        // Format ngày in
+        String printDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
 
-        int month = (monthParam != null && !monthParam.isEmpty())
-                ? Integer.parseInt(monthParam)
-                : LocalDate.now().getMonthValue();
-
-        DashboardData dashboard = new DashboardData();
-
-        // Thống kê tổng quan
-        dashboard.setTotalOrders(dashboardDao.getTotalOrders());
-        dashboard.setTotalRevenue(dashboardDao.getTotalRevenue());
-        dashboard.setTotalProducts(dashboardDao.getTotalProducts());
-        dashboard.setTotalUsers(dashboardDao.getTotalUsers());
-
-        // Doanh thu theo tháng được chọn
-        dashboard.setCurrentMonthRevenue(dashboardDao.getRevenueByMonth(year, month));
-
-        // Top sản phẩm
-        dashboard.setTopSellingProducts(dashboardDao.getTopSellingProducts(20));
-        dashboard.setSlowMovingProducts(dashboardDao.getSlowMovingProducts(20));
-
-        // Doanh thu theo năm
-        dashboard.setYearlyRevenue(dashboardDao.getYearlyRevenue());
-        dashboard.setCurrentYearRevenue(dashboardDao.getRevenueByYear(year));
-        dashboard.setPreviousYearRevenue(dashboardDao.getRevenueByYear(year - 1));
-
+        // Set attributes cho JSP in
         request.setAttribute("dashboard", dashboard);
         request.setAttribute("selectedYear", year);
         request.setAttribute("selectedMonth", month);
-        request.setAttribute("printDate", new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date()));
+        request.setAttribute("printDate", printDate);
 
         request.getRequestDispatcher("/adminPage/print_report_dashboard.jsp")
                 .forward(request, response);

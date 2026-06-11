@@ -39,4 +39,7 @@ public class OrderService {
         }
         return orderId;
     }
+    public void cancelOrder(int orderId,String reason) {
+        orderDao.cancleOrder(orderId,reason);
+    }
 }

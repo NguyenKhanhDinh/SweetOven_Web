@@ -10,40 +10,47 @@ import jakarta.servlet.http.HttpSession;
 import model.Cart;
 import service.UserService;
 import model.User;
+
 import java.io.IOException;
 
 @WebServlet("/login")
 public class LoginControllerr extends HttpServlet {
-private UserService userService;
+    private UserService userService;
 
     public void init() {
         userService = new UserService();
     }
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    HttpSession session = request.getSession(false);
-    if (session != null && session.getAttribute("user") != null) {
-        response.sendRedirect(request.getContextPath()+"/home");
-        return;
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("user") != null) {
+            response.sendRedirect(request.getContextPath() + "/home");
+            return;
+        }
+        request.getRequestDispatcher("/authPage/login.jsp").forward(request, response);
     }
-    request.getRequestDispatcher("/authPage/login.jsp").forward(request, response);
-    }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         User user = userService.login(username, password);
 
-        if(user!=null){
+        if (user != null) {
             HttpSession session = request.getSession();
-            session.setAttribute("user",user);
-            Cart sessionCart  = (Cart) session.getAttribute("cart");
-            if(sessionCart==null) sessionCart=new Cart();
-            CartDao  cartDao = new CartDao();
+            session.setAttribute("user", user);
+            Cart sessionCart = (Cart) session.getAttribute("cart");
+            if (sessionCart == null) sessionCart = new Cart();
+            CartDao cartDao = new CartDao();
             Cart merged = cartDao.mergeDBCartIntoSession(user.getId(), sessionCart);
             cartDao.saveCartToDB(user.getId(), merged);
-            session.setAttribute("cart",merged);
-            response.sendRedirect(request.getContextPath()+"/home");
-        }else {
+            session.setAttribute("cart", merged);
+            if (user.getRoleId() == 1) {
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/home");
+            }
+        } else {
             request.setAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng");
             request.getRequestDispatcher("/authPage/login.jsp").forward(request, response);
         }

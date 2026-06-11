@@ -1,7 +1,7 @@
 package controller.Admin;
 
-import dao.CategoryDao;
-import dao.ProductDao;
+import service.CategoryService;
+import service.ProductService;
 import model.Category;
 import utils.UploadUtils;
 
@@ -24,13 +24,13 @@ import java.util.List;
 )
 public class AdminCategoryController extends HttpServlet {
 
-    private CategoryDao categoryDao;
-    private ProductDao productDao;
+    private CategoryService categoryService;
+    private ProductService productService;
 
     @Override
     public void init() throws ServletException {
-        categoryDao = new CategoryDao();
-        productDao = new ProductDao();
+        categoryService = new CategoryService();
+        productService = new ProductService();
     }
 
     @Override
@@ -81,25 +81,22 @@ public class AdminCategoryController extends HttpServlet {
         String searchKeyword = request.getParameter("search");
         if (searchKeyword == null) searchKeyword = "";
 
-        List<Category> categories;
-        if (!searchKeyword.trim().isEmpty()) {
-            categories = categoryDao.searchByName(searchKeyword);
-        } else {
-            categories = categoryDao.findAll();
-        }
+        // Lấy danh sách categories qua service
+        List<Category> categories = categoryService.searchCategoriesByName(searchKeyword);
 
+        // Đếm số sản phẩm cho từng category qua service
         for (Category category : categories) {
-            int productCount = categoryDao.countProducts(category.getId());
+            int productCount = categoryService.countProductsInCategory(category.getId());
             category.setProductCount(productCount);
         }
 
-        List<Category> allCategories = categoryDao.findAll();
-        int totalCategories = allCategories.size();
-        int activeCategories = (int) allCategories.stream()
-                .filter(c -> c.getStatus() == 1).count();
-        int inactiveCategories = totalCategories - activeCategories;
-        int totalProducts = productDao.countAll();
+        // Lấy thống kê qua service
+        int totalCategories = categoryService.countTotalCategories();
+        int activeCategories = categoryService.countActiveCategories();
+        int inactiveCategories = categoryService.countInactiveCategories();
+        int totalProducts = productService.countAllProducts();
 
+        // Set attributes cho JSP
         request.setAttribute("categories", categories);
         request.setAttribute("totalCategories", totalCategories);
         request.setAttribute("activeCategories", activeCategories);
@@ -117,11 +114,13 @@ public class AdminCategoryController extends HttpServlet {
         String description = request.getParameter("description");
         String statusParam = request.getParameter("status");
 
+        // Validate input
         if (name == null || name.trim().isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/admin/categories?error=empty_name");
             return;
         }
 
+        // Tạo đối tượng Category
         Category category = new Category();
         category.setName(name.trim());
         category.setDescription(description != null ? description.trim() : "");
@@ -129,15 +128,16 @@ public class AdminCategoryController extends HttpServlet {
         category.setCreatedAt(LocalDateTime.now());
         category.setUpdatedAt(LocalDateTime.now());
 
+        // Xử lý upload thumbnail
         Part filePart = request.getPart("thumbnail");
-        String thumbnailPath = null;
         if (filePart != null && filePart.getSize() > 0) {
-            thumbnailPath = UploadUtils.saveFile(filePart, request.getServletContext(), "categories");
+            String thumbnailPath = UploadUtils.saveFile(filePart, request.getServletContext(), "categories");
             category.setThumbnail(thumbnailPath);
         }
 
+        // Thêm category qua service
         try {
-            int generatedId = categoryDao.insert(category);
+            int generatedId = categoryService.addCategory(category);
             if (generatedId > 0) {
                 response.sendRedirect(request.getContextPath() + "/admin/categories?success=added");
             } else {
@@ -157,6 +157,7 @@ public class AdminCategoryController extends HttpServlet {
         String description = request.getParameter("description");
         String statusParam = request.getParameter("status");
 
+        // Validate input
         if (idParam == null || idParam.trim().isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/admin/categories?error=invalid_id");
             return;
@@ -169,12 +170,14 @@ public class AdminCategoryController extends HttpServlet {
 
         int id = Integer.parseInt(idParam);
 
-        Category existingCategory = categoryDao.getCategoryById(id);
+        // Lấy category cũ qua service
+        Category existingCategory = categoryService.getCategoryById(id);
         if (existingCategory == null) {
             response.sendRedirect(request.getContextPath() + "/admin/categories?error=not_found");
             return;
         }
 
+        // Tạo đối tượng category mới
         Category category = new Category();
         category.setId(id);
         category.setName(name.trim());
@@ -183,20 +186,28 @@ public class AdminCategoryController extends HttpServlet {
         category.setCreatedAt(existingCategory.getCreatedAt()); // Giữ nguyên ngày tạo gốc
         category.setUpdatedAt(LocalDateTime.now());
 
+        // Xử lý upload thumbnail mới
         Part filePart = request.getPart("thumbnail");
         if (filePart != null && filePart.getSize() > 0) {
+            // Xóa thumbnail cũ nếu có
             if (existingCategory.getThumbnail() != null && !existingCategory.getThumbnail().isEmpty()) {
                 UploadUtils.deleteFile(request.getServletContext(), existingCategory.getThumbnail());
             }
             String thumbnailPath = UploadUtils.saveFile(filePart, request.getServletContext(), "categories");
             category.setThumbnail(thumbnailPath);
         } else {
+            // Giữ thumbnail cũ
             category.setThumbnail(existingCategory.getThumbnail());
         }
 
+        // Cập nhật category qua service
         try {
-            categoryDao.update(category);
-            response.sendRedirect(request.getContextPath() + "/admin/categories?success=updated");
+            boolean updated = categoryService.updateCategory(category);
+            if (updated) {
+                response.sendRedirect(request.getContextPath() + "/admin/categories?success=updated");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/admin/categories?error=update_failed");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/admin/categories?error=update_failed");
@@ -215,15 +226,21 @@ public class AdminCategoryController extends HttpServlet {
 
         int id = Integer.parseInt(idParam);
 
-        Category category = categoryDao.getCategoryById(id);
+        // Kiểm tra category tồn tại qua service
+        Category category = categoryService.getCategoryById(id);
         if (category == null) {
             response.sendRedirect(request.getContextPath() + "/admin/categories?error=not_found");
             return;
         }
 
+        // Xóa mềm category qua service
         try {
-            categoryDao.softDelete(id);
-            response.sendRedirect(request.getContextPath() + "/admin/categories?success=deleted");
+            boolean deleted = categoryService.softDeleteCategory(id);
+            if (deleted) {
+                response.sendRedirect(request.getContextPath() + "/admin/categories?success=deleted");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/admin/categories?error=delete_failed");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/admin/categories?error=delete_failed");

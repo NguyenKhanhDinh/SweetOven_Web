@@ -2,14 +2,18 @@ package service;
 
 import dao.ProductDao;
 import model.Product;
-
 import java.util.List;
 
 public class ProductService {
 
     private ProductDao productDao = new ProductDao();
 
-    //featured products for homepage
+    // Đếm tổng số sản phẩm
+    public int countAllProducts() {
+        return productDao.countAll();
+    }
+
+    // featured products for homepage
     public List<Product> getFeaturedProducts() {
         return productDao.getFeaturedProducts();
     }
@@ -64,6 +68,6 @@ public class ProductService {
         );
     }
     public List<Product> searchByKeyword(String keyword, int limit) {
-        return productDao.findAllWithFilters(keyword,null,1,null,null,1,limit);
+        return productDao.findAllWithFilters(keyword, null, 1, null, null, 1, limit);
     }
 }

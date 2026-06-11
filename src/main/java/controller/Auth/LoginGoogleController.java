@@ -54,7 +54,11 @@ public class LoginGoogleController extends HttpServlet {
             model.Cart merged = cartDao.mergeDBCartIntoSession(user.getId(), sessionCart);
             cartDao.saveCartToDB(user.getId(), merged);
             session.setAttribute("cart",merged);
-            response.sendRedirect(request.getContextPath() + "/");
+            if (user.getRoleId() == 1) {
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/");
+            }
 
         } catch (Exception e) {
             response.sendRedirect(request.getContextPath() + "/login.jsp?error=ServerError");

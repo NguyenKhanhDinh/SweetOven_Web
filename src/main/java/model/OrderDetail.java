@@ -89,14 +89,14 @@ public void setUpdatedAt(LocalDateTime updatedAt) {
 }
 
     public String getTotalPriceFormatted() {
-        if(totalPrice == null) return "0 đ";
+        if(totalPrice == null) return "0 VNĐ";
         NumberFormat nf = NumberFormat.getInstance(new Locale("vi","VN"));
-        return nf.format(totalPrice) + " đ";
+        return nf.format(totalPrice) + " VNĐ";
     }
 
     public String getBuyPriceFormatted() {
-        if(buyPrice == null) return "0 đ";
+        if(buyPrice == null) return "0 VNĐ";
         NumberFormat nf = NumberFormat.getInstance(new Locale("vi","VN"));
-        return nf.format(buyPrice) + " đ";
+        return nf.format(buyPrice) + " VNĐ";
     }
 }

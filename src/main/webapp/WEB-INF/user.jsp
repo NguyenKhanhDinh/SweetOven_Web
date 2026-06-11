@@ -11,13 +11,30 @@
     <meta name="description" content="Tiệm bánh ngọt & đồ nướng thủ công - Sweet Oven Bakery"/>
     <link rel="icon" href="${pageContext.request.contextPath}/assets/picture/logo.png">
 
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
+        :root {
+            --primary:       #3C2F27;
+            --primary-hover: #4a3728;
+            --accent:        #C9A96E;
+            --accent-dark:   #c97b21;
+            --accent-hover:  #a96414;
+            --accent-light:  #e8d5b0;
+            --bg:            #F9F6F0;
+            --white:         #ffffff;
+            --text-main:     #333333;
+            --text-muted:    #888888;
+            --border:        rgba(201,169,110,.25);
+            --shadow:        0 4px 20px rgba(60,47,39,.08);
+            --radius:        16px;
+            --radius-sm:     10px;
+        }
         body {
-            background: #F9F6F0;
-            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg);
+            font-family: 'Quicksand', sans-serif;
         }
 
         .profile-container {
@@ -27,9 +44,9 @@
         }
 
         .card-box {
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, .06);
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
             padding: 22px;
         }
 
@@ -38,6 +55,18 @@
             grid-template-columns: 360px 1fr;
             gap: 20px;
             align-items: start;
+        }
+
+        .orders-card {
+            height: 418px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .orders-card .orders-scroll-box {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 276px;
         }
 
         .bottom-grid {
@@ -70,7 +99,7 @@
             height: 140px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid #d9a45e;
+            border: 4px solid var(--accent);
         }
 
         .avatar-upload {
@@ -80,7 +109,7 @@
             width: 38px;
             height: 38px;
             border-radius: 50%;
-            background: #c97b21;
+            background: var(--primary);
             color: #fff;
             display: flex;
             align-items: center;
@@ -89,12 +118,13 @@
         }
 
         .avatar-upload:hover {
-            background: #a96414;
+            background: var(--primary-hover);
         }
 
         .section-title {
             font-size: 20px;
-            font-weight: 700;
+            font-weight: 800;
+            color: var(--primary);
             margin-bottom: 15px;
         }
 
@@ -109,11 +139,10 @@
         }
 
         .scroll-box::-webkit-scrollbar-thumb {
-            background: #d9a45e;
-            border-radius: 20px;
+            background: var(--accent);
+            border-radius: var(--radius);
         }
 
-        /* 6 rows × 46px = 276px */
         .orders-scroll-box {
             max-height: 276px;
             overflow-y: auto;
@@ -125,8 +154,8 @@
         }
 
         .orders-scroll-box::-webkit-scrollbar-thumb {
-            background: #d9a45e;
-            border-radius: 20px;
+            background: var(--accent);
+            border-radius: var(--radius);
         }
 
         .orders-header, .order-row {
@@ -138,9 +167,9 @@
         }
 
         .orders-header {
-            background: #c97b21;
+            background: var(--primary);
             color: #fff;
-            border-radius: 10px;
+            border-radius: var(--radius-sm);
             font-weight: 600;
         }
 
@@ -168,7 +197,7 @@
 
         .favorite-item {
             border: 1px solid #eee;
-            border-radius: 14px;
+            border-radius: var(--radius);
             padding: 10px;
             text-align: center;
             position: relative;
@@ -183,7 +212,7 @@
             width: 100%;
             height: 110px;
             object-fit: cover;
-            border-radius: 10px;
+            border-radius: var(--radius-sm);
             display: block;
         }
 
@@ -229,7 +258,7 @@
             padding: 8px 2px 12px;
             overflow-x: auto;
             scrollbar-width: thin;
-            scrollbar-color: #d9a45e transparent;
+            scrollbar-color: var(--accent) transparent;
         }
 
         .voucher-list::-webkit-scrollbar {
@@ -237,15 +266,15 @@
         }
 
         .voucher-list::-webkit-scrollbar-thumb {
-            background: #d9a45e;
-            border-radius: 20px;
+            background: var(--accent);
+            border-radius: var(--radius);
         }
 
         .voucher-card {
-            background: #ffffff;
+            background: var(--white);
             display: flex;
             overflow: visible;
-            border: 1px solid #e9ddd0;
+            border: 1px solid var(--border);
             transition: box-shadow .18s, border-color .18s, transform .15s;
             position: relative;
             flex-shrink: 0;
@@ -254,7 +283,7 @@
 
         .voucher-card:hover {
             box-shadow: 0 4px 22px rgba(139, 69, 19, .13);
-            border-color: #ffffff;
+            border-color: var(--white);
             transform: translateY(-2px);
         }
 
@@ -265,8 +294,8 @@
             left: 92px;
             width: 16px;
             height: 16px;
-            background: #F9F6F0;
-            border: 1px solid #e9ddd0;
+            background: var(--bg);
+            border: 1px solid var(--border);
             border-radius: 50%;
             z-index: 3;
         }
@@ -282,7 +311,7 @@
         .vc-logo-panel {
             width: 100px;
             flex-shrink: 0;
-            background: #3C2F27;
+            background: var(--primary);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -348,9 +377,9 @@
         .vc-code-tag {
             font-size: 12px;
             font-weight: 700;
-            color: #3C2F27;
-            background: #FFF3E0;
-            border: 1px dashed #D4A76A;
+            color: var(--primary);
+            background: rgba(201,169,110,.08);
+            border: 1px dashed var(--accent);
             padding: 1px 7px;
             font-family: monospace;
             letter-spacing: .5px;
@@ -377,7 +406,7 @@
         .vc-desc {
             font-size: 13px;
             font-weight: 700;
-            color: #3C2F27;
+            color: var(--primary);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -390,7 +419,7 @@
             gap: 8px;
             flex-wrap: wrap;
             font-size: 10.5px;
-            color: #9ca3af;
+            color: var(--text-muted);
         }
 
         .vc-meta span {
@@ -400,7 +429,7 @@
         }
 
         .vc-meta b {
-            color: #8B4513;
+            color: var(--accent-dark);
             font-weight: 600;
         }
 
@@ -410,7 +439,7 @@
             justify-content: space-between;
             margin-top: 7px;
             padding-top: 6px;
-            border-top: 1px dashed #e9ddd0;
+            border-top: 1px dashed var(--border);
         }
 
         .vc-expire {
@@ -422,7 +451,7 @@
         }
 
         .btn-use-now {
-            background: #fff;
+            background: var(--white);
             color: #16a34a;
             border: 1px solid #16a34a;
             padding: 4px 12px;
@@ -461,14 +490,14 @@
 
         .vc-empty-state a {
             font-size: 13px;
-            color: #8B4513;
+            color: var(--accent-dark);
             font-weight: 600;
         }
 
         /* ── ADDRESS ── */
         .address-item {
             border: 1px solid #eee;
-            border-radius: 14px;
+            border-radius: var(--radius);
             padding: 14px;
             margin-bottom: 12px;
         }
@@ -485,25 +514,28 @@
         }
 
         .icon-btn:hover {
-            background: #c97b21;
+            background: var(--accent-dark);
             color: #fff;
         }
 
-        .btn-main {
-            background: linear-gradient(135deg, #e89b3c, #c46b12);
-            border: none;
-            color: #fff;
+        .btn.btn-main,
+        button.btn-main {
+            background: #3C2F27 !important;
+            border: none !important;
+            color: #ffffff !important;
             font-weight: 600;
-            border-radius: 10px;
+            font-family: 'Quicksand', sans-serif;
+            border-radius: var(--radius-sm);
             padding: 10px 18px;
-            box-shadow: 0 6px 14px rgba(196, 107, 18, .25);
-            transition: 0.25s;
+            box-shadow: 0 6px 14px rgba(60, 47, 39, .25);
+            transition: background 0.25s, transform 0.25s;
         }
 
-        .btn-main:hover {
-            background: linear-gradient(135deg, #d98424, #a85a10);
+        .btn.btn-main:hover,
+        button.btn-main:hover {
+            background: #4a3728 !important;
+            color: #ffffff !important;
             transform: translateY(-2px);
-            color: #fff;
         }
 
         #addressModal select,
@@ -531,8 +563,8 @@
         .toast-notify {
             width: 300px;
             padding: 10px 12px 10px 14px;
-            border-radius: 10px;
-            background: #fff;
+            border-radius: var(--radius-sm);
+            background: var(--white);
             display: flex;
             align-items: center;
             gap: 9px;
@@ -637,9 +669,6 @@
     </c:if>
 </div>
 
-<%-- ══════════════════════════════════════════════════════════
-     MAIN WRAPPER — tất cả nội dung nằm trong đây
-     ══════════════════════════════════════════════════════════ --%>
 <div class="container profile-container">
 
     <%-- TOP: Profile + Orders --%>
@@ -707,7 +736,7 @@
         </div>
 
         <%-- ORDERS --%>
-        <div class="card-box" style="overflow: hidden;">
+        <div class="card-box orders-card" style="overflow: hidden;">
             <div class="section-title">Đơn hàng của tôi</div>
 
             <div class="orders-header">
@@ -734,15 +763,24 @@
                                 <div>${o.totalAmountFormatted}</div>
                                 <div>
                                     <c:choose>
-                                        <c:when test="${o.orderStatus == 1}"><span
-                                                class="badge bg-warning">Chờ xác nhận</span></c:when>
-                                        <c:when test="${o.orderStatus == 2}"><span
-                                                class="badge bg-info">Đang giao</span></c:when>
-                                        <c:when test="${o.orderStatus == 3}"><span
-                                                class="badge bg-success">Hoàn thành</span></c:when>
-                                        <c:when test="${o.orderStatus == 4}"><span
-                                                class="badge bg-danger">Đã hủy</span></c:when>
-                                        <c:otherwise><span class="badge bg-secondary">Khác</span></c:otherwise>
+                                        <c:when test="${o.orderStatus == 1}">
+                                            <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                        </c:when>
+                                        <c:when test="${o.orderStatus == 2}">
+                                            <span class="badge bg-info text-dark">Đã xác nhận</span>
+                                        </c:when>
+                                        <c:when test="${o.orderStatus == 3}">
+                                            <span class="badge bg-primary">Đang giao</span>
+                                        </c:when>
+                                        <c:when test="${o.orderStatus == 4}">
+                                            <span class="badge bg-success">Đã giao</span>
+                                        </c:when>
+                                        <c:when test="${o.orderStatus == 5}">
+                                            <span class="badge bg-danger">Đã huỷ</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="badge bg-secondary">Khác</span>
+                                        </c:otherwise>
                                     </c:choose>
                                 </div>
                                 <div>
@@ -791,10 +829,10 @@
         <div class="card-box">
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <div class="section-title m-0">
-                    <i class="fa fa-ticket-alt me-2" style="color:#e67a2a;"></i>Voucher của tôi
+                    <i class="fa fa-ticket-alt me-2" style="color:var(--accent-dark);"></i>Voucher của tôi
                 </div>
                 <a href="${pageContext.request.contextPath}/vouchers"
-                   style="font-size:13px;color:#8B4513;font-weight:600;text-decoration:none;">
+                   style="font-size:13px;color:var(--accent-dark);font-weight:600;text-decoration:none;">
                     Thêm voucher <i class="fa fa-arrow-right ms-1" style="font-size:11px;"></i>
                 </a>
             </div>
@@ -830,16 +868,13 @@
                                                 </div>
                                                 <div class="vc-desc">${v.description}</div>
                                                 <div class="vc-meta">
-                                                    <span><i
-                                                            class="fa fa-receipt"></i>Từ <b>${v.displayMinOrder}</b></span>
-                                                    <span><i
-                                                            class="fa fa-clock"></i>HSD: <b>${v.formattedEndDate}</b></span>
+                                                    <span><i class="fa fa-receipt"></i>Từ <b>${v.displayMinOrder}</b></span>
+                                                    <span><i class="fa fa-clock"></i>HSD: <b>${v.formattedEndDate}</b></span>
                                                 </div>
                                             </div>
                                             <div class="vc-footer-row">
                                                 <span class="vc-expire">
-                                                    <i class="fa fa-clock"></i>&nbsp;HSD: <b
-                                                        style="color:#8B4513;">${v.formattedEndDate}</b>
+                                                    <i class="fa fa-clock"></i>&nbsp;HSD: <b style="color:var(--accent-dark);">${v.formattedEndDate}</b>
                                                 </span>
                                                 <button class="btn-use-now" onclick="useVoucher('${v.code}')">
                                                     <i class="fa fa-cart-shopping"></i>Dùng ngay
@@ -1012,7 +1047,6 @@
     const wardSelect = document.getElementById("ward");
     const CTX = '${pageContext.request.contextPath}';
 
-    // ── 1. Load Tỉnh/Thành ───────────────────────────────────────────────────────
     function loadProvinces() {
         fetch(CTX + '/ghn-location?type=province')
             .then(r => {
@@ -1041,7 +1075,6 @@
         if (provinceSelect.options.length <= 1) loadProvinces();
     });
 
-    // ── 2. Tỉnh → Huyện ──────────────────────────────────────────────────────────
     provinceSelect.onchange = function () {
         const opt = this.options[this.selectedIndex];
         const pId = opt ? opt.getAttribute("data-id") : null;
@@ -1062,7 +1095,6 @@
             .catch(() => console.error('[GHN] Không load được danh sách huyện'));
     };
 
-    // ── 3. Huyện → Xã ────────────────────────────────────────────────────────────
     districtSelect.onchange = function () {
         const opt = this.options[this.selectedIndex];
         const dId = opt ? opt.getAttribute("data-id") : null;
@@ -1077,7 +1109,6 @@
             .catch(() => console.error('[GHN] Không load được danh sách xã'));
     };
 
-    // ── 4. Modal Thêm địa chỉ ────────────────────────────────────────────────────
     function openAddModal() {
         document.getElementById("addressModalTitle").textContent = "Thêm địa chỉ giao hàng";
         document.getElementById("addressAction").value = "add";
@@ -1091,7 +1122,6 @@
         wardSelect.add(new Option("Chọn phường / xã", ""));
     }
 
-    // ── 5. Modal Sửa địa chỉ ─────────────────────────────────────────────────────
     function openEditModal(id, detail, province, district, ward) {
         document.getElementById("addressModalTitle").textContent = "Chỉnh sửa địa chỉ";
         document.getElementById("addressAction").value = "edit";
@@ -1154,13 +1184,11 @@
         else setTimeout(trySetProvince, 600);
     }
 
-    // ── Voucher ───────────────────────────────────────────────────────────────────
     function useVoucher(code) {
         sessionStorage.setItem('pendingVoucherCode', code);
         window.location.href = '${pageContext.request.contextPath}/my-cart';
     }
 
-    // ── Toast ─────────────────────────────────────────────────────────────────────
     function closeToast(id) {
         const el = document.getElementById(id);
         if (!el) return;
@@ -1209,7 +1237,6 @@
         setTimeout(() => closeToast(id), 3500);
     }
 
-    // ── AJAX Address ──────────────────────────────────────────────────────────────
     function handleAddressSubmit(e) {
         e.preventDefault();
         const form = e.target;

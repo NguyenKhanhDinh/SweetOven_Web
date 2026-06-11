@@ -1,4 +1,4 @@
-package controller;
+package controller.order;
 
 import com.google.gson.JsonObject;
 import jakarta.servlet.ServletException;

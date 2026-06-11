@@ -1,5 +1,6 @@
 package controller.Admin;
 
+import service.ProductImageService;
 import service.ProductService;
 import service.CategoryService;
 import model.Category;
@@ -25,11 +26,12 @@ public class AdminProductController extends HttpServlet {
 
     private ProductService productService;
     private CategoryService categoryService;
-
+    private ProductImageService productImageService;
     @Override
     public void init() {
         productService = new ProductService();
         categoryService = new CategoryService();
+        productImageService = new ProductImageService();
     }
 
     @Override
@@ -224,14 +226,14 @@ public class AdminProductController extends HttpServlet {
             product.setIngredients(ingredients);
             product.setCreatedAt(LocalDateTime.now());
 
-            // Xử lý upload ảnh
             Part imagePart = req.getPart("imageFile");
             if (imagePart != null && imagePart.getSize() > 0) {
-                String fileName = saveFile(imagePart, "products");
-                product.setImage(fileName);
+                String fileUrl = utils.CloudinaryUtil.uploadImage(imagePart);
+                if (fileUrl != null) {
+                    product.setImage(fileUrl);
+                }
             }
 
-            // Thêm sản phẩm qua service
             int generatedId = productService.addProduct(product);
             if (generatedId > 0) {
                 req.setAttribute(
@@ -296,19 +298,16 @@ public class AdminProductController extends HttpServlet {
             product.setIngredients(ingredients);
             product.setUpdatedAt(LocalDateTime.now());
 
-            // Xử lý upload ảnh mới
+            // Xử lý upload ảnh mới lên Cloudinary
             Part imagePart = req.getPart("imageFile");
             if (imagePart != null && imagePart.getSize() > 0) {
-                // Xóa ảnh cũ nếu có
-                if (product.getImage() != null && !product.getImage().isEmpty()) {
-                    String realPath = getServletContext().getRealPath("/");
-                    File oldFile = new File(realPath + product.getImage());
-                    if (oldFile.exists()) {
-                        oldFile.delete();
-                    }
+                String fileUrl = utils.CloudinaryUtil.uploadImage(imagePart);
+                if (fileUrl != null) {
+                    product.setImage(fileUrl);
+
+                    productImageService.deleteByProductId(id);
+                    productImageService.insertImage(id, fileUrl, true);
                 }
-                String fileName = saveFile(imagePart, "products");
-                product.setImage(fileName);
             }
 
             // Cập nhật sản phẩm qua service
@@ -334,15 +333,7 @@ public class AdminProductController extends HttpServlet {
             Product product = productService.findById(id);
 
             if (product != null) {
-                // Xóa file ảnh nếu có
-                if (product.getImage() != null && !product.getImage().isEmpty()) {
-                    String realPath = getServletContext().getRealPath("/");
-                    File imgFile = new File(realPath + product.getImage());
-                    if (imgFile.exists()) {
-                        imgFile.delete();
-                    }
-                }
-
+                productImageService.deleteByProductId(id);
                 boolean deleted = productService.deleteProductById(id);
                 if (deleted) {
                     req.setAttribute("success", "Đã xóa sản phẩm thành công!");

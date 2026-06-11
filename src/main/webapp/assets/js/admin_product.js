@@ -111,9 +111,15 @@ function openEditModal(productId) {
                 imagesContainer.innerHTML = '';
 
                 if (product.image && product.image !== 'null' && product.image !== '') {
-                    var imgSrc = product.image.startsWith('/')
-                        ? contextPath + product.image
-                        : contextPath + '/' + product.image;
+                    var imgSrc = '';
+
+                    if (product.image.startsWith('http://') || product.image.startsWith('https://')) {
+                        imgSrc = product.image; // Giữ nguyên link đám mây
+                    } else {
+                        imgSrc = product.image.startsWith('/')
+                            ? contextPath + product.image
+                            : contextPath + '/' + product.image;
+                    }
 
                     imagesContainer.innerHTML =
                         '<div class="text-center">' +

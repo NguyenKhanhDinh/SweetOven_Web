@@ -120,7 +120,7 @@
         <div class="success-msg"><i class="fa-solid fa-circle-check"></i> ${success}</div>
     </c:if>
 
-    <form action="${pageContext.request.contextPath}/verify-email" method="post">
+    <form action="${pageContext.request.contextPath}/verify-email" method="post" id="otpForm">
         <div class="otp-inputs">
             <input type="text" maxlength="1" class="otp-box" id="otp-0" autocomplete="off">
             <input type="text" maxlength="1" class="otp-box" id="otp-1" autocomplete="off">
@@ -169,7 +169,7 @@
     });
 
     // Gộp 6 ô thành hidden input trước khi submit
-    document.querySelector('form').addEventListener('submit', function(e) {
+    document.getElementById('otpForm').addEventListener('submit', function(e) {
         const otp = [...boxes].map(b => b.value).join('');
         if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
             e.preventDefault();

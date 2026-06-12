@@ -142,11 +142,6 @@
             <div class="success-message">
                 <i class="fa-solid fa-circle-check"></i> ${success}
             </div>
-            <div class="back-home" style="margin-top:10px;">
-                <a href="${pageContext.request.contextPath}/authPage/login.jsp">
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Đăng nhập ngay
-                </a>
-            </div>
         </c:if>
 
         <%-- Form đặt mật khẩu mới --%>
@@ -179,9 +174,6 @@
         </c:if>
 
         <div class="back-home">
-            <a href="${pageContext.request.contextPath}/authPage/login.jsp">
-                <i class="fa-solid fa-arrow-left-long"></i> Quay lại Đăng nhập
-            </a>
             <a href="${pageContext.request.contextPath}/">
                 Trang chủ <i class="fa-solid fa-house"></i>
             </a>

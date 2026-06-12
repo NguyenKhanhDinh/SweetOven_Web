@@ -13,6 +13,21 @@ public class UserService {
     private UserDao userDao = new UserDao();
     private PasswordResetTokenDao tokenDao = new PasswordResetTokenDao();
 
+    public enum LoginResult { SUCCESS, WRONG_CREDENTIALS, NOT_VERIFIED, BLOCKED }
+
+    // login trả về enum để controller hiển thị đúng thông báo lỗi
+    public LoginResult loginCheck(String username, String password) {
+        if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
+            return LoginResult.WRONG_CREDENTIALS;
+        }
+        User user = userDao.findByUsernameAny(username);
+        if (user == null) return LoginResult.WRONG_CREDENTIALS;
+        if (!utils.PasswordUtil.verifyPassword(password, user.getPassword())) return LoginResult.WRONG_CREDENTIALS;
+        if (user.getStatus() == 0) return LoginResult.NOT_VERIFIED;
+        if (user.isBlocked()) return LoginResult.BLOCKED;
+        return LoginResult.SUCCESS;
+    }
+
     //for login
     public User login(String username, String password) {
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
@@ -189,6 +204,7 @@ public class UserService {
             utils.EmailUtil.sendResetPasswordEmail(user.getEmail(), user.getFullName(), resetLink);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -239,5 +255,8 @@ public class UserService {
             return ResetPasswordResult.EXPIRED_TOKEN;
         }
         return ResetPasswordResult.SUCCESS;
+    }
+    public boolean activateByEmail(String email) {
+        return userDao.setStatusByEmail(email, 1);
     }
 }

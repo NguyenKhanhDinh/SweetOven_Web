@@ -5,13 +5,24 @@ import org.jdbi.v3.core.Handle;
 import utils.JdbiConnector;
 
 public class UserDao {
-    //check login
+    //check login - chỉ trả về user đã xác thực và không bị khoá
     public User findByUsername(String username) {
         String sql = "SELECT u.id, u.avatar, u.full_name AS fullName, u.username, " +
                 "u.gender, u.email, u.phone_number AS phoneNumber, u.password, " +
                 "u.status, u.is_blocked AS blocked, u.role_id AS roleId " +
                 "FROM `user` u " +
                 "WHERE u.username = :username AND u.status = 1 AND u.is_blocked = 0";
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql).bind("username", username).mapToBean(User.class).findFirst().orElse(null)
+        );
+    }
+
+    // tìm user theo username bất kể status/blocked - dùng để kiểm tra lý do login thất bại
+    public User findByUsernameAny(String username) {
+        String sql = "SELECT u.id, u.avatar, u.full_name AS fullName, u.username, " +
+                "u.gender, u.email, u.phone_number AS phoneNumber, u.password, " +
+                "u.status, u.is_blocked AS isBlocked, u.role_id AS roleId " +
+                "FROM `user` u WHERE u.username = :username";
         return JdbiConnector.getJdbi().withHandle(handle ->
                 handle.createQuery(sql).bind("username", username).mapToBean(User.class).findFirst().orElse(null)
         );
@@ -120,5 +131,13 @@ public class UserDao {
                 "WHERE u.email = :email AND u.status = 1 AND u.is_blocked = 0";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("email", email).mapToBean(User.class).findFirst().orElse(null)
         );
+    }
+    public boolean setStatusByEmail(String email, int status) {
+        String sql = "UPDATE `user` SET status = :status WHERE email = :email";
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createUpdate(sql)
+                        .bind("status", status)
+                        .bind("email", email)
+                        .execute()) > 0;
     }
 }

@@ -38,7 +38,7 @@
         }
 
         .profile-container {
-            margin-top: 100px;
+            margin-top: 20px;
             margin-bottom: 50px;
             max-width: 1350px;
         }
@@ -311,7 +311,7 @@
         .vc-logo-panel {
             width: 100px;
             flex-shrink: 0;
-            background: var(--primary);
+            background: #15803d;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -833,16 +833,15 @@
                 </div>
                 <a href="${pageContext.request.contextPath}/vouchers"
                    style="font-size:13px;color:var(--accent-dark);font-weight:600;text-decoration:none;">
-                    Thêm voucher <i class="fa fa-arrow-right ms-1" style="font-size:11px;"></i>
+                    Thêm voucher
                 </a>
             </div>
             <div style="overflow:visible;">
                 <c:choose>
                     <c:when test="${empty vouchers}">
                         <div class="vc-empty-state">
-                            <i class="fa fa-ticket-alt"></i>
                             <p>Bạn chưa lưu voucher nào.</p>
-                            <a href="${pageContext.request.contextPath}/vouchers">Xem kho voucher →</a>
+                            <a href="${pageContext.request.contextPath}/vouchers">Xem kho voucher</a>
                         </div>
                     </c:when>
                     <c:otherwise>
@@ -854,7 +853,6 @@
                                             <img src="${pageContext.request.contextPath}/assets/picture/logo-voucher.png"
                                                  alt="Sweet Oven" class="logo-img"
                                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                            <i class="fas fa-bread-slice logo-fallback-icon"></i>
                                             <div class="logo-label">Sweet Oven<br>Bakery</div>
                                         </div>
                                         <div class="vc-divider"></div>

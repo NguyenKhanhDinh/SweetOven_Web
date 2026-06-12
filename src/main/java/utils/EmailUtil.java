@@ -86,7 +86,7 @@ public class EmailUtil {
         StringBuilder sb = new StringBuilder();
         sb.append("<div style='font-family:\"Helvetica Neue\",Arial,sans-serif;max-width:600px;margin:auto;")
                 .append("background:#fffdfb;border:1px solid #f0dece;border-radius:14px;overflow:hidden;'>")
-                .append("<div style='background:linear-gradient(135deg,#3C2F27,#8B4513);padding:32px 28px;text-align:center;'>")
+                .append("<div style='background:#3C2F27;padding:32px 28px;text-align:center;'>")
                 .append("<h1 style='color:#fff;margin:0;font-size:22px;letter-spacing:1px;'>🎂 Sweet Oven Bakery</h1>")
                 .append("<p style='color:#D4A76A;margin:8px 0 0;font-size:14px;'>Xác nhận đặt hàng thành công</p>").append("</div>")
                 .append("<div style='padding:28px 28px 0;'>")

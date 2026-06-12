@@ -13,83 +13,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/components/css/sidebar.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin_user.css">
     <script>const CONTEXT_PATH = '${pageContext.request.contextPath}';</script>
 </head>
 <body>
 <div class="admin-wrapper">
 
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <span class="brand-name">SWEET OVEN</span>
-            <span class="brand-sub">Quản trị hệ thống</span>
-        </div>
-        <nav class="sidebar-nav">
-            <ul style="list-style:none;padding:0;margin:0">
-                <li class="nav-section-label">Tổng quan</li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/dashboard"
-                       class="nav-link ${pageContext.request.requestURI.contains('dashboard') ? 'active' : ''}">
-                        <i class="fas fa-chart-line"></i> Dashboard
-                    </a>
-                </li>
-                <li class="nav-section-label" style="margin-top:6px">Danh mục</li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/products"
-                       class="nav-link ${pageContext.request.requestURI.contains('products') ? 'active' : ''}">
-                        <i class="fas fa-box-open"></i> Sản phẩm
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/categories"
-                       class="nav-link ${pageContext.request.requestURI.contains('categories') ? 'active' : ''}">
-                        <i class="fas fa-tags"></i> Danh mục
-                    </a>
-                </li>
-                <li class="nav-section-label" style="margin-top:6px">Vận hành</li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/users"
-                       class="nav-link ${pageContext.request.requestURI.contains('users') ? 'active' : ''}">
-                        <i class="fas fa-users"></i> Người dùng
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/orders"
-                       class="nav-link ${pageContext.request.requestURI.contains('orders') ? 'active' : ''}">
-                        <i class="fas fa-receipt"></i> Đơn hàng
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/banners"
-                       class="nav-link ${pageContext.request.requestURI.contains('banners') ? 'active' : ''}">
-                        <i class="fas fa-image"></i> Banner
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/feedback"
-                       class="nav-link ${pageContext.request.requestURI.contains('feedback') ? 'active' : ''}">
-                        <i class="fas fa-comment-dots"></i> Phản hồi
-                    </a>
-                </li>
-            </ul>
-        </nav>
-        <div class="sidebar-footer">
-            <div class="dropdown">
-                <a href="#" class="admin-profile text-decoration-none"
-                   id="dropdownAdmin" data-bs-toggle="dropdown" aria-expanded="false">
-                    <div class="admin-avatar-icon"><i class="fas fa-user-shield"></i></div>
-                    <div>
-                        <div class="admin-name">${sessionScope.user.fullName}</div>
-                        <div class="admin-role">Quản trị viên</div>
-                    </div>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark shadow" aria-labelledby="dropdownAdmin">
-                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout">
-                        <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
-                </ul>
-            </div>
-        </div>
-    </aside>
+    <%@ include file="/components/sidebar.jsp" %>
 
     <main class="main-content">
 
@@ -166,7 +97,6 @@
                 <div class="table-card-title">
                     <i class="fas fa-list-ul"></i>
                     Danh sách tài khoản
-                    <span class="count-badge">${totalUsers}</span>
                 </div>
                 <div class="page-meta">
                     <i class="fas fa-file-alt"></i>
@@ -190,8 +120,8 @@
                         <th>#</th>
                         <th>Người dùng</th>
                         <th class="hide-xs">Liên hệ</th>
-                        <th>Vai trò</th>
-                        <th class="hide-mobile">Ngày đăng ký</th>
+                        <th style="text-align:center">Vai trò</th>
+                        <th class="hide-mobile col-date-th">Ngày đăng ký</th>
                         <th>Thao tác</th>
                     </tr>
                     </thead>
@@ -253,17 +183,17 @@
                                             </c:choose>
                                         </div>
                                     </td>
-                                    <td>
+                                    <td style="text-align:center">
                                         <c:choose>
                                             <c:when test="${u.roleId == 1}">
-                                                <span class="role-badge role-admin"><i class="fas fa-crown"></i> Admin</span>
+                                                <span class="role-badge role-admin">Quản trị viên</span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span class="role-badge role-customer"><i class="fas fa-user"></i> Khách hàng</span>
+                                                <span class="role-badge role-customer"></i>Khách hàng</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td class="hide-mobile">
+                                    <td class="hide-mobile col-date-td">
                                         <c:choose>
                                             <c:when test="${not empty u.createdAt}">
                                                 <div class="date-cell">
@@ -271,7 +201,7 @@
                                                     <c:set var="yr"  value="${fn:substring(dt,0,4)}"/>
                                                     <c:set var="mo"  value="${fn:substring(dt,5,7)}"/>
                                                     <c:set var="day" value="${fn:substring(dt,8,10)}"/>
-                                                    <i class="fas fa-calendar-alt"></i>${day}/${mo}/${yr}
+                                                   ${day}/${mo}/${yr}
                                                 </div>
                                             </c:when>
                                             <c:otherwise><span style="color:#ccc">—</span></c:otherwise>
@@ -574,6 +504,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="${pageContext.request.contextPath}/components/js/sidebar.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/admin_user.js"></script>
 </body>
 </html>

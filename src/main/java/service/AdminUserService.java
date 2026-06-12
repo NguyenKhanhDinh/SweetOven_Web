@@ -26,13 +26,13 @@ public class AdminUserService {
         return adminUserDao.countNewUsersThisMonth();
     }
 
-    public List<User> getUsers(String keyword, int status, int blocked, int page, int pageSize) {
+    public List<User> getUsers(String keyword, int blocked, int roleId, int page, int pageSize) {
         if (page < 1) page = 1;
-        return adminUserDao.getUsers(keyword, status, blocked, page, pageSize);
+        return adminUserDao.getUsers(keyword, blocked, roleId, page, pageSize);
     }
 
-    public int countUsers(String keyword, int status, int blocked) {
-        return adminUserDao.countUsers(keyword, status, blocked);
+    public int countUsers(String keyword, int blocked, int roleId) {
+        return adminUserDao.countUsers(keyword, blocked, roleId);
     }
 
     public User findById(int id) {
@@ -57,17 +57,6 @@ public class AdminUserService {
         User user = adminUserDao.findById(targetId);
         if (user == null) return BlockResult.NOT_FOUND;
         return adminUserDao.setBlocked(targetId, false) ? BlockResult.SUCCESS : BlockResult.ERROR;
-    }
-
-    public enum ResetPwdResult {SUCCESS, NOT_FOUND, ERROR}
-
-    public static final String DEFAULT_RESET_PASSWORD = "SweetOven@2024";
-
-    public ResetPwdResult resetPassword(int userId) {
-        User user = adminUserDao.findById(userId);
-        if (user == null) return ResetPwdResult.NOT_FOUND;
-        String hashed = PasswordUtil.hashPassword(DEFAULT_RESET_PASSWORD);
-        return adminUserDao.resetPassword(userId, hashed) ? ResetPwdResult.SUCCESS : ResetPwdResult.ERROR;
     }
 
     public enum CreateResult {
@@ -105,13 +94,16 @@ public class AdminUserService {
     }
 
     public enum UpdateResult {
-        SUCCESS, NOT_FOUND, EMAIL_TAKEN, INVALID_INPUT, ERROR
+        SUCCESS, NOT_FOUND, EMAIL_TAKEN, INVALID_INPUT, WEAK_PASSWORD, ERROR
     }
 
-    public UpdateResult updateUser(int id, String fullName, String email, String phone, int gender) {
+    public UpdateResult updateUser(int id, String fullName, String email, String phone, int gender, String newPassword) {
         if (isBlank(fullName) || isBlank(email) || isBlank(phone)) return UpdateResult.INVALID_INPUT;
         if (!email.matches("^[\\w.-]+@[\\w.-]+\\.\\w+$")) return UpdateResult.INVALID_INPUT;
         if (!phone.matches("\\d{9,11}")) return UpdateResult.INVALID_INPUT;
+
+        boolean changePassword = !isBlank(newPassword);
+        if (changePassword && !isStrongPassword(newPassword)) return UpdateResult.WEAK_PASSWORD;
 
         User existing = adminUserDao.findById(id);
         if (existing == null) return UpdateResult.NOT_FOUND;
@@ -123,7 +115,21 @@ public class AdminUserService {
         existing.setPhoneNumber(phone.trim());
         existing.setGender(gender);
 
-        return adminUserDao.updateUser(existing) ? UpdateResult.SUCCESS : UpdateResult.ERROR;
+        boolean updated = adminUserDao.updateUser(existing);
+        if (!updated) return UpdateResult.ERROR;
+
+        if (changePassword) {
+            String hashed = PasswordUtil.hashPassword(newPassword.trim());
+            adminUserDao.resetPassword(id, hashed);
+        }
+
+        return UpdateResult.SUCCESS;
+    }
+
+    public BlockResult activateUser(int targetId) {
+        User user = adminUserDao.findById(targetId);
+        if (user == null) return BlockResult.NOT_FOUND;
+        return adminUserDao.setStatus(targetId, 1) ? BlockResult.SUCCESS : BlockResult.ERROR;
     }
 
     public boolean promoteToAdmin(int userId, int adminId) {

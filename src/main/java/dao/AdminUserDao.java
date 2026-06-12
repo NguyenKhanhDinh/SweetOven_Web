@@ -27,17 +27,17 @@ public class AdminUserDao {
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).mapTo(Integer.class).one());
     }
 
-    public List<User> getUsers(String keyword, int status, int blocked, int page, int pageSize) {
-        StringBuilder sql = new StringBuilder("SELECT id, avatar, full_name AS fullName, username AS userName, gender, email, " + "phone_number AS phoneNumber, status, is_blocked AS isBlocked, role_id AS roleId, " + "created_at AS createdAt, updated_at AS updatedAt " + "FROM `user` WHERE role_id = 2 ");
+    public List<User> getUsers(String keyword, int blocked, int roleId, int page, int pageSize) {
+        StringBuilder sql = new StringBuilder("SELECT id, avatar, full_name AS fullName, username AS userName, gender, email, " + "phone_number AS phoneNumber, status, is_blocked AS isBlocked, role_id AS roleId, " + "created_at AS createdAt, updated_at AS updatedAt " + "FROM `user` WHERE 1=1 ");
 
         if (keyword != null && !keyword.isBlank()) {
             sql.append("AND (full_name LIKE :kw OR username LIKE :kw OR email LIKE :kw OR phone_number LIKE :kw) ");
         }
-        if (status >= 0) {
-            sql.append("AND status = :status ");
-        }
         if (blocked >= 0) {
             sql.append("AND is_blocked = :blocked ");
+        }
+        if (roleId >= 0) {
+            sql.append("AND role_id = :roleId ");
         }
         sql.append("ORDER BY created_at DESC LIMIT :limit OFFSET :offset");
 
@@ -47,24 +47,24 @@ public class AdminUserDao {
         return JdbiConnector.getJdbi().withHandle(handle -> {
             var query = handle.createQuery(sql.toString());
             if (keyword != null && !keyword.isBlank()) query.bind("kw", kw);
-            if (status >= 0) query.bind("status", status);
             if (blocked >= 0) query.bind("blocked", blocked);
+            if (roleId >= 0) query.bind("roleId", roleId);
             query.bind("limit", pageSize).bind("offset", offset);
             return query.mapToBean(User.class).list();
         });
     }
 
-    public int countUsers(String keyword, int status, int blocked) {
-        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM `user` WHERE role_id = 2 ");
+    public int countUsers(String keyword, int blocked, int roleId) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM `user` WHERE 1=1 ");
 
         if (keyword != null && !keyword.isBlank()) {
             sql.append("AND (full_name LIKE :kw OR username LIKE :kw OR email LIKE :kw OR phone_number LIKE :kw) ");
         }
-        if (status >= 0) {
-            sql.append("AND status = :status ");
-        }
         if (blocked >= 0) {
             sql.append("AND is_blocked = :blocked ");
+        }
+        if (roleId >= 0) {
+            sql.append("AND role_id = :roleId ");
         }
 
         String kw = "%" + (keyword == null ? "" : keyword.trim()) + "%";
@@ -72,8 +72,8 @@ public class AdminUserDao {
         return JdbiConnector.getJdbi().withHandle(handle -> {
             var query = handle.createQuery(sql.toString());
             if (keyword != null && !keyword.isBlank()) query.bind("kw", kw);
-            if (status >= 0) query.bind("status", status);
             if (blocked >= 0) query.bind("blocked", blocked);
+            if (roleId >= 0) query.bind("roleId", roleId);
             return query.mapTo(Integer.class).one();
         });
     }
@@ -91,6 +91,12 @@ public class AdminUserDao {
     public boolean setRole(int userId, int roleId) {
         String sql = "UPDATE `user` SET role_id = :roleId, updated_at = NOW() WHERE id = :id";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql).bind("roleId", roleId).bind("id", userId).execute()) > 0;
+    }
+
+    public boolean setStatus(int userId, int status) {
+        String sql = "UPDATE `user` SET status = :status, updated_at = NOW() WHERE id = :id AND role_id = 2";
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createUpdate(sql).bind("status", status).bind("id", userId).execute()) > 0;
     }
 
     public boolean insertUser(User user) {

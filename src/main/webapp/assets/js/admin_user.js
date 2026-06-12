@@ -13,37 +13,47 @@ document.addEventListener('DOMContentLoaded', function () {
         const modalId = openModal.value;
         if (modalId) {
             const modalEl = document.getElementById(modalId);
-            if (modalEl) {
-                const modal = new bootstrap.Modal(modalEl);
-                modal.show();
-            }
+            if (modalEl) new bootstrap.Modal(modalEl).show();
         }
     }
 
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
-        let timer;
-        searchInput.addEventListener('input', function () {
-            clearTimeout(timer);
-            timer = setTimeout(() => submitFilter(), 500);
+        searchInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') submitFilter();
         });
     }
 
-    ['filterStatus', 'filterBlocked'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('change', () => submitFilter());
-    });
+    const editForm = document.querySelector('#editUserModal form');
+    if (editForm) {
+        editForm.addEventListener('submit', function (e) {
+            const pwd     = document.getElementById('editNewPassword').value;
+            const confirm = document.getElementById('editConfirmPassword').value;
+            if (pwd && pwd !== confirm) {
+                e.preventDefault();
+                showToast('error', 'Mật khẩu xác nhận không khớp!');
+            }
+        });
+    }
 });
 
 function submitFilter() {
     const keyword = document.getElementById('searchInput')?.value || '';
-    const status  = document.getElementById('filterStatus')?.value ?? '-1';
     const blocked = document.getElementById('filterBlocked')?.value ?? '-1';
-
+    const role   = document.getElementById('filterRole')?.value ?? '-1';
     const url = new URL(window.location.href);
     url.searchParams.set('keyword', keyword);
-    url.searchParams.set('status',  status);
     url.searchParams.set('blocked', blocked);
+    url.searchParams.set('role',    role);
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+function resetFilter() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('keyword', '');
+    url.searchParams.set('blocked', '-1');
+    url.searchParams.set('role',    '-1');
     url.searchParams.set('page', '1');
     window.location.href = url.toString();
 }
@@ -56,7 +66,7 @@ function openViewModal(userId) {
 
             const genderMap  = { 0: 'Khác', 1: 'Nam', 2: 'Nữ' };
             const statusMap  = { 0: '<span class="badge-status badge-inactive">Chưa xác thực</span>', 1: '<span class="badge-status badge-active">Đã xác thực</span>' };
-            const blockedMap = { 0: '', 1: '<span class="badge-status badge-blocked">Đã khoá</span>' };
+            const blockedMap = { 1: '<span class="badge-status badge-blocked">Đã khoá</span>' };
             const roleMap    = { 1: '<span class="badge-status badge-admin">Admin</span>', 2: '<span class="badge-status badge-user">Khách hàng</span>' };
 
             const avatarHtml = data.avatar
@@ -64,10 +74,10 @@ function openViewModal(userId) {
                 : `<div class="user-detail-avatar-placeholder">${(data.fullName || '?').charAt(0).toUpperCase()}</div>`;
 
             document.getElementById('viewAvatarWrap').innerHTML  = avatarHtml;
-            document.getElementById('viewFullName').textContent   = data.fullName     || '—';
-            document.getElementById('viewUsername').textContent   = data.username     || '—';
-            document.getElementById('viewEmail').textContent      = data.email        || '—';
-            document.getElementById('viewPhone').textContent      = data.phoneNumber  || '—';
+            document.getElementById('viewFullName').textContent   = data.fullName    || '—';
+            document.getElementById('viewUsername').textContent   = data.username    || '—';
+            document.getElementById('viewEmail').textContent      = data.email       || '—';
+            document.getElementById('viewPhone').textContent      = data.phoneNumber || '—';
             document.getElementById('viewGender').textContent     = genderMap[data.gender]  || '—';
             document.getElementById('viewStatus').innerHTML       = statusMap[data.status]   || '—';
             document.getElementById('viewBlocked').innerHTML      = data.blocked ? blockedMap[1] : '(Không)';
@@ -75,8 +85,7 @@ function openViewModal(userId) {
             document.getElementById('viewCreatedAt').textContent  = data.createdAt ? formatDateTime(data.createdAt) : '—';
             document.getElementById('viewOrderCount').textContent = data.orderCount ?? '—';
 
-            const modal = new bootstrap.Modal(document.getElementById('viewUserModal'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('viewUserModal')).show();
         })
         .catch(() => showToast('error', 'Không thể tải thông tin người dùng!'));
 }
@@ -86,17 +95,41 @@ function openEditModal(userId) {
         .then(r => r.json())
         .then(data => {
             if (data.error) { showToast('error', data.error); return; }
-
-            document.getElementById('editId').value       = data.id;
-            document.getElementById('editFullName').value = data.fullName     || '';
-            document.getElementById('editEmail').value    = data.email        || '';
-            document.getElementById('editPhone').value    = data.phoneNumber  || '';
-            document.getElementById('editGender').value   = data.gender ?? 0;
-
-            const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
-            modal.show();
+            document.getElementById('editId').value               = data.id;
+            document.getElementById('editFullName').value         = data.fullName    || '';
+            document.getElementById('editEmail').value            = data.email       || '';
+            document.getElementById('editPhone').value            = data.phoneNumber || '';
+            document.getElementById('editGender').value           = data.gender ?? 0;
+            document.getElementById('editNewPassword').value      = '';
+            document.getElementById('editConfirmPassword').value  = '';
+            document.getElementById('pwdMatchMsg').innerHTML      = '';
+            new bootstrap.Modal(document.getElementById('editUserModal')).show();
         })
         .catch(() => showToast('error', 'Không thể tải thông tin người dùng!'));
+}
+
+function togglePwd(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon  = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+
+function checkPwdMatch() {
+    const pwd     = document.getElementById('editNewPassword').value;
+    const confirm = document.getElementById('editConfirmPassword').value;
+    const msg     = document.getElementById('pwdMatchMsg');
+    if (!confirm) { msg.innerHTML = ''; return; }
+    if (pwd === confirm) {
+        msg.innerHTML = '<span style="color:#28a745"><i class="fas fa-check-circle me-1"></i>Mật khẩu khớp</span>';
+    } else {
+        msg.innerHTML = '<span style="color:#dc3545"><i class="fas fa-times-circle me-1"></i>Mật khẩu không khớp</span>';
+    }
 }
 
 function confirmBlock(userId, userName) {
@@ -109,12 +142,10 @@ function confirmBlock(userId, userName) {
         cancelButtonColor: '#6c757d',
         confirmButtonText: '<i class="fas fa-lock me-1"></i> Khoá',
         cancelButtonText: 'Huỷ',
-        borderRadius: '16px',
         customClass: { popup: 'swal-custom' }
     }).then(result => {
-        if (result.isConfirmed) {
+        if (result.isConfirmed)
             window.location.href = `${CONTEXT_PATH}/admin/users?action=block&id=${userId}${getFilterQS()}`;
-        }
     });
 }
 
@@ -129,34 +160,31 @@ function confirmUnblock(userId, userName) {
         confirmButtonText: '<i class="fas fa-lock-open me-1"></i> Mở khoá',
         cancelButtonText: 'Huỷ',
     }).then(result => {
-        if (result.isConfirmed) {
+        if (result.isConfirmed)
             window.location.href = `${CONTEXT_PATH}/admin/users?action=unblock&id=${userId}${getFilterQS()}`;
-        }
     });
 }
 
-function confirmResetPassword(userId, userName) {
+function confirmActivate(userId, userName) {
     Swal.fire({
-        title: 'Đặt lại mật khẩu?',
-        html: `Mật khẩu của <strong>${userName}</strong> sẽ được đặt lại thành:<br>
-               <code style="background:#f8f9fa;padding:6px 12px;border-radius:8px;font-size:1rem;margin-top:8px;display:inline-block">SweetOven@2024</code>`,
-        icon: 'warning',
+        title: 'Kích hoạt tài khoản?',
+        html: `Bạn có chắc muốn kích hoạt tài khoản <strong>${userName}</strong>?<br><small style="color:#888">Tài khoản sẽ được xác thực và có thể đăng nhập ngay.</small>`,
+        icon: 'info',
         showCancelButton: true,
-        confirmButtonColor: '#3C2F27',
+        confirmButtonColor: '#0d6efd',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: '<i class="fas fa-key me-1"></i> Đặt lại',
+        confirmButtonText: '<i class="fas fa-user-check me-1"></i> Kích hoạt',
         cancelButtonText: 'Huỷ',
     }).then(result => {
-        if (result.isConfirmed) {
-            window.location.href = `${CONTEXT_PATH}/admin/users?action=resetPwd&id=${userId}`;
-        }
+        if (result.isConfirmed)
+            window.location.href = `${CONTEXT_PATH}/admin/users?action=activate&id=${userId}${getFilterQS()}`;
     });
 }
 
 function getFilterQS() {
     const url = new URL(window.location.href);
     let qs = '';
-    ['keyword','status','blocked','page'].forEach(k => {
+    ['keyword', 'blocked', 'role', 'page'].forEach(k => {
         const v = url.searchParams.get(k);
         if (v) qs += `&${k}=${encodeURIComponent(v)}`;
     });

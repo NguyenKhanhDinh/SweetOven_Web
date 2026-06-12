@@ -57,8 +57,8 @@ public class AdminUserController extends HttpServlet {
             case "unblock":
                 unblockUser(req, resp, adminUser);
                 break;
-            case "resetPwd":
-                resetPassword(req, resp, adminUser);
+            case "activate":
+                activateUser(req, resp, adminUser);
                 break;
             default:
                 listUsers(req, resp);
@@ -102,20 +102,22 @@ public class AdminUserController extends HttpServlet {
     private void listUsers(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         String keyword = req.getParameter("keyword");
-        String statusParam = req.getParameter("status");
+
         String blockedParam = req.getParameter("blocked");
         String pageParam = req.getParameter("page");
 
-        int status = parseIntOrDefault(statusParam, -1);
+
         int blocked = parseIntOrDefault(blockedParam, -1);
         int page = parseIntOrDefault(pageParam, 1);
         if (page < 1) page = 1;
 
-        List<User> users = adminUserService.getUsers(keyword, status, blocked, page, PAGE_SIZE);
-        int totalUsers = adminUserService.countUsers(keyword, status, blocked);
+        String roleParam = req.getParameter("role");
+        int roleFilter = parseIntOrDefault(roleParam, -1);
+        List<User> users = adminUserService.getUsers(keyword, blocked, roleFilter, page, PAGE_SIZE);
+        int totalUsers = adminUserService.countUsers(keyword, blocked, roleFilter);
         int totalPages = (int) Math.ceil((double) totalUsers / PAGE_SIZE);
 
-        req.setAttribute("totalUsers", adminUserService.countAllUsers());
+        req.setAttribute("totalAllUsers", adminUserService.countAllUsers());
         req.setAttribute("activeUsers", adminUserService.countActiveUsers());
         req.setAttribute("blockedUsers", adminUserService.countBlockedUsers());
         req.setAttribute("newUsersThisMonth", adminUserService.countNewUsersThisMonth());
@@ -127,8 +129,9 @@ public class AdminUserController extends HttpServlet {
         req.setAttribute("pageSize", PAGE_SIZE);
 
         req.setAttribute("keyword", keyword == null ? "" : keyword);
-        req.setAttribute("status", status);
+
         req.setAttribute("blocked", blocked);
+        req.setAttribute("roleFilter", roleFilter);
 
         req.getRequestDispatcher("/adminPage/admin_users.jsp").forward(req, resp);
     }
@@ -176,6 +179,24 @@ public class AdminUserController extends HttpServlet {
         listUsers(req, resp);
     }
 
+    private void activateUser(HttpServletRequest req, HttpServletResponse resp, User adminUser) throws IOException {
+        int id = parseIntOrDefault(req.getParameter("id"), 0);
+        AdminUserService.BlockResult result = adminUserService.activateUser(id);
+
+        HttpSession session = req.getSession();
+        switch (result) {
+            case SUCCESS:
+                session.setAttribute("successMsg", "Đã kích hoạt tài khoản thành công!");
+                break;
+            case NOT_FOUND:
+                session.setAttribute("errorMsg", "Không tìm thấy người dùng!");
+                break;
+            default:
+                session.setAttribute("errorMsg", "Có lỗi xảy ra, vui lòng thử lại!");
+        }
+        resp.sendRedirect(req.getContextPath() + "/admin/users" + buildQueryString(req));
+    }
+
     private void blockUser(HttpServletRequest req, HttpServletResponse resp, User adminUser) throws ServletException, IOException {
         int id = parseIntOrDefault(req.getParameter("id"), 0);
         AdminUserService.BlockResult result = adminUserService.blockUser(id, adminUser.getId());
@@ -211,19 +232,6 @@ public class AdminUserController extends HttpServlet {
                 break;
             default:
                 session.setAttribute("errorMsg", "Có lỗi xảy ra, vui lòng thử lại!");
-        }
-        resp.sendRedirect(req.getContextPath() + "/admin/users" + buildQueryString(req));
-    }
-
-    private void resetPassword(HttpServletRequest req, HttpServletResponse resp, User adminUser) throws ServletException, IOException {
-        int id = parseIntOrDefault(req.getParameter("id"), 0);
-        AdminUserService.ResetPwdResult result = adminUserService.resetPassword(id);
-
-        HttpSession session = req.getSession();
-        if (result == AdminUserService.ResetPwdResult.SUCCESS) {
-            session.setAttribute("successMsg", "Đã đặt lại mật khẩu thành công! Mật khẩu mới: " + AdminUserService.DEFAULT_RESET_PASSWORD);
-        } else {
-            session.setAttribute("errorMsg", "Có lỗi khi đặt lại mật khẩu, vui lòng thử lại!");
         }
         resp.sendRedirect(req.getContextPath() + "/admin/users" + buildQueryString(req));
     }
@@ -273,8 +281,9 @@ public class AdminUserController extends HttpServlet {
         String email = req.getParameter("email");
         String phone = req.getParameter("phone");
         int gender = parseIntOrDefault(req.getParameter("gender"), 0);
+        String newPassword = req.getParameter("newPassword");
 
-        AdminUserService.UpdateResult result = adminUserService.updateUser(id, fullName, email, phone, gender);
+        AdminUserService.UpdateResult result = adminUserService.updateUser(id, fullName, email, phone, gender, newPassword);
 
         HttpSession session = req.getSession();
         switch (result) {
@@ -289,6 +298,9 @@ public class AdminUserController extends HttpServlet {
                 break;
             case INVALID_INPUT:
                 session.setAttribute("errorMsg", "Thông tin không hợp lệ, vui lòng kiểm tra lại!");
+                break;
+            case WEAK_PASSWORD:
+                session.setAttribute("errorMsg", "Mật khẩu mới phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt!");
                 break;
             default:
                 session.setAttribute("errorMsg", "Có lỗi xảy ra, vui lòng thử lại!");
@@ -307,7 +319,7 @@ public class AdminUserController extends HttpServlet {
 
     private String buildQueryString(HttpServletRequest req) {
         StringBuilder sb = new StringBuilder("?");
-        String[] params = {"keyword", "status", "blocked", "page"};
+        String[] params = {"keyword", "blocked", "role", "page"};
         for (String p : params) {
             String v = req.getParameter(p);
             if (v != null && !v.isBlank()) sb.append(p).append("=").append(v).append("&");

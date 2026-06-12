@@ -34,6 +34,23 @@ public class LoginControllerr extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+
+        UserService.LoginResult loginResult = userService.loginCheck(username, password);
+
+        if (loginResult == UserService.LoginResult.NOT_VERIFIED) {
+            request.setAttribute("error", "Tài khoản chưa được xác thực email. Vui lòng kiểm tra hộp thư của bạn.");
+            request.setAttribute("showResend", true);
+            request.setAttribute("pendingUsernameForResend", username);
+            request.getRequestDispatcher("/authPage/login.jsp").forward(request, response);
+            return;
+        }
+
+        if (loginResult == UserService.LoginResult.BLOCKED) {
+            request.setAttribute("error", "Tài khoản của bạn đã bị khoá. Vui lòng liên hệ hỗ trợ.");
+            request.getRequestDispatcher("/authPage/login.jsp").forward(request, response);
+            return;
+        }
+
         User user = userService.login(username, password);
 
         if (user != null) {

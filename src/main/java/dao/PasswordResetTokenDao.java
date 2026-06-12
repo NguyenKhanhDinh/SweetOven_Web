@@ -12,13 +12,13 @@ public class PasswordResetTokenDao {
     }
 
     public boolean insertToken(int userId, String token, LocalDateTime expiredAt) {
-        String sql = "INSERT INTO password_reset_token(user_id, reset_token, expired_at,created_at) " +
+        String sql = "INSERT INTO password_reset_token(user_id, reset_token, expires_at,created_at) " +
                 "VALUES (:userId, :token, :expiredAt, NOW())";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql).bind("userId", userId).bind("token", token).bind("expiredAt", expiredAt).execute()) > 0;
     }
     public PasswordResetToken findByToken(String token) {
         String sql ="SELECT id, user_id AS userId, reset_token AS resetToken, " +
-                "expired_at AS expiredAt, created_at AS createdAt " +
+                "expires_at AS expiredAt, created_at AS createdAt " +
                 "FROM password_reset_token WHERE reset_token = :token";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).bind("token", token).mapToBean(PasswordResetToken.class).findFirst().orElse(null));
     }

@@ -321,9 +321,6 @@
         </form>
 
         <div class="back-home">
-            <a href="${pageContext.request.contextPath}/authPage/login.jsp">
-                <i class="fa-solid fa-arrow-left-long"></i> Quay lại Đăng nhập
-            </a>
             <a href="${pageContext.request.contextPath}/">
                 Trang chủ <i class="fa-solid fa-house"></i>
             </a>

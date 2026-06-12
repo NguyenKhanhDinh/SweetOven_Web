@@ -32,7 +32,7 @@ public class VerifyController extends HttpServlet {
         long expiry = (long) session.getAttribute("otpExpiry");
 
         if (System.currentTimeMillis() > expiry) {
-            request.setAttribute("error", "Mã OTP đã hết hạn, vui lòng đăng ký lại");
+            request.setAttribute("error", "Mã OTP đã hết hạn, vui lòng nhấn \"Gửi lại mã\" để nhận mã mới");
             request.getRequestDispatcher("/authPage/verifyemail.jsp").forward(request, response);
             return;
         }

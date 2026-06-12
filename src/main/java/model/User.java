@@ -89,9 +89,15 @@ public class User implements Serializable {
         this.status = status;
     }
     public boolean isBlocked() {
+return isBlocked;
+    }
+    public boolean getBlocked() {
         return isBlocked;
     }
     public void setBlocked(boolean blocked) {
+        isBlocked = blocked;
+    }
+    public void setIsBlocked(boolean blocked) {
         isBlocked = blocked;
     }
     public int getRoleId() {

@@ -226,16 +226,24 @@ public class AdminProductController extends HttpServlet {
             product.setIngredients(ingredients);
             product.setCreatedAt(LocalDateTime.now());
 
+            String uploadedFileUrl = null;
+
             Part imagePart = req.getPart("imageFile");
             if (imagePart != null && imagePart.getSize() > 0) {
                 String fileUrl = utils.CloudinaryUtil.uploadImage(imagePart);
                 if (fileUrl != null) {
                     product.setImage(fileUrl);
+                    uploadedFileUrl = fileUrl;
                 }
             }
 
             int generatedId = productService.addProduct(product);
+
             if (generatedId > 0) {
+                if (uploadedFileUrl != null) {
+                    productImageService.insertImage(generatedId, uploadedFileUrl, true);
+                }
+
                 req.setAttribute(
                         "success",
                         "Thêm sản phẩm thành công! Mã SP: " + productCode);

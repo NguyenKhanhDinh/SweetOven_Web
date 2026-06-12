@@ -2,7 +2,6 @@ package service;
 
 import dao.ProductImageDao;
 import model.ProductImage;
-
 import java.util.List;
 
 public class ProductImageService {
@@ -13,12 +12,8 @@ public class ProductImageService {
         productImageDao.insertImage(productId, imageUrl, isPrimary);
     }
 
-    public int insert(ProductImage image) {
-        return productImageDao.insert(image);
-    }
-
-    public void update(ProductImage image) {
-        productImageDao.update(image);
+    public void deleteByProductId(int productId) {
+        productImageDao.deleteByProductId(productId);
     }
 
     public String getPrimaryImage(int productId) {
@@ -29,20 +24,19 @@ public class ProductImageService {
         return productImageDao.getProductImages(productId);
     }
 
-    public List<ProductImage> findByProductId(int productId) {
-        return productImageDao.findByProductId(productId);
-    }
-
     public void deleteImage(int imageId) {
         productImageDao.deleteImage(imageId);
     }
 
-    public void deleteByProductId(int productId) {
-        productImageDao.deleteByProductId(productId);
+    public List<ProductImage> findByProductId(int productId) {
+        return productImageDao.findByProductId(productId);
     }
 
-    public void replaceAllWithSingle(int productId, String imageUrl) {
-        deleteByProductId(productId);
-        insertImage(productId, imageUrl, true);
+    public void update(ProductImage image) {
+        productImageDao.update(image);
+    }
+
+    public int insert(ProductImage image) {
+        return productImageDao.insert(image);
     }
 }

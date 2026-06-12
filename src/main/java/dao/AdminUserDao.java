@@ -8,7 +8,7 @@ import java.util.List;
 public class AdminUserDao {
 
     public int countAllUsers() {
-        String sql = "SELECT COUNT(*) FROM `user` WHERE role_id = 2";
+        String sql = "SELECT COUNT(*) FROM `user`";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createQuery(sql).mapTo(Integer.class).one());
     }
 

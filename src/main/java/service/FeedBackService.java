@@ -37,6 +37,7 @@ public class FeedBackService {
         boolean result = feedBackDao.insert(feedBack);
         return result ? "SUCCESS" : "Lỗi database";
     }
+
     // Lấy danh sách phản hồi, phân trang và lọc
     public Map<String, Object> getFeedbacksWithPagination(String keyword, String dateFrom,
                                                           String dateTo, int page, int pageSize) {
@@ -71,6 +72,7 @@ public class FeedBackService {
 
         return result;
     }
+
     //Lấy thống kê
     public Map<String, Object> getStatistics() {
         Map<String, Object> result = new HashMap<>();
@@ -93,6 +95,7 @@ public class FeedBackService {
 
         return result;
     }
+
     //Lấy chi tiết feedback
     public Map<String, Object> getFeedbackDetail(int id) {
         Map<String, Object> result = new HashMap<>();
@@ -119,4 +122,35 @@ public class FeedBackService {
 
         return result;
     }
+
+    //Xóa feedback
+    public Map<String, Object> deleteFeedback(int id) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            // Kiểm tra xem feedback có tồn tại không
+            FeedBack existing = feedBackDao.findById(id);
+            if (existing == null) {
+                result.put("success", false);
+                result.put("message", "Phản hồi không tồn tại!");
+                return result;
+            }
+
+            boolean deleted = feedBackDao.deleteById(id);
+
+            if (deleted) {
+                result.put("success", true);
+                result.put("message", "Xóa phản hồi thành công!");
+            } else {
+                result.put("success", false);
+                result.put("message", "Không thể xóa phản hồi!");
+            }
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "Lỗi khi xóa phản hồi: " + e.getMessage());
+        }
+
+        return result;
+    }
+
 }

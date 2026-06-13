@@ -69,8 +69,8 @@
             </div>
             <div class="stat-item">
                 <div class="stat-bar sb-pending"></div>
-                <div class="stat-value">${monthFeedbacks}</div>
-                <div class="stat-label">Tháng này</div>
+                <div class="stat-value">${pendingFeedbacks}</div>
+                <div class="stat-label">Chưa phản hồi</div>
             </div>
         </div>
 
@@ -117,6 +117,7 @@
                         <col class="col-sender">
                         <col class="col-content">
                         <col class="col-date">
+                        <col class="col-status">
                         <col class="col-action">
                     </colgroup>
                     <thead>
@@ -125,6 +126,7 @@
                             <th>Người gửi</th>
                             <th>Nội dung</th>
                             <th>Ngày gửi</th>
+                            <th>Trạng thái</th>
                             <th style="text-align:center">Thao tác</th>
                         </tr>
                     </thead>
@@ -132,7 +134,7 @@
                         <c:choose>
                             <c:when test="${empty feedbacks}">
                                 <tr>
-                                    <td colspan="5">
+                                    <td colspan="6">
                                         <div class="empty-state">
                                             <div class="empty-state-icon">
                                                 <i class="fas fa-envelope-open-text"></i>
@@ -179,6 +181,27 @@
                                             </div>
                                         </td>
                                         <td>
+                                            <div class="status-cell">
+                                                <c:choose>
+                                                    <c:when test="${fb.externalReplyStatus == 'replied' || fb.status == 'replied'}">
+                                                        <span class="badge-status badge-replied">
+                                                            <i class="fas fa-check-circle"></i> Đã phản hồi
+                                                        </span>
+                                                    </c:when>
+                                                    <c:when test="${fb.externalReplyStatus == 'opened'}">
+                                                        <span class="badge-status badge-opened">
+                                                            <i class="fas fa-envelope-open"></i> Đã mở email
+                                                        </span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="badge-status badge-pending">
+                                                            <i class="fas fa-clock"></i> Chưa phản hồi
+                                                        </span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
+                                        </td>
+                                        <td>
                                             <div class="actions-cell">
                                                 <button class="action-btn action-btn-view"
                                                         onclick="openViewModal(${fb.id})"
@@ -186,9 +209,9 @@
                                                     <i class="fas fa-eye"></i>
                                                 </button>
                                                 <button class="action-btn action-btn-reply"
-                                                        onclick="window.location.href='mailto:${fb.email}?subject=Phản hồi từ Sweet Oven'"
-                                                        title="Trả lời qua email">
-                                                    <i class="fas fa-reply"></i>
+                                                        onclick="openGmailAndReply(${fb.id}, '${fn:escapeXml(fb.email)}', '${fn:escapeXml(fb.fullName)}')"
+                                                        title="Trả lời qua Gmail">
+                                                    <i class="fas fa-envelope"></i>
                                                 </button>
                                                 <button class="action-btn action-btn-delete"
                                                         onclick="confirmDelete(${fb.id}, '${fn:escapeXml(fb.fullName)}')"
@@ -293,6 +316,12 @@
                     </span>
                     <span class="detail-val" id="modalTime"></span>
                 </div>
+                <div class="detail-row">
+                    <span class="detail-lbl">
+                        <i class="fas fa-reply"></i> Trạng thái phản hồi
+                    </span>
+                    <span class="detail-val" id="modalStatus"></span>
+                </div>
 
                 <div style="margin-top: 16px;">
                     <div class="detail-lbl" style="margin-bottom: 8px;">
@@ -300,13 +329,50 @@
                     </div>
                     <div class="content-box" id="modalContent"></div>
                 </div>
+
+                <div style="margin-top: 16px;" id="replySection" style="display:none;">
+                    <div class="detail-lbl" style="margin-bottom: 8px;">
+                        <i class="fas fa-reply-all"></i> Phản hồi của Admin
+                    </div>
+                    <div class="content-box reply-box" id="modalReply"></div>
+                </div>
             </div>
             <div class="modal-footer">
-                <a id="btnReplyEmail" href="#" class="btn-primary" target="_blank">
-                    <i class="fas fa-reply"></i> Trả lời qua Email
-                </a>
                 <button type="button" class="btn-secondary" data-bs-dismiss="modal">
                     <i class="fas fa-times"></i> Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Reply Dialog -->
+<div class="modal fade" id="confirmReplyDialog" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-question-circle"></i> Xác nhận đã gửi email
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn đã gửi email phản hồi cho khách hàng chưa?</p>
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-edit"></i> Nội dung đã gửi (tùy chọn)
+                    </label>
+                    <textarea class="form-control" id="replyContent" rows="4"
+                              placeholder="Nhập nội dung email đã gửi..."></textarea>
+                    <small class="text-muted">Bạn có thể lưu lại nội dung đã gửi để tham khảo sau này.</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Chưa gửi
+                </button>
+                <button type="button" class="btn-primary" id="confirmSendBtn">
+                    <i class="fas fa-check-circle"></i> Đã gửi
                 </button>
             </div>
         </div>

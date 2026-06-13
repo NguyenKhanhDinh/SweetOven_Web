@@ -188,4 +188,28 @@ public class FeedBackDao {
             throw new RuntimeException("Delete feedback failed", e);
         }
     }
+    //Cập nhật khi admin nhắn vào nút phản hồi
+    public boolean updateExternalReplyStatusOpened(int id) {
+        String sql = "UPDATE feedback SET external_reply_status = 'opened' WHERE id = ?";
+        try (Handle handle = jdbi.open()) {
+            int rows = handle.createUpdate(sql).bind(0, id).execute();
+            return rows > 0;
+        }
+    }
+    //Cập nhật các feedback đ phản hồi dành cho admin
+    public boolean updateExternalReplyStatusReplied(int id) {
+        String sql = "UPDATE feedback SET external_reply_status = 'replied' WHERE id = ?";
+        try (Handle handle = jdbi.open()) {
+            int rows = handle.createUpdate(sql).bind(0, id).execute();
+            return rows > 0;
+        }
+    }
+
+    // Lấy số feedback chưa phản hồi
+    public long getPendingFeedbacks() {
+        String sql = "SELECT COUNT(*) FROM feedback WHERE status = 'pending' OR status IS NULL";
+        try (Handle handle = jdbi.open()) {
+            return handle.createQuery(sql).mapTo(Long.class).one();
+        }
+    }
 }

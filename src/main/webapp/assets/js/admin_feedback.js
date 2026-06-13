@@ -264,3 +264,68 @@ function exportToExcel() {
 function printPage() {
     window.print();
 }
+function exportToExcel() {
+    const keyword = document.getElementById('searchInput')?.value || '';
+    const dateFrom = document.getElementById('filterDateFrom')?.value || '';
+    const dateTo = document.getElementById('filterDateTo')?.value || '';
+
+    let url = `${CONTEXT_PATH}/admin/feedback?action=export`;
+    if (keyword) url += `&keyword=${encodeURIComponent(keyword)}`;
+    if (dateFrom) url += `&dateFrom=${dateFrom}`;
+    if (dateTo) url += `&dateTo=${dateTo}`;
+
+    window.location.href = url;
+}
+
+let isExporting = false;
+
+function exportToExcelWithLoading() {
+    if (isExporting) {
+        showToast('warning', 'Đang xuất dữ liệu, vui lòng chờ...');
+        return;
+    }
+
+    const keyword = document.getElementById('searchInput')?.value || '';
+    const dateFrom = document.getElementById('filterDateFrom')?.value || '';
+    const dateTo = document.getElementById('filterDateTo')?.value || '';
+
+    isExporting = true;
+    const exportBtn = document.querySelector('.btn-primary[onclick*="exportToExcel"]');
+    const originalHtml = exportBtn.innerHTML;
+    exportBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Đang xuất...';
+    exportBtn.disabled = true;
+
+    // Tạo URL
+    let url = `${CONTEXT_PATH}/admin/feedback?action=export`;
+    if (keyword) url += `&keyword=${encodeURIComponent(keyword)}`;
+    if (dateFrom) url += `&dateFrom=${dateFrom}`;
+    if (dateTo) url += `&dateTo=${dateTo}`;
+
+    // Sử dụng fetch để tải file
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.blob();
+        })
+        .then(blob => {
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            a.download = `feedback_export_${timestamp}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(downloadUrl);
+            showToast('success', 'Xuất file Excel thành công!');
+        })
+        .catch(error => {
+            console.error('Export error:', error);
+            showToast('error', 'Có lỗi xảy ra khi xuất Excel!');
+        })
+        .finally(() => {
+            isExporting = false;
+            exportBtn.innerHTML = originalHtml;
+            exportBtn.disabled = false;
+        });
+}

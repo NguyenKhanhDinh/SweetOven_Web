@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -49,6 +50,9 @@ public class AdminFeedbackController extends HttpServlet {
                     break;
                 case "confirm-replied":
                     confirmReplied(request, response);
+                    break;
+                case "export":
+                    exportToExcel(request, response);
                     break;
                 default:
                     showFeedbackList(request, response);
@@ -298,5 +302,47 @@ public class AdminFeedbackController extends HttpServlet {
         }
 
         return qs.toString();
+    }
+    // Thêm method exportToExcel
+    private void exportToExcel(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        try {
+            String keyword = request.getParameter("keyword");
+            String dateFrom = request.getParameter("dateFrom");
+            String dateTo = request.getParameter("dateTo");
+
+            // Xử lý null và empty values
+            if (keyword != null && keyword.trim().isEmpty()) keyword = null;
+            if (dateFrom != null && dateFrom.trim().isEmpty()) dateFrom = null;
+            if (dateTo != null && dateTo.trim().isEmpty()) dateTo = null;
+
+            // Xuất Excel
+            byte[] excelData = feedBackService.exportToExcel(keyword, dateFrom, dateTo);
+
+            // Tạo tên file với timestamp
+            String timestamp = java.time.LocalDateTime.now()
+                    .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            String filename = "feedback_export_" + timestamp + ".xlsx";
+
+            // Set response headers
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setCharacterEncoding("UTF-8");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" +
+                    URLEncoder.encode(filename, "UTF-8") + "\"");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setContentLength(excelData.length);
+
+            // Ghi dữ liệu ra response
+            try (OutputStream os = response.getOutputStream()) {
+                os.write(excelData);
+                os.flush();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setContentType("text/html;charset=UTF-8");
+            response.getWriter().write("<script>alert('Lỗi xuất Excel: " + e.getMessage() + "'); history.back();</script>");
+        }
     }
 }

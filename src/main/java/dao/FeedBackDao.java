@@ -261,4 +261,66 @@ public class FeedBackDao {
             throw new RuntimeException("Delete feedback failed", e);
         }
     }
+//Xất excel
+    public List<FeedBack> findAllForExport(String keyword, String dateFrom, String dateTo) {
+        StringBuilder sql = new StringBuilder("""
+        SELECT id, full_name, email, phone_number, content, reply, replied_at, 
+               replied_by, created_at, sentiment, sentiment_analyzed_at, status, external_reply_status
+        FROM feedback WHERE 1=1
+    """);
+
+        List<Object> params = new ArrayList<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (full_name LIKE ? OR email LIKE ? OR content LIKE ?)");
+            String searchPattern = "%" + keyword.trim() + "%";
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
+        }
+
+        if (dateFrom != null && !dateFrom.isEmpty()) {
+            sql.append(" AND DATE(created_at) >= ?");
+            params.add(dateFrom);
+        }
+
+        if (dateTo != null && !dateTo.isEmpty()) {
+            sql.append(" AND DATE(created_at) <= ?");
+            params.add(dateTo);
+        }
+
+        sql.append(" ORDER BY created_at DESC");
+
+        try (Handle handle = jdbi.open()) {
+            var query = handle.createQuery(sql.toString());
+            for (int i = 0; i < params.size(); i++) {
+                query.bind(i, params.get(i));
+            }
+
+            return query.map((rs, ctx) -> {
+                FeedBack fb = new FeedBack(
+                        rs.getInt("id"),
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getString("phone_number"),
+                        rs.getString("content"),
+                        rs.getTimestamp("created_at") != null
+                                ? rs.getTimestamp("created_at").toLocalDateTime()
+                                : null
+                );
+                fb.setReply(rs.getString("reply"));
+                fb.setRepliedAt(rs.getTimestamp("replied_at") != null
+                        ? rs.getTimestamp("replied_at").toLocalDateTime() : null);
+                fb.setRepliedBy(rs.getString("replied_by"));
+                fb.setStatus(rs.getString("status"));
+                fb.setExternalReplyStatus(rs.getString("external_reply_status"));
+                fb.setSentiment(rs.getString("sentiment"));
+                fb.setSentimentAnalyzedAt(rs.getTimestamp("sentiment_analyzed_at") != null
+                        ? rs.getTimestamp("sentiment_analyzed_at").toLocalDateTime() : null);
+                return fb;
+            }).list();
+        } catch (Exception e) {
+            throw new RuntimeException("Find all feedbacks for export failed", e);
+        }
+    }
 }

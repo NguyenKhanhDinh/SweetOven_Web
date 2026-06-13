@@ -27,6 +27,7 @@ public class AdminProductController extends HttpServlet {
     private ProductService productService;
     private CategoryService categoryService;
     private ProductImageService productImageService;
+
     @Override
     public void init() {
         productService = new ProductService();
@@ -40,13 +41,11 @@ public class AdminProductController extends HttpServlet {
 
         String action = req.getParameter("action");
 
-        // Xử lý API lấy thông tin sản phẩm dạng JSON
         if ("api".equals(action)) {
             handleApiRequest(req, resp);
             return;
         }
 
-        // Xử lý xóa sản phẩm
         if ("delete".equals(action)) {
             String idParam = req.getParameter("id");
             if (idParam != null && !idParam.isEmpty()) {
@@ -112,7 +111,6 @@ public class AdminProductController extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            // Lấy các tham số filter từ request
             String searchKeyword = req.getParameter("searchKeyword");
             String categoryIdParam = req.getParameter("categoryId");
             String statusParam = req.getParameter("status");
@@ -120,7 +118,6 @@ public class AdminProductController extends HttpServlet {
             String sortOrder = req.getParameter("sort");
             String pageParam = req.getParameter("page");
 
-            // Phân trang
             int page = 1;
             int pageSize = 10;
             if (pageParam != null && !pageParam.isEmpty()) {
@@ -131,7 +128,6 @@ public class AdminProductController extends HttpServlet {
                 }
             }
 
-            // Xử lý category filter
             Integer categoryId = null;
             if (categoryIdParam != null && !categoryIdParam.isEmpty() && !"null".equals(categoryIdParam)) {
                 try {
@@ -139,7 +135,6 @@ public class AdminProductController extends HttpServlet {
                 } catch (NumberFormatException ignored) {}
             }
 
-            // Xử lý status filter
             Integer status = null;
             if (statusParam != null && !statusParam.isEmpty() && !"null".equals(statusParam)) {
                 try {
@@ -147,31 +142,31 @@ public class AdminProductController extends HttpServlet {
                 } catch (NumberFormatException ignored) {}
             }
 
-            // Xử lý featured filter
             Boolean featured = null;
             if (featuredParam != null && !featuredParam.isEmpty() && !"null".equals(featuredParam)) {
                 featured = Boolean.parseBoolean(featuredParam);
             }
 
-            // Lấy danh sách sản phẩm qua service
             List<Product> products = productService.findAllWithFilters(
                     searchKeyword, categoryId, status, featured, sortOrder, page, pageSize
             );
 
-            // Đếm tổng số sản phẩm qua service
-            int totalProducts = productService.countWithFilters(
+            int filteredCount = productService.countWithFilters(
                     searchKeyword, categoryId, status, featured
             );
 
-            int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+            int totalPages = (int) Math.ceil((double) filteredCount / pageSize);
 
-            // Lấy danh sách categories qua service
             List<Category> categories = categoryService.findAllCategories();
 
-            // Set attributes cho JSP
+            int totalProducts      = productService.countAllProducts();
+            int availableProducts  = productService.countAvailableProducts();
+            int outOfStockProducts = productService.countOutOfStockProducts();
+            int featuredProducts   = productService.countFeaturedProducts();
+
             req.setAttribute("products", products != null ? products : List.of());
             req.setAttribute("categories", categories != null ? categories : List.of());
-            req.setAttribute("totalProducts", totalProducts);
+            req.setAttribute("totalProducts", filteredCount);
             req.setAttribute("totalPages", totalPages > 0 ? totalPages : 1);
             req.setAttribute("currentPage", page);
             req.setAttribute("pageSize", pageSize);
@@ -180,6 +175,10 @@ public class AdminProductController extends HttpServlet {
             req.setAttribute("filterStatus", statusParam != null ? statusParam : "");
             req.setAttribute("filterFeatured", featuredParam != null ? featuredParam : "");
             req.setAttribute("sortOrder", sortOrder != null ? sortOrder : "");
+            req.setAttribute("statTotalProducts", totalProducts);
+            req.setAttribute("availableProducts", availableProducts);
+            req.setAttribute("outOfStockProducts", outOfStockProducts);
+            req.setAttribute("featuredProducts", featuredProducts);
 
             req.getRequestDispatcher("/adminPage/admin_products.jsp").forward(req, resp);
 
@@ -196,10 +195,8 @@ public class AdminProductController extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            // Tạo mã sản phẩm tự động qua service
             String productCode = productService.generateProductCode();
 
-            // Lấy các tham số từ request
             int categoryId = Integer.parseInt(req.getParameter("categoryId"));
             String name = req.getParameter("name");
             BigDecimal originalPrice = new BigDecimal(req.getParameter("originalPrice"));
@@ -212,7 +209,6 @@ public class AdminProductController extends HttpServlet {
             String description = req.getParameter("description");
             String ingredients = req.getParameter("ingredients");
 
-            // Tạo đối tượng Product
             Product product = new Product();
             product.setProductCode(productCode);
             product.setName(name);
@@ -243,10 +239,7 @@ public class AdminProductController extends HttpServlet {
                 if (uploadedFileUrl != null) {
                     productImageService.insertImage(generatedId, uploadedFileUrl, true);
                 }
-
-                req.setAttribute(
-                        "success",
-                        "Thêm sản phẩm thành công! Mã SP: " + productCode);
+                req.setAttribute("success", "Thêm sản phẩm thành công! Mã SP: " + productCode);
             } else {
                 req.setAttribute("error", "Thêm sản phẩm thất bại!");
             }
@@ -266,26 +259,17 @@ public class AdminProductController extends HttpServlet {
             int id = Integer.parseInt(req.getParameter("id"));
             String productCode = req.getParameter("productCode");
             String name = req.getParameter("name");
-            int categoryId =
-                    Integer.parseInt(req.getParameter("categoryId"));
-            BigDecimal originalPrice =
-                    new BigDecimal(req.getParameter("originalPrice"));
-            String discountPriceStr =
-                    req.getParameter("discountPrice");
-            BigDecimal discountPrice =
-                    (discountPriceStr == null || discountPriceStr.isEmpty())
-                    ? null
-                            : new BigDecimal(discountPriceStr);
-            int stock =
-                    Integer.parseInt(req.getParameter("stockQuantity"));
-            int status =
-                    Integer.parseInt(req.getParameter("status"));
-            boolean featured =
-                    "true".equals(req.getParameter("featured"));
+            int categoryId = Integer.parseInt(req.getParameter("categoryId"));
+            BigDecimal originalPrice = new BigDecimal(req.getParameter("originalPrice"));
+            String discountPriceStr = req.getParameter("discountPrice");
+            BigDecimal discountPrice = (discountPriceStr == null || discountPriceStr.isEmpty())
+                    ? null : new BigDecimal(discountPriceStr);
+            int stock = Integer.parseInt(req.getParameter("stockQuantity"));
+            int status = Integer.parseInt(req.getParameter("status"));
+            boolean featured = "true".equals(req.getParameter("featured"));
             String description = req.getParameter("description");
             String ingredients = req.getParameter("ingredients");
 
-            // Lấy sản phẩm cũ qua service
             Product product = productService.findById(id);
             if (product == null) {
                 req.setAttribute("error", "Không tìm thấy sản phẩm!");
@@ -293,7 +277,6 @@ public class AdminProductController extends HttpServlet {
                 return;
             }
 
-            // Cập nhật thông tin
             product.setProductCode(productCode);
             product.setName(name);
             product.setCategoryId(categoryId);
@@ -306,19 +289,16 @@ public class AdminProductController extends HttpServlet {
             product.setIngredients(ingredients);
             product.setUpdatedAt(LocalDateTime.now());
 
-            // Xử lý upload ảnh mới lên Cloudinary
             Part imagePart = req.getPart("imageFile");
             if (imagePart != null && imagePart.getSize() > 0) {
                 String fileUrl = utils.CloudinaryUtil.uploadImage(imagePart);
                 if (fileUrl != null) {
                     product.setImage(fileUrl);
-
                     productImageService.deleteByProductId(id);
                     productImageService.insertImage(id, fileUrl, true);
                 }
             }
 
-            // Cập nhật sản phẩm qua service
             boolean updated = productService.updateProduct(product);
             if (updated) {
                 req.setAttribute("success", "Cập nhật sản phẩm thành công!");
@@ -361,17 +341,9 @@ public class AdminProductController extends HttpServlet {
     }
 
     private String saveFile(Part part, String folder) throws IOException {
-        String fileName =
-                System.currentTimeMillis()
-                        + "_"
-                        + part.getSubmittedFileName();
+        String fileName = System.currentTimeMillis() + "_" + part.getSubmittedFileName();
         String appPath = getServletContext().getRealPath("/");
-        String savePath =
-                appPath
-                + File.separator
-                + "uploads"
-                + File.separator
-                + folder;
+        String savePath = appPath + File.separator + "uploads" + File.separator + folder;
 
         File dir = new File(savePath);
         if (!dir.exists()) {

@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,12 @@ public class AdminFeedbackController extends HttpServlet {
                     break;
                 case "delete":
                     deleteFeedback(request, response);
+                    break;
+                case "mark-opened":
+                    markAsOpenedAndRedirectToGmail(request, response);
+                    break;
+                case "confirm-replied":
+                    confirmReplied(request, response);
                     break;
                 default:
                     showFeedbackList(request, response);
@@ -185,7 +193,6 @@ public class AdminFeedbackController extends HttpServlet {
         }
     }
 
-    // Helper method: Lấy query string để giữ filter khi redirect
     private String getFilterQueryString(HttpServletRequest request) {
         StringBuilder qs = new StringBuilder();
         String keyword = request.getParameter("keyword");
@@ -207,5 +214,59 @@ public class AdminFeedbackController extends HttpServlet {
         }
 
         return qs.toString();
+    }
+    //Đánh dấu opened và redirect đến Gmail compose
+    private void markAsOpenedAndRedirectToGmail(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            String idParam = request.getParameter("id");
+            if (idParam == null || idParam.isEmpty()) {
+                request.getSession().setAttribute("errorMsg", "Thiếu ID phản hồi");
+                response.sendRedirect(request.getContextPath() + "/admin/feedback");
+                return;
+            }
+            int id = Integer.parseInt(idParam);
+            Map<String, Object> result = feedBackService.markAsOpened(id);
+            if ((boolean) result.get("success")) {
+                request.getSession().setAttribute("pendingReplyId", id);
+                String email = (String) result.get("email");
+                String fullName = (String) result.get("fullName");
+                String subject = URLEncoder.encode("Phản hồi từ Sweet Oven", StandardCharsets.UTF_8.toString());
+                String body = URLEncoder.encode(
+                        "Chào " + fullName + ",\n\nCảm ơn bạn đã gửi phản hồi đến Sweet Oven...",
+                        StandardCharsets.UTF_8.toString()
+                );
+                String gmailUrl = "https://mail.google.com/mail/?view=cm&fs=1&to=" + email + "&su=" + subject + "&body=" + body;
+                response.sendRedirect(gmailUrl);
+            } else {
+                request.getSession().setAttribute("errorMsg", result.get("message"));
+                response.sendRedirect(request.getContextPath() + "/admin/feedback");
+            }
+        } catch (NumberFormatException e) {
+            request.getSession().setAttribute("errorMsg", "ID không hợp lệ");
+            response.sendRedirect(request.getContextPath() + "/admin/feedback");
+        }
+    }
+
+    // Xác nhận đã gửi email
+    private void confirmReplied(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        try {
+            String idParam = request.getParameter("id");
+            if (idParam == null || idParam.isEmpty()) {
+                response.getWriter().write("{\"success\": false, \"message\": \"Thiếu ID phản hồi\"}");
+                return;
+            }
+            int id = Integer.parseInt(idParam);
+            Map<String, Object> result = feedBackService.confirmReplied(id);
+            if (request.getSession().getAttribute("pendingReplyId") != null) {
+                request.getSession().removeAttribute("pendingReplyId");
+            }
+            response.getWriter().write(new Gson().toJson(result));
+        } catch (NumberFormatException e) {
+            response.getWriter().write("{\"success\": false, \"message\": \"ID không hợp lệ\"}");
+        }
     }
 }

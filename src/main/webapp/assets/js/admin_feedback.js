@@ -1,4 +1,7 @@
 var contextPath = '';
+var pendingReplyId = null;
+var confirmReplyModal = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     const alertEl = document.getElementById('alertFloating');
     if (alertEl) {
@@ -17,8 +20,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-});
 
+    // Initialize confirm reply modal
+    confirmReplyModal = new bootstrap.Modal(document.getElementById('confirmReplyDialog'));
+
+    // Handle confirm send button
+    const confirmSendBtn = document.getElementById('confirmSendBtn');
+    if (confirmSendBtn) {
+        confirmSendBtn.addEventListener('click', confirmSendEmail);
+    }
+
+    // Check for pending reply when page loads
+    checkAndShowConfirmDialog();
+});
 
 function submitFilter() {
     const keyword = document.getElementById('searchInput')?.value || '';
@@ -33,7 +47,6 @@ function submitFilter() {
     window.location.href = url.toString();
 }
 
-
 function resetFilter() {
     const url = new URL(window.location.href);
     url.searchParams.set('keyword', '');
@@ -42,7 +55,6 @@ function resetFilter() {
     url.searchParams.set('page', '1');
     window.location.href = url.toString();
 }
-
 
 function openViewModal(feedbackId) {
     fetch(`${CONTEXT_PATH}/admin/feedback?action=get-detail&id=${feedbackId}`)
@@ -57,16 +69,38 @@ function openViewModal(feedbackId) {
             }
 
             const formattedDate = data.createdAt ? formatDateTime(data.createdAt) : '—';
+            const repliedAt = data.repliedAt ? formatDateTime(data.repliedAt) : null;
+
+            let statusHtml = '';
+            if (data.externalReplyStatus === 'replied' || data.status === 'replied') {
+                statusHtml = '<span class="badge-status badge-replied"><i class="fas fa-check-circle"></i> Đã phản hồi</span>';
+                if (repliedAt) {
+                    statusHtml += `<small class="text-muted d-block mt-1">Ngày: ${repliedAt}</small>`;
+                }
+                if (data.repliedBy) {
+                    statusHtml += `<small class="text-muted d-block">Bởi: ${escapeHtml(data.repliedBy)}</small>`;
+                }
+            } else if (data.externalReplyStatus === 'opened') {
+                statusHtml = '<span class="badge-status badge-opened"><i class="fas fa-envelope-open"></i> Đã mở email</span>';
+            } else {
+                statusHtml = '<span class="badge-status badge-pending"><i class="fas fa-clock"></i> Chưa phản hồi</span>';
+            }
 
             document.getElementById('modalFullName').textContent = data.fullName || '—';
             document.getElementById('modalEmail').textContent = data.email || '—';
             document.getElementById('modalPhone').textContent = data.phoneNumber || '—';
             document.getElementById('modalTime').textContent = formattedDate;
+            document.getElementById('modalStatus').innerHTML = statusHtml;
             document.getElementById('modalContent').textContent = data.content || '—';
 
-            const replyBtn = document.getElementById('btnReplyEmail');
-            if (replyBtn && data.email) {
-                replyBtn.href = `mailto:${data.email}?subject=Phản hồi từ Sweet Oven&body=Chào ${data.fullName || ''},%0D%0A%0D%0ACảm ơn bạn đã gửi phản hồi đến Sweet Oven.%0D%0A%0D%0A`;
+            // Show reply section if has reply
+            const replySection = document.getElementById('replySection');
+            const modalReply = document.getElementById('modalReply');
+            if (data.reply) {
+                replySection.style.display = 'block';
+                modalReply.textContent = data.reply || '—';
+            } else {
+                replySection.style.display = 'none';
             }
 
             const modal = new bootstrap.Modal(document.getElementById('viewFeedbackModal'));
@@ -78,6 +112,71 @@ function openViewModal(feedbackId) {
         });
 }
 
+// Function to open Gmail and handle reply
+function openGmailAndReply(feedbackId, email, fullName) {
+    // Store pending reply info in sessionStorage
+    sessionStorage.setItem('pendingReplyId', feedbackId);
+    sessionStorage.setItem('pendingReplyEmail', email);
+    sessionStorage.setItem('pendingReplyName', fullName);
+
+    // Redirect to Gmail compose via backend (which will mark as opened)
+    window.location.href = `${CONTEXT_PATH}/admin/feedback?action=mark-opened&id=${feedbackId}`;
+}
+
+// Function to check and show confirm dialog when returning to page
+function checkAndShowConfirmDialog() {
+    const pendingId = sessionStorage.getItem('pendingReplyId');
+    if (pendingId) {
+        pendingReplyId = pendingId;
+        // Show dialog after a short delay
+        setTimeout(() => {
+            if (confirmReplyModal) {
+                confirmReplyModal.show();
+            }
+        }, 500);
+    }
+}
+
+// Function to confirm email has been sent
+function confirmSendEmail() {
+    if (!pendingReplyId) return;
+
+    const replyContent = document.getElementById('replyContent').value;
+
+    fetch(`${CONTEXT_PATH}/admin/feedback?action=confirm-replied`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `id=${pendingReplyId}&replyContent=${encodeURIComponent(replyContent)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('success', data.message);
+            // Clear session storage
+            sessionStorage.removeItem('pendingReplyId');
+            sessionStorage.removeItem('pendingReplyEmail');
+            sessionStorage.removeItem('pendingReplyName');
+            pendingReplyId = null;
+            // Close dialog
+            if (confirmReplyModal) {
+                confirmReplyModal.hide();
+            }
+            document.getElementById('replyContent').value = '';
+            // Reload page to update status
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showToast('error', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('error', 'Có lỗi xảy ra!');
+    });
+}
 
 function confirmDelete(feedbackId, senderName) {
     Swal.fire({
@@ -99,7 +198,6 @@ function confirmDelete(feedbackId, senderName) {
     });
 }
 
-
 function getFilterQS() {
     const url = new URL(window.location.href);
     let qs = '';
@@ -112,18 +210,21 @@ function getFilterQS() {
     return qs;
 }
 
-
-function formatDateTime(dateArr) {
-    if (Array.isArray(dateArr) && dateArr.length >= 3) {
-        const [y, mo, d, h = 0, min = 0] = dateArr;
-        return `${String(d).padStart(2, '0')}/${String(mo).padStart(2, '0')}/${y} ${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+function formatDateTime(dateStr) {
+    if (!dateStr) return '—';
+    try {
+        let date = new Date(dateStr);
+        if (isNaN(date.getTime())) {
+            if (typeof dateStr === 'string') {
+                return dateStr.replace('T', ' ').substring(0, 16);
+            }
+            return '—';
+        }
+        return date.toLocaleString('vi-VN');
+    } catch(e) {
+        return dateStr;
     }
-    if (typeof dateArr === 'string') {
-        return dateArr.replace('T', ' ').substring(0, 16);
-    }
-    return '—';
 }
-
 
 function showToast(type, msg) {
     Swal.fire({
@@ -150,14 +251,13 @@ function escapeHtml(str) {
         .replace(/'/g, '&#39;');
 }
 
-    function exportToExcel() {
+function exportToExcel() {
     const keyword = document.getElementById('searchInput')?.value || '';
     const dateFrom = document.getElementById('filterDateFrom')?.value || '';
     const dateTo = document.getElementById('filterDateTo')?.value || '';
 
     window.location.href = `${CONTEXT_PATH}/admin/feedback?action=export&keyword=${encodeURIComponent(keyword)}&dateFrom=${dateFrom}&dateTo=${dateTo}`;
 }
-
 
 function printPage() {
     window.print();

@@ -45,6 +45,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.13.2'
 
     implementation 'com.zaxxer:HikariCP:5.1.0'
+    implementation 'com.sendgrid:sendgrid-java:4.10.2'
 }
 
 clean {

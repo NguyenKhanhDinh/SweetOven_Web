@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 public class ProductDao {
 
-    // featured products for homepage
     public List<Product> getFeaturedProducts() {
         String sql = "SELECT p.*, pi.image_url as image " +
                 "FROM product p " +
@@ -25,7 +24,6 @@ public class ProductDao {
         );
     }
 
-    // lấy hết sản phẩm hiển thị lên
     public List<Product> getListProduct() {
         String sql = "SELECT p.*, pi.image_url as image " +
                 "FROM product p " +
@@ -39,7 +37,6 @@ public class ProductDao {
         );
     }
 
-    // tìm sản phẩm dựa trên id xài cho xem chi tiết sản phẩm
     public Product findById(int id) {
         String sql = "SELECT p.*, pi.image_url as image " +
                 "FROM product p " +
@@ -55,7 +52,6 @@ public class ProductDao {
         );
     }
 
-    // hiển thị sản phẩm liên quan
     public List<Product> getRelatedProducts(int categoryId, int currentProductId, int limit) {
         String sql = "SELECT p.*, pi.image_url as image " +
                 "FROM product p " +
@@ -76,7 +72,6 @@ public class ProductDao {
         );
     }
 
-    //tìm sản phẩm dụa trên danh mục
     public List<Product> getProductsByCategory(int categoryId) {
         String sql = "SELECT p.*, pi.image_url as image " +
                 "FROM product p " +
@@ -122,7 +117,6 @@ public class ProductDao {
         );
     }
 
-    // lấy ảnh phụ cho sản phẩm
     public List<String> getProductImages(int productId) {
         String sql = "SELECT image_url FROM productimage WHERE product_id = :productId";
 
@@ -154,9 +148,6 @@ public class ProductDao {
         );
     }
 
-    /**
-     * Cập nhật sản phẩm
-     */
     public void update(Product p) {
         String sql = "UPDATE product SET product_code = :productCode, category_id = :categoryId, " +
                 "name = :name, original_price = :originalPrice, discount_price = :discountPrice, " +
@@ -171,9 +162,6 @@ public class ProductDao {
         );
     }
 
-    /**
-     * Cập nhật trạng thái sản phẩm
-     */
     public void updateStatus(int productId, int status) {
         String sql = "UPDATE product SET status = :status, updated_at = NOW() WHERE id = :id";
 
@@ -185,9 +173,6 @@ public class ProductDao {
         );
     }
 
-    /**
-     * Lấy số thứ tự lớn nhất theo prefix
-     */
     public int getMaxSequenceByPrefix(String prefix) {
         String sql = "SELECT MAX(CAST(SUBSTRING(product_code, LENGTH(:prefix) + 2) AS UNSIGNED)) " +
                 "FROM product WHERE product_code LIKE CONCAT(:prefix, '-%')";
@@ -307,9 +292,6 @@ public class ProductDao {
         });
     }
 
-    /**
-     * Đếm số lượng sản phẩm với bộ lọc
-     */
     public int countWithFilters(String search, Integer categoryId, Integer status, Boolean featured) {
 
         StringBuilder sql = new StringBuilder("""
@@ -354,8 +336,36 @@ public class ProductDao {
             return query.mapTo(Integer.class).one();
         });
     }
+
     public int countAll() {
         String sql = "SELECT COUNT(*) FROM product";
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .mapTo(Integer.class)
+                        .one()
+        );
+    }
+
+    public int countAvailable() {
+        String sql = "SELECT COUNT(*) FROM product WHERE status = 1 AND stock_quantity > 0";
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .mapTo(Integer.class)
+                        .one()
+        );
+    }
+
+    public int countOutOfStock() {
+        String sql = "SELECT COUNT(*) FROM product WHERE status = 0 OR stock_quantity = 0";
+        return JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .mapTo(Integer.class)
+                        .one()
+        );
+    }
+
+    public int countFeatured() {
+        String sql = "SELECT COUNT(*) FROM product WHERE is_featured = 1";
         return JdbiConnector.getJdbi().withHandle(handle ->
                 handle.createQuery(sql)
                         .mapTo(Integer.class)

@@ -1,34 +1,4 @@
 
-:root {
-    --primary: #8B4513;
-    --primary-hover: #6B3410;
-    --accent: #D4A76A;
-    --accent-light: #E8CBAE;
-    --accent-soft: #FDF8F0;
-    --surface: #FFFFFF;
-    --bg: #F9F6F0;
-    --border: #F0E8E0;
-    --border-strong: #E0D5C8;
-    --text-main: #3C2F27;
-    --text-sub: #7A6B5D;
-    --text-muted: #B0A498;
-    --success: #28A745;
-    --success-bg: #E6F4EA;
-    --danger: #DC3545;
-    --danger-bg: #FEE8E7;
-    --warning: #FFC107;
-    --warning-bg: #FFF8E0;
-    --info: #17A2B8;
-    --info-bg: #E6F4F6;
-    --shadow-sm: 0 2px 8px rgba(60, 47, 39, 0.06);
-    --shadow-md: 0 4px 16px rgba(60, 47, 39, 0.08);
-    --shadow-lg: 0 8px 24px rgba(60, 47, 39, 0.12);
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --transition: all 0.2s ease;
-}
-
 /* Page Header */
 .page-header {
     display: flex;
@@ -289,7 +259,7 @@
 }
 
 .data-table col.col-action {
-    width: 110px;
+    width: 130px;
 }
 
 .data-table thead th {
@@ -370,11 +340,16 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    flex-wrap: wrap;
 }
 
 .sender-email i {
     font-size: 0.7rem;
     color: var(--accent);
+}
+
+.sender-email .text-muted {
+    color: var(--border-strong);
 }
 
 /* Content Cell */
@@ -386,6 +361,8 @@
     color: var(--text-sub);
     font-size: 0.88rem;
     line-height: 1.4;
+    display: flex;
+    align-items: center;
 }
 
 /* Date Cell */
@@ -432,7 +409,7 @@
 }
 
 .action-btn-view {
-    border-color: var(--info-bg);
+    border-color: #c4e8ee;
     color: var(--info);
     background: var(--info-bg);
 }
@@ -444,7 +421,7 @@
 }
 
 .action-btn-delete {
-    border-color: var(--danger-bg);
+    border-color: #f4c3bf;
     color: var(--danger);
     background: var(--danger-bg);
 }
@@ -456,7 +433,7 @@
 }
 
 .action-btn-reply {
-    border-color: var(--success-bg);
+    border-color: #bce8cc;
     color: var(--success);
     background: var(--success-bg);
 }
@@ -801,6 +778,11 @@
         font-size: 1rem;
     }
 
+    .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+
     .stats-row {
         flex-wrap: wrap;
     }
@@ -897,6 +879,10 @@
     .table-card-header {
         padding: 12px 14px;
     }
+
+    .data-table .hide-xs {
+        display: none;
+    }
 }
 
 @media (max-width: 480px) {
@@ -937,5 +923,9 @@
 
     .search-wrap input {
         font-size: 0.78rem;
+    }
+
+    .page-header {
+        padding: 12px 14px;
     }
 }

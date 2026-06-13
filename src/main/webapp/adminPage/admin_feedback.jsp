@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -174,7 +175,7 @@
                                         <td>
                                             <div class="date-cell">
                                                 <i class="fas fa-calendar-alt"></i>
-                                                <fmt:formatDate value="${fb.createdAt}" pattern="dd/MM/yyyy HH:mm"/>
+                                                ${fb.createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))}
                                             </div>
                                         </td>
                                         <td>

@@ -1,6 +1,4 @@
-
-const CONTEXT_PATH = window.CONTEXT_PATH || '';
-
+var contextPath = '';
 document.addEventListener('DOMContentLoaded', function() {
     const alertEl = document.getElementById('alertFloating');
     if (alertEl) {

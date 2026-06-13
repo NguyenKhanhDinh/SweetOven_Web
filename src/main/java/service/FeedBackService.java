@@ -2,7 +2,11 @@ package service;
 
 import dao.FeedBackDao;
 import model.FeedBack;
-
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -239,5 +243,193 @@ public class FeedBackService {
         }
 
         return result;
+    }
+    public List<FeedBack> getAllFeedbacksForExport(String keyword, String dateFrom, String dateTo) {
+        try {
+            return feedBackDao.findAllForExport(keyword, dateFrom, dateTo);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi lấy dữ liệu xuất Excel: " + e.getMessage());
+        }
+    }
+
+    public byte[] exportToExcel(String keyword, String dateFrom, String dateTo) {
+        List<FeedBack> feedbacks = getAllFeedbacksForExport(keyword, dateFrom, dateTo);
+        return generateExcelFile(feedbacks);
+    }
+
+    private byte[] generateExcelFile(List<FeedBack> feedbacks) {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Danh sách phản hồi");
+
+            // Tạo style cho header
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 12);
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setBorderBottom(BorderStyle.THIN);
+            headerStyle.setBorderTop(BorderStyle.THIN);
+            headerStyle.setBorderLeft(BorderStyle.THIN);
+            headerStyle.setBorderRight(BorderStyle.THIN);
+            headerStyle.setAlignment(HorizontalAlignment.CENTER);
+
+            // Tạo style cho cell bình thường
+            CellStyle cellStyle = workbook.createCellStyle();
+            cellStyle.setBorderBottom(BorderStyle.THIN);
+            cellStyle.setBorderTop(BorderStyle.THIN);
+            cellStyle.setBorderLeft(BorderStyle.THIN);
+            cellStyle.setBorderRight(BorderStyle.THIN);
+            cellStyle.setWrapText(true);
+
+            // Tạo style cho cell trạng thái
+            CellStyle pendingStyle = workbook.createCellStyle();
+            pendingStyle.cloneStyleFrom(cellStyle);
+            pendingStyle.setFillForegroundColor(IndexedColors.LIGHT_ORANGE.getIndex());
+            pendingStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            CellStyle repliedStyle = workbook.createCellStyle();
+            repliedStyle.cloneStyleFrom(cellStyle);
+            repliedStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+            repliedStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            // Tạo header row
+            Row headerRow = sheet.createRow(0);
+            String[] headers = {
+                    "STT", "Họ tên", "Email", "Số điện thoại",
+                    "Nội dung phản hồi", "Phản hồi của Admin",
+                    "Ngày gửi", "Ngày phản hồi", "Người phản hồi",
+                    "Trạng thái", "Trạng thái phản hồi qua email", "Sentiment"
+            };
+
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            // Tạo data rows
+            int rowNum = 1;
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+            for (int i = 0; i < feedbacks.size(); i++) {
+                FeedBack fb = feedbacks.get(i);
+                Row row = sheet.createRow(rowNum++);
+
+                // STT
+                createCell(row, 0, String.valueOf(i + 1), cellStyle);
+
+                // Họ tên
+                createCell(row, 1, fb.getFullName() != null ? fb.getFullName() : "", cellStyle);
+
+                // Email
+                createCell(row, 2, fb.getEmail() != null ? fb.getEmail() : "", cellStyle);
+
+                // Số điện thoại
+                createCell(row, 3, fb.getPhoneNumber() != null ? fb.getPhoneNumber() : "", cellStyle);
+
+                // Nội dung phản hồi
+                createCell(row, 4, fb.getContent() != null ? fb.getContent() : "", cellStyle);
+
+                // Phản hồi của Admin
+                createCell(row, 5, fb.getReply() != null ? fb.getReply() : "", cellStyle);
+
+                // Ngày gửi
+                String createdAt = fb.getCreatedAt() != null ?
+                        fb.getCreatedAt().format(dateFormatter) : "";
+                createCell(row, 6, createdAt, cellStyle);
+
+                // Ngày phản hồi
+                String repliedAt = fb.getRepliedAt() != null ?
+                        fb.getRepliedAt().format(dateFormatter) : "";
+                createCell(row, 7, repliedAt, cellStyle);
+
+                // Người phản hồi
+                createCell(row, 8, fb.getRepliedBy() != null ? fb.getRepliedBy() : "", cellStyle);
+
+                // Trạng thái (status) với màu sắc
+                String statusText = getStatusText(fb.getStatus());
+                Cell statusCell = row.createCell(9);
+                statusCell.setCellValue(statusText);
+                if ("Đã phản hồi".equals(statusText)) {
+                    statusCell.setCellStyle(repliedStyle);
+                } else if ("Chưa phản hồi".equals(statusText)) {
+                    statusCell.setCellStyle(pendingStyle);
+                } else {
+                    statusCell.setCellStyle(cellStyle);
+                }
+
+                // Trạng thái phản hồi qua email
+                String externalStatusText = getExternalStatusText(fb.getExternalReplyStatus());
+                Cell externalCell = row.createCell(10);
+                externalCell.setCellValue(externalStatusText);
+                if ("Đã phản hồi qua email".equals(externalStatusText)) {
+                    externalCell.setCellStyle(repliedStyle);
+                } else if ("Đã mở email".equals(externalStatusText)) {
+                    externalCell.setCellStyle(pendingStyle);
+                } else {
+                    externalCell.setCellStyle(cellStyle);
+                }
+
+                // Sentiment
+                String sentimentText = getSentimentText(fb.getSentiment());
+                createCell(row, 11, sentimentText, cellStyle);
+            }
+
+            // Auto-size tất cả các cột
+            for (int i = 0; i < headers.length; i++) {
+                sheet.autoSizeColumn(i);
+                int width = sheet.getColumnWidth(i);
+                if (width < 4000) sheet.setColumnWidth(i, 4000);
+                if (width > 15000) sheet.setColumnWidth(i, 15000);
+            }
+
+            // Freeze header row
+            sheet.createFreezePane(0, 1);
+
+            // Ghi workbook vào byte array
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+            return outputStream.toByteArray();
+
+        } catch (IOException e) {
+            throw new RuntimeException("Lỗi tạo file Excel: " + e.getMessage());
+        }
+    }
+
+    private void createCell(Row row, int column, String value, CellStyle style) {
+        Cell cell = row.createCell(column);
+        cell.setCellValue(value);
+        cell.setCellStyle(style);
+    }
+
+    private String getStatusText(String status) {
+        if (status == null) return "Chưa phản hồi";
+        switch (status) {
+            case "replied": return "Đã phản hồi";
+            case "pending": return "Chưa phản hồi";
+            default: return status;
+        }
+    }
+
+    private String getExternalStatusText(String externalStatus) {
+        if (externalStatus == null) return "Chưa phản hồi";
+        switch (externalStatus) {
+            case "replied": return "Đã phản hồi qua email";
+            case "opened": return "Đã mở email";
+            case "pending": return "Chưa phản hồi";
+            default: return externalStatus;
+        }
+    }
+
+    private String getSentimentText(String sentiment) {
+        if (sentiment == null) return "Chưa phân tích";
+        switch (sentiment.toLowerCase()) {
+            case "positive": return "Tích cực";
+            case "negative": return "Tiêu cực";
+            case "neutral": return "Trung lập";
+            default: return sentiment;
+        }
     }
 }

@@ -16,7 +16,7 @@
                     <a href="${pageContext.request.contextPath}/admin/dashboard"
                        class="nav-link ${pageContext.request.requestURI.contains('dashboard') ? 'active' : ''}"
                        data-tooltip="Dashboard">
-                        <i class="fas fa-chart-line"></i>
+                        <i class="fas fa-chart-pie"></i>
                         <span class="nav-label">Dashboard</span>
                     </a>
                 </li>
@@ -24,7 +24,7 @@
                     <a href="${pageContext.request.contextPath}/admin/products"
                        class="nav-link ${pageContext.request.requestURI.contains('products') ? 'active' : ''}"
                        data-tooltip="Sản phẩm">
-                        <i class="fas fa-box-open"></i>
+                        <i class="fas fa-cookie-bite"></i>
                         <span class="nav-label">Sản phẩm</span>
                     </a>
                 </li>
@@ -32,7 +32,7 @@
                     <a href="${pageContext.request.contextPath}/admin/categories"
                        class="nav-link ${pageContext.request.requestURI.contains('categories') ? 'active' : ''}"
                        data-tooltip="Danh mục">
-                        <i class="fas fa-tags"></i>
+                        <i class="fas fa-layer-group"></i>
                         <span class="nav-label">Danh mục</span>
                     </a>
                 </li>
@@ -40,16 +40,16 @@
                     <a href="${pageContext.request.contextPath}/admin/orders"
                        class="nav-link ${pageContext.request.requestURI.contains('orders') ? 'active' : ''}"
                        data-tooltip="Đơn hàng">
-                        <i class="fas fa-receipt"></i>
+                        <i class="fas fa-clipboard-list"></i>
                         <span class="nav-label">Đơn hàng</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="${pageContext.request.contextPath}/admin/users"
                        class="nav-link ${pageContext.request.requestURI.contains('users') ? 'active' : ''}"
-                       data-tooltip="Người dùng">
+                       data-tooltip="Khách hàng">
                         <i class="fas fa-users"></i>
-                        <span class="nav-label">Khách hàng</span>
+                        <span class="nav-label">Người dùng</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -61,10 +61,18 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="${pageContext.request.contextPath}/admin/discounts"
+                       class="nav-link ${pageContext.request.requestURI.contains('discounts') ? 'active' : ''}"
+                       data-tooltip="Khuyến mãi">
+                        <i class="fas fa-tags"></i>
+                        <span class="nav-label">Khuyến mãi</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="${pageContext.request.contextPath}/admin/feedback"
                        class="nav-link ${pageContext.request.requestURI.contains('feedback') ? 'active' : ''}"
                        data-tooltip="Phản hồi">
-                        <i class="fas fa-comment-dots"></i>
+                        <i class="fas fa-comment-alt"></i>
                         <span class="nav-label">Phản hồi</span>
                     </a>
                 </li>
@@ -72,24 +80,12 @@
         </nav>
 
         <div class="sidebar-footer">
-            <div class="dropdown">
-                <a href="#" class="admin-profile text-decoration-none"
-                   id="dropdownAdmin" data-bs-toggle="dropdown" aria-expanded="false">
-                    <div class="admin-avatar-icon"><i class="fas fa-user-shield"></i></div>
-                    <div class="admin-profile-info">
-                        <div class="admin-name">${sessionScope.user.fullName}</div>
-                        <div class="admin-role">Quản trị viên</div>
-                    </div>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark shadow" aria-labelledby="dropdownAdmin">
-                    <li>
-                        <form action="${pageContext.request.contextPath}/logout" method="post" class="m-0">
-                            <button type="submit" class="dropdown-item">
-                                <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
-                            </button>
-                        </form>
-                    </li>
-                </ul>
+            <div class="admin-profile">
+                <div class="admin-avatar-icon"><i class="fas fa-user-shield"></i></div>
+                <div class="admin-profile-info">
+                    <div class="admin-name">${sessionScope.user.fullName}</div>
+                    <div class="admin-role">Quản trị viên</div>
+                </div>
             </div>
             <form action="${pageContext.request.contextPath}/logout" method="post" class="logout-form">
                 <button type="submit" class="nav-link logout-link" data-tooltip="Đăng xuất">

@@ -25,13 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
     confirmReplyModal = new bootstrap.Modal(document.getElementById('confirmReplyDialog'));
 
     // Handle confirm send button
-    const confirmSendBtn = document.getElementById('confirmSendBtn');
-    if (confirmSendBtn) {
-        confirmSendBtn.addEventListener('click', confirmSendEmail);
-    }
-
-    // Check for pending reply when page loads
-    checkAndShowConfirmDialog();
+    document.getElementById('confirmSendBtn').addEventListener('click', function() {
+        confirmSendEmail();
+    });
 });
 
 function submitFilter() {
@@ -112,23 +108,26 @@ function openViewModal(feedbackId) {
         });
 }
 
-// Function to open Gmail and handle reply
+// Hàm mở Gmail và xử lý phản hồi
 function openGmailAndReply(feedbackId, email, fullName) {
-    // Store pending reply info in sessionStorage
+    // Gọi API để đánh dấu opened và chuyển hướng đến Gmail
+    window.location.href = `${CONTEXT_PATH}/admin/feedback?action=mark-opened&id=${feedbackId}`;
+
+    // Lưu ID để sử dụng sau khi quay lại trang
+    pendingReplyId = feedbackId;
+
+    // Lưu vào sessionStorage để khi quay lại trang vẫn nhớ
     sessionStorage.setItem('pendingReplyId', feedbackId);
     sessionStorage.setItem('pendingReplyEmail', email);
     sessionStorage.setItem('pendingReplyName', fullName);
-
-    // Redirect to Gmail compose via backend (which will mark as opened)
-    window.location.href = `${CONTEXT_PATH}/admin/feedback?action=mark-opened&id=${feedbackId}`;
 }
 
-// Function to check and show confirm dialog when returning to page
+// Hàm kiểm tra và hiển thị dialog xác nhận khi quay lại trang
 function checkAndShowConfirmDialog() {
     const pendingId = sessionStorage.getItem('pendingReplyId');
     if (pendingId) {
         pendingReplyId = pendingId;
-        // Show dialog after a short delay
+        // Hiển thị dialog hỏi đã gửi email chưa
         setTimeout(() => {
             if (confirmReplyModal) {
                 confirmReplyModal.show();
@@ -137,7 +136,7 @@ function checkAndShowConfirmDialog() {
     }
 }
 
-// Function to confirm email has been sent
+// Xác nhận đã gửi email
 function confirmSendEmail() {
     if (!pendingReplyId) return;
 
@@ -154,17 +153,15 @@ function confirmSendEmail() {
     .then(data => {
         if (data.success) {
             showToast('success', data.message);
-            // Clear session storage
+            // Xóa session storage
             sessionStorage.removeItem('pendingReplyId');
             sessionStorage.removeItem('pendingReplyEmail');
             sessionStorage.removeItem('pendingReplyName');
             pendingReplyId = null;
-            // Close dialog
-            if (confirmReplyModal) {
-                confirmReplyModal.hide();
-            }
+            // Đóng dialog
+            confirmReplyModal.hide();
             document.getElementById('replyContent').value = '';
-            // Reload page to update status
+            // Reload lại trang để cập nhật trạng thái
             setTimeout(() => {
                 window.location.reload();
             }, 1500);
@@ -177,6 +174,12 @@ function confirmSendEmail() {
         showToast('error', 'Có lỗi xảy ra!');
     });
 }
+
+// Kiểm tra khi trang load xong
+document.addEventListener('DOMContentLoaded', function() {
+    // ... existing code ...
+    checkAndShowConfirmDialog();
+});
 
 function confirmDelete(feedbackId, senderName) {
     Swal.fire({
@@ -255,7 +258,6 @@ function exportToExcel() {
     const keyword = document.getElementById('searchInput')?.value || '';
     const dateFrom = document.getElementById('filterDateFrom')?.value || '';
     const dateTo = document.getElementById('filterDateTo')?.value || '';
-
     window.location.href = `${CONTEXT_PATH}/admin/feedback?action=export&keyword=${encodeURIComponent(keyword)}&dateFrom=${dateFrom}&dateTo=${dateTo}`;
 }
 

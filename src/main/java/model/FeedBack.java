@@ -10,7 +10,10 @@ private String email;
 private String phoneNumber;
 private String content;
 private LocalDateTime createdAt;
-
+private String reply;
+private LocalDateTime repliedAt;
+private String repliedBy;
+private String status; // 'pending', 'replied'private String externalReplyStatus; // 'pending', 'opened', 'replied'
 public  FeedBack(int id, String fullName, String email, String phoneNumber, String content, LocalDateTime createdAt) {
     this.id = id;
     this.fullName = fullName;
@@ -18,6 +21,7 @@ public  FeedBack(int id, String fullName, String email, String phoneNumber, Stri
     this.phoneNumber = phoneNumber;
     this.content = content;
     this.createdAt = createdAt;
+
 }
 public FeedBack() {}
 

@@ -884,7 +884,51 @@
         display: none;
     }
 }
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
 
+.badge-pending {
+    background: #FFF3E0;
+    color: #ED6C02;
+}
+
+.badge-opened {
+    background: #E3F2FD;
+    color: #1976D2;
+}
+
+.badge-replied {
+    background: #E8F5E9;
+    color: #2E7D32;
+}
+
+.status-cell {
+    min-width: 130px;
+}
+
+.reply-box {
+    background: #F5F5F5;
+    border-left: 3px solid #F4A261;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.stat-bar.sb-pending {
+    background: linear-gradient(135deg, #ED6C02, #FF9800);
+}
+
+col.col-status {
+    width: 130px;
+}
 @media (max-width: 480px) {
     .stat-value {
         font-size: 1.2rem;

@@ -44,18 +44,11 @@ public class FeedBackService {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            // Tính offset
             int offset = (page - 1) * pageSize;
-
-            // Lấy danh sách feedback
             List<FeedBack> feedbacks = feedBackDao.findAllWithFilters(
                     keyword, dateFrom, dateTo, offset, pageSize
             );
-
-            // Lấy tổng số bản ghi
             long totalFeedbacks = feedBackDao.countWithFilters(keyword, dateFrom, dateTo);
-
-            // Tính tổng số trang
             int totalPages = (int) Math.ceil((double) totalFeedbacks / pageSize);
 
             result.put("success", true);
@@ -73,30 +66,32 @@ public class FeedBackService {
         return result;
     }
 
-    //Lấy thống kê
+    // Lấy thống kê
     public Map<String, Object> getStatistics() {
         Map<String, Object> result = new HashMap<>();
+
         try {
             long total = feedBackDao.getTotalFeedbacks();
             long today = feedBackDao.getTodayFeedbacks();
             long week = feedBackDao.getWeekFeedbacks();
             long month = feedBackDao.getMonthFeedbacks();
-            long pending = feedBackDao.getPendingFeedbacks(); // Thêm dòng này
+            long pending = feedBackDao.getPendingFeedbacks();
 
             result.put("success", true);
             result.put("totalFeedbacks", total);
             result.put("todayFeedbacks", today);
             result.put("weekFeedbacks", week);
             result.put("monthFeedbacks", month);
-            result.put("pendingFeedbacks", pending); // Thêm dòng này
+            result.put("pendingFeedbacks", pending);
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", "Lỗi khi lấy thống kê: " + e.getMessage());
         }
+
         return result;
     }
 
-    //Lấy chi tiết feedback
+    // Lấy chi tiết feedback
     public Map<String, Object> getFeedbackDetail(int id) {
         Map<String, Object> result = new HashMap<>();
 
@@ -110,7 +105,12 @@ public class FeedBackService {
                 result.put("email", feedback.getEmail());
                 result.put("phoneNumber", feedback.getPhoneNumber());
                 result.put("content", feedback.getContent());
+                result.put("reply", feedback.getReply());
+                result.put("status", feedback.getStatus());
+                result.put("externalReplyStatus", feedback.getExternalReplyStatus());
                 result.put("createdAt", feedback.getCreatedAt() != null ? feedback.getCreatedAt().toString() : "");
+                result.put("repliedAt", feedback.getRepliedAt() != null ? feedback.getRepliedAt().toString() : "");
+                result.put("repliedBy", feedback.getRepliedBy());
             } else {
                 result.put("success", false);
                 result.put("message", "Không tìm thấy phản hồi!");
@@ -123,12 +123,100 @@ public class FeedBackService {
         return result;
     }
 
-    //Xóa feedback
+    // Mở Gmail
+    public Map<String, Object> markAsOpened(int id) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            FeedBack feedback = feedBackDao.findById(id);
+            if (feedback == null) {
+                result.put("success", false);
+                result.put("message", "Phản hồi không tồn tại!");
+                return result;
+            }
+
+            boolean updated = feedBackDao.updateExternalReplyStatusOpened(id);
+
+            if (updated) {
+                result.put("success", true);
+                result.put("message", "Đã mở Gmail");
+                result.put("email", feedback.getEmail());
+                result.put("fullName", feedback.getFullName());
+            } else {
+                result.put("success", false);
+                result.put("message", "Không thể cập nhật trạng thái!");
+            }
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "Lỗi: " + e.getMessage());
+        }
+
+        return result;
+    }
+
+    // Xác nhận đã gửi email
+    public Map<String, Object> confirmReplied(int id) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            FeedBack feedback = feedBackDao.findById(id);
+            if (feedback == null) {
+                result.put("success", false);
+                result.put("message", "Phản hồi không tồn tại!");
+                return result;
+            }
+
+            boolean updated = feedBackDao.updateExternalReplyStatusReplied(id);
+
+            if (updated) {
+                result.put("success", true);
+                result.put("message", "Đã xác nhận gửi email phản hồi!");
+            } else {
+                result.put("success", false);
+                result.put("message", "Không thể cập nhật trạng thái!");
+            }
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "Lỗi: " + e.getMessage());
+        }
+
+        return result;
+    }
+
+    // Lưu nội dung reply và cập nhật trạng thái
+    public Map<String, Object> saveReplyAndConfirm(int id, String replyContent, String repliedBy) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            FeedBack feedback = feedBackDao.findById(id);
+            if (feedback == null) {
+                result.put("success", false);
+                result.put("message", "Phản hồi không tồn tại!");
+                return result;
+            }
+
+            boolean updated = feedBackDao.updateRepliedStatus(id, replyContent, repliedBy);
+
+            if (updated) {
+                result.put("success", true);
+                result.put("message", "Đã lưu phản hồi và cập nhật trạng thái!");
+            } else {
+                result.put("success", false);
+                result.put("message", "Không thể lưu phản hồi!");
+            }
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "Lỗi: " + e.getMessage());
+        }
+
+        return result;
+    }
+
+    // Xóa feedback
     public Map<String, Object> deleteFeedback(int id) {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            // Kiểm tra xem feedback có tồn tại không
             FeedBack existing = feedBackDao.findById(id);
             if (existing == null) {
                 result.put("success", false);
@@ -152,55 +240,4 @@ public class FeedBackService {
 
         return result;
     }
-    // Mở Gmail
-    public Map<String, Object> markAsOpened(int id) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            FeedBack feedback = feedBackDao.findById(id);
-            if (feedback == null) {
-                result.put("success", false);
-                result.put("message", "Phản hồi không tồn tại!");
-                return result;
-            }
-            boolean updated = feedBackDao.updateExternalReplyStatusOpened(id);
-            if (updated) {
-                result.put("success", true);
-                result.put("email", feedback.getEmail());
-                result.put("fullName", feedback.getFullName());
-            } else {
-                result.put("success", false);
-                result.put("message", "Không thể cập nhật trạng thái!");
-            }
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", "Lỗi: " + e.getMessage());
-        }
-        return result;
-    }
-
-    // Xác nhận đã gửi email
-    public Map<String, Object> confirmReplied(int id) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            FeedBack feedback = feedBackDao.findById(id);
-            if (feedback == null) {
-                result.put("success", false);
-                result.put("message", "Phản hồi không tồn tại!");
-                return result;
-            }
-            boolean updated = feedBackDao.updateExternalReplyStatusReplied(id);
-            if (updated) {
-                result.put("success", true);
-                result.put("message", "Đã xác nhận gửi email phản hồi!");
-            } else {
-                result.put("success", false);
-                result.put("message", "Không thể cập nhật trạng thái!");
-            }
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", "Lỗi: " + e.getMessage());
-        }
-        return result;
-    }
-
 }

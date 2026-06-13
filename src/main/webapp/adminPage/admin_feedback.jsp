@@ -26,7 +26,6 @@
 
     <main class="main-content">
 
-        <!-- Floating Alerts -->
         <c:if test="${not empty sessionScope.successMsg}">
             <div id="alertFloating" class="alert-floating alert-success">
                 <i class="fas fa-check-circle"></i> ${sessionScope.successMsg}
@@ -40,7 +39,6 @@
             <c:remove var="errorMsg" scope="session"/>
         </c:if>
 
-        <!-- Page Header -->
         <div class="page-header">
             <h1 class="page-title">
                 <i class="fas fa-envelope"></i> Quản lý phản hồi
@@ -378,9 +376,6 @@
         </div>
     </div>
 </div>
-
-<!-- Hidden field for auto open modal -->
-<input type="hidden" id="autoOpenModal" value="${autoOpenModal}">
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>

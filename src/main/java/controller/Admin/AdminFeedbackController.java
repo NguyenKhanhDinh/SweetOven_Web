@@ -36,6 +36,16 @@ public class AdminFeedbackController extends HttpServlet {
         if (action == null) {
             //  Hiển thị danh sách
             showFeedbackList(request, response);
+        }else {
+            switch (action) {
+                // TÍNH NĂNG 2: Lấy chi tiết feedback (AJAX)
+                case "get-detail":
+                    getFeedbackDetail(request, response);
+                    break;
+                default:
+                    showFeedbackList(request, response);
+                    break;
+            }
         }
     }
 
@@ -108,6 +118,38 @@ public class AdminFeedbackController extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("errorMsg", "Lỗi: " + e.getMessage());
             request.getRequestDispatcher("/adminPage/admin_feedback.jsp").forward(request, response);
+        }
+    }
+    //Lấy chi tiết feedback
+    private void getFeedbackDetail(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        try {
+            String idParam = request.getParameter("id");
+            if (idParam == null || idParam.isEmpty()) {
+                response.getWriter().write(gson.toJson(Map.of("error", "Thiếu ID phản hồi")));
+                return;
+            }
+
+            int id = Integer.parseInt(idParam);
+            Map<String, Object> result = feedBackService.getFeedbackDetail(id);
+
+            if ((boolean) result.get("success")) {
+                // Xóa success flag khỏi response
+                result.remove("success");
+                response.getWriter().write(gson.toJson(result));
+            } else {
+                response.getWriter().write(gson.toJson(Map.of("error", result.get("message"))));
+            }
+
+        } catch (NumberFormatException e) {
+            response.getWriter().write(gson.toJson(Map.of("error", "ID không hợp lệ")));
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.getWriter().write(gson.toJson(Map.of("error", "Lỗi server: " + e.getMessage())));
         }
     }
 

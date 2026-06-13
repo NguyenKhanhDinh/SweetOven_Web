@@ -42,6 +42,9 @@ public class AdminFeedbackController extends HttpServlet {
                 case "get-detail":
                     getFeedbackDetail(request, response);
                     break;
+                case "delete":
+                    deleteFeedback(request, response);
+                    break;
                 default:
                     showFeedbackList(request, response);
                     break;
@@ -52,7 +55,6 @@ public class AdminFeedbackController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Sẽ thêm ở các commit sau
         showFeedbackList(request, response);
     }
 
@@ -152,5 +154,58 @@ public class AdminFeedbackController extends HttpServlet {
             response.getWriter().write(gson.toJson(Map.of("error", "Lỗi server: " + e.getMessage())));
         }
     }
+    //Xóa feedback
+    private void deleteFeedback(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
 
+        try {
+            String idParam = request.getParameter("id");
+            if (idParam == null || idParam.isEmpty()) {
+                request.getSession().setAttribute("errorMsg", "Thiếu ID phản hồi");
+                response.sendRedirect(request.getContextPath() + "/admin/feedback");
+                return;
+            }
+
+            int id = Integer.parseInt(idParam);
+            Map<String, Object> result = feedBackService.deleteFeedback(id);
+
+            if ((boolean) result.get("success")) {
+                request.getSession().setAttribute("successMsg", result.get("message"));
+            } else {
+                request.getSession().setAttribute("errorMsg", result.get("message"));
+            }
+
+            // Redirect giữ nguyên filter
+            String queryString = getFilterQueryString(request);
+            response.sendRedirect(request.getContextPath() + "/admin/feedback" + queryString);
+
+        } catch (NumberFormatException e) {
+            request.getSession().setAttribute("errorMsg", "ID không hợp lệ");
+            response.sendRedirect(request.getContextPath() + "/admin/feedback");
+        }
+    }
+
+    // Helper method: Lấy query string để giữ filter khi redirect
+    private String getFilterQueryString(HttpServletRequest request) {
+        StringBuilder qs = new StringBuilder();
+        String keyword = request.getParameter("keyword");
+        String dateFrom = request.getParameter("dateFrom");
+        String dateTo = request.getParameter("dateTo");
+        String page = request.getParameter("page");
+
+        if (keyword != null && !keyword.isEmpty()) {
+            qs.append("?keyword=").append(keyword);
+        }
+        if (dateFrom != null && !dateFrom.isEmpty()) {
+            qs.append(qs.length() == 0 ? "?" : "&").append("dateFrom=").append(dateFrom);
+        }
+        if (dateTo != null && !dateTo.isEmpty()) {
+            qs.append(qs.length() == 0 ? "?" : "&").append("dateTo=").append(dateTo);
+        }
+        if (page != null && !page.isEmpty()) {
+            qs.append(qs.length() == 0 ? "?" : "&").append("page=").append(page);
+        }
+
+        return qs.toString();
+    }
 }

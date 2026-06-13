@@ -175,4 +175,17 @@ public class FeedBackDao {
             throw new RuntimeException("Find feedback by id failed", e);
         }
     }
+
+    //xóa feedback
+    public boolean deleteById(int id) {
+        String sql = "DELETE FROM feedback WHERE id = ?";
+        try (Handle handle = jdbi.open()) {
+            int rows = handle.createUpdate(sql)
+                    .bind(0, id)
+                    .execute();
+            return rows > 0;
+        } catch (Exception e) {
+            throw new RuntimeException("Delete feedback failed", e);
+        }
+    }
 }

@@ -93,4 +93,30 @@ public class FeedBackService {
 
         return result;
     }
+    //Lấy chi tiết feedback
+    public Map<String, Object> getFeedbackDetail(int id) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            FeedBack feedback = feedBackDao.findById(id);
+
+            if (feedback != null) {
+                result.put("success", true);
+                result.put("id", feedback.getId());
+                result.put("fullName", feedback.getFullName());
+                result.put("email", feedback.getEmail());
+                result.put("phoneNumber", feedback.getPhoneNumber());
+                result.put("content", feedback.getContent());
+                result.put("createdAt", feedback.getCreatedAt() != null ? feedback.getCreatedAt().toString() : "");
+            } else {
+                result.put("success", false);
+                result.put("message", "Không tìm thấy phản hồi!");
+            }
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "Lỗi khi lấy chi tiết phản hồi: " + e.getMessage());
+        }
+
+        return result;
+    }
 }

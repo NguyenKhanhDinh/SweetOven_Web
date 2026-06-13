@@ -153,4 +153,26 @@ public class FeedBackDao {
             return handle.createQuery(sql).mapTo(Long.class).one();
         }
     }
+    //Lấy chi tiết feedback theo ID
+    public FeedBack findById(int id) {
+        String sql = "SELECT id, full_name, email, phone_number, content, created_at FROM feedback WHERE id = ?";
+        try (Handle handle = jdbi.open()) {
+            return handle.createQuery(sql)
+                    .bind(0, id)
+                    .map((rs, ctx) -> new FeedBack(
+                            rs.getInt("id"),
+                            rs.getString("full_name"),
+                            rs.getString("email"),
+                            rs.getString("phone_number"),
+                            rs.getString("content"),
+                            rs.getTimestamp("created_at") != null
+                                    ? rs.getTimestamp("created_at").toLocalDateTime()
+                                    : null
+                    ))
+                    .findOne()
+                    .orElse(null);
+        } catch (Exception e) {
+            throw new RuntimeException("Find feedback by id failed", e);
+        }
+    }
 }

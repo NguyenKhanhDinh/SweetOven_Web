@@ -90,7 +90,7 @@ public class AdminOrderController extends HttpServlet {
         }
         List<OrderDetail> details = orderService.getOrderDetails(id);
 
-        boolean isGhnCreated = order.getOrderCode() != null && order.getOrderCode().matches("^[A-Z]{2}\\d+.*");
+        boolean isGhnCreated = isGhnOrderCode(order.getOrderCode());
 
         StringBuilder detailsJson = new StringBuilder("[");
         for (int i = 0; i < details.size(); i++) {
@@ -209,6 +209,11 @@ public class AdminOrderController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/admin/orders" + buildQueryString(request));
             return;
         }
+        if (isGhnOrderCode(order.getOrderCode())) {
+            session.setAttribute("errorMsg","Đơn hàng đã có mã GHN: " + order.getOrderCode() + " không thể tạo lại!");
+            response.sendRedirect(request.getContextPath() + "/admin/orders" + buildQueryString(request));
+            return;
+        }
         String address = order.getAddress();
         String province = "", district = "", ward = "", streetAddress = address;
         if (address != null) {
@@ -259,6 +264,11 @@ public class AdminOrderController extends HttpServlet {
         Order order = orderService.findById(id);
         if (order == null) {
             session.setAttribute("errorMsg", "Không tìm thấy đơn hàng!");
+            response.sendRedirect(request.getContextPath() + "/admin/orders" + buildQueryString(request));
+            return;
+        }
+        if(!isGhnOrderCode(order.getOrderCode())) {
+            session.setAttribute("errorMsg","Đơn hàng #" +id +" chưa có mã GHN. Hãy tạo đơn giao hàng nhanh trước!");
             response.sendRedirect(request.getContextPath() + "/admin/orders" + buildQueryString(request));
             return;
         }
@@ -363,5 +373,8 @@ public class AdminOrderController extends HttpServlet {
         }
         String qs = sb.toString();
         return qs.equals("?") ? "" : qs.substring(0, qs.length() - 1);
+    }
+    private static  boolean isGhnOrderCode(String orderCode) {
+       return orderCode != null && orderCode.matches("^[A-Z]{2,}[A-Z0-9]{4,}$");
     }
 }

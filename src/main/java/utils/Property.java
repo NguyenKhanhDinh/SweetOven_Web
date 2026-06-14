@@ -1,9 +1,8 @@
 package utils;
 
 public class Property {
-    public final static String HOST = System.getenv("MYSQLHOST");
-    public final static String PORT = System.getenv("MYSQLPORT");
-    public final static String DBNAME = System.getenv("MYSQLDATABASE");
-    public final static String USERNAME = System.getenv("MYSQLUSER");
-    public final static String PASSWORD = System.getenv("MYSQLPASSWORD");
-}
+    public final static  String HOST ="localhost";
+    public final static  String PORT ="3306";
+    public final static  String DBNAME ="ltweb";
+    public final static  String USERNAME ="root";
+    public final static  String PASSWORD ="";}

@@ -1,3 +1,23 @@
+document.getElementById('searchInput')?.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') submitFilter();
+});
+
+function submitFilter() {
+    const keyword = document.getElementById('searchInput')?.value || '';
+    const status  = document.getElementById('filterStatus')?.value ?? '-1';
+    const url = new URL(window.location.href);
+    url.searchParams.set('search', keyword);
+    url.searchParams.set('status', status);
+    window.location.href = url.toString();
+}
+
+function resetFilter() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('search', '');
+    url.searchParams.set('status', '-1');
+    window.location.href = url.toString();
+}
+
 function previewImage(input, previewId) {
     const preview = document.getElementById(previewId);
     if (input.files && input.files[0]) {

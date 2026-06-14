@@ -8,22 +8,30 @@ public class ProductService {
 
     private ProductDao productDao = new ProductDao();
 
-    // Đếm tổng số sản phẩm
     public int countAllProducts() {
         return productDao.countAll();
     }
 
-    // featured products for homepage
+    public int countAvailableProducts() {
+        return productDao.countAvailable();
+    }
+
+    public int countOutOfStockProducts() {
+        return productDao.countOutOfStock();
+    }
+
+    public int countFeaturedProducts() {
+        return productDao.countFeatured();
+    }
+
     public List<Product> getFeaturedProducts() {
         return productDao.getFeaturedProducts();
     }
 
-    // lấy tất cả sản phẩm
     public List<Product> getListProduct() {
         return productDao.getListProduct();
     }
 
-    // tìm sản phẩm theo category
     public List<Product> getProductsByCategoryId(int categoryId) {
         return productDao.getProductsByCategory(categoryId);
     }
@@ -77,12 +85,10 @@ public class ProductService {
         return productDao.findAllWithFilters(keyword, null, 1, null, null, 1, limit);
     }
 
-    // Thêm sản phẩm mới
     public int addProduct(Product product) {
         return productDao.addProduct(product);
     }
 
-    // Cập nhật sản phẩm
     public boolean updateProduct(Product product) {
         try {
             productDao.update(product);
@@ -93,7 +99,6 @@ public class ProductService {
         }
     }
 
-    // Xóa sản phẩm theo ID
     public boolean deleteProductById(int id) {
         try {
             productDao.deleteById(id);
@@ -104,7 +109,6 @@ public class ProductService {
         }
     }
 
-    // Cập nhật trạng thái sản phẩm
     public boolean updateProductStatus(int productId, int status) {
         try {
             productDao.updateStatus(productId, status);
@@ -115,22 +119,18 @@ public class ProductService {
         }
     }
 
-    // Lấy số sequence tiếp theo cho mã sản phẩm
     public int getNextProductSequence() {
         return productDao.getNextProductSequence();
     }
 
-    // Kiểm tra mã sản phẩm đã tồn tại chưa
     public boolean isProductCodeExists(String productCode) {
         return productDao.isProductCodeExists(productCode);
     }
 
-    // Lấy danh sách ảnh của sản phẩm
     public List<String> getProductImages(int productId) {
         return productDao.getProductImages(productId);
     }
 
-    // Tạo mã sản phẩm tự động
     public String generateProductCode() {
         int nextSeq = getNextProductSequence();
         return String.format("SP%06d", nextSeq);

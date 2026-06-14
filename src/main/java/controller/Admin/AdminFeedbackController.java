@@ -1,7 +1,9 @@
 package controller.Admin;
 
 import com.google.gson.Gson;
+import jakarta.servlet.http.HttpSession;
 import model.FeedBack;
+import model.User;
 import service.FeedBackService;
 
 import jakarta.servlet.ServletException;
@@ -32,6 +34,17 @@ public class AdminFeedbackController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        User adminUser = (User) session.getAttribute("user");
+        if (adminUser.getRoleId() != 1) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return;
+        }
 
         String action = request.getParameter("action");
 
@@ -64,6 +77,17 @@ public class AdminFeedbackController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        User adminUser = (User) session.getAttribute("user");
+        if (adminUser.getRoleId() != 1) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return;
+        }
 
         String action = request.getParameter("action");
 

@@ -1,5 +1,7 @@
 package controller.Admin;
 
+import jakarta.servlet.http.HttpSession;
+import model.User;
 import service.DashboardService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -27,6 +29,17 @@ public class AdminDashboardController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        User adminUser = (User) session.getAttribute("user");
+        if (adminUser.getRoleId() != 1) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return;
+        }
 
         String yearParam = request.getParameter("year");
         String monthParam = request.getParameter("month");

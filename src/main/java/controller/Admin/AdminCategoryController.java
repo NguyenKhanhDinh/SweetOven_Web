@@ -1,5 +1,7 @@
 package controller.Admin;
 
+import jakarta.servlet.http.*;
+import model.User;
 import service.CategoryService;
 import service.ProductService;
 import model.Category;
@@ -8,10 +10,7 @@ import utils.CloudinaryUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,6 +35,18 @@ public class AdminCategoryController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        User adminUser = (User) session.getAttribute("user");
+        if (adminUser.getRoleId() != 1) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return;
+        }
+
         String action = request.getParameter("action");
 
         if (action == null) {
@@ -55,6 +66,18 @@ public class AdminCategoryController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        User adminUser = (User) session.getAttribute("user");
+        if (adminUser.getRoleId() != 1) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return;
+        }
+
         String action = request.getParameter("action");
 
         if (action == null) {

@@ -23,11 +23,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // THÊM: dropdown tự filter ngay khi đổi giá trị, không cần nhấn nút "Áp dụng"
+    // Dropdown tự filter ngay khi đổi giá trị
     const filterStatus = document.getElementById('filterStatus');
     const filterMethod = document.getElementById('filterMethod');
-    if (filterStatus) filterStatus.addEventListener('change', submitFilter); // THÊM
-    if (filterMethod) filterMethod.addEventListener('change', submitFilter); // THÊM
+    if (filterStatus) filterStatus.addEventListener('change', submitFilter);
+    if (filterMethod) filterMethod.addEventListener('change', submitFilter);
 
     // Auto-hide alert toast
     const alert = document.getElementById('alertFloating');
@@ -38,28 +38,42 @@ document.addEventListener('DOMContentLoaded', function () {
             setTimeout(() => alert.remove(), 500);
         }, 3500);
     }
+
+    // [FIX Bug 1] KHÔNG dùng addEventListener cho btnNextStatus ở đây nữa.
+    // onclick được gán trực tiếp trong renderOrderDetail() để tránh
+    // listener bị gắn chồng nhiều lần mỗi khi mở modal.
 });
 
 // ── Mở modal chi tiết đơn hàng ───────────────────────────────────────────────
 function openOrderDetail(id) {
     const modal = document.getElementById('orderDetailModal');
     const body  = document.getElementById('orderDetailBody');
-    const footer = document.getElementById('orderDetailFooter');
 
     // Reset footer buttons về trạng thái chờ
     document.getElementById('btnNextStatus').disabled  = true;
     document.getElementById('btnCancelOrder').disabled = true;
     document.getElementById('cancelOrderForm').style.display = 'none';
 
+    // [FIX Bug 1] Reset onclick để tránh handler cũ còn sót lại
+    document.getElementById('btnNextStatus').onclick  = null;
+    document.getElementById('btnCancelOrder').onclick = null;
+
+    // Ẩn nút GHN / Sync khi chờ load
+    const ghnBtnReset  = document.getElementById('btnCreateGhn');
+    const syncBtnReset = document.getElementById('btnSyncGhn');
+    if (ghnBtnReset)  ghnBtnReset.style.display  = 'none';
+    if (syncBtnReset) syncBtnReset.style.display = 'none';
+
     body.innerHTML = '<div class="text-center py-4"><div class="spinner-border" style="color:var(--accent)"></div></div>';
-    const bsModal = new bootstrap.Modal(modal);
+
+    // Dùng getInstance để tránh tạo nhiều instance Bootstrap Modal
+    let bsModal = bootstrap.Modal.getInstance(modal);
+    if (!bsModal) bsModal = new bootstrap.Modal(modal);
     bsModal.show();
 
-    // SỬA: thêm kiểm tra response.ok + nút Thử lại
-    // Trước: server trả 500 vẫn cố parse JSON → crash im lặng, modal treo spinner
     fetch(CONTEXT_PATH + '/admin/orders?action=api&id=' + id)
         .then(r => {
-            if (!r.ok) throw new Error('HTTP ' + r.status); // THÊM
+            if (!r.ok) throw new Error('HTTP ' + r.status);
             return r.text();
         })
         .then(text => {
@@ -67,7 +81,7 @@ function openOrderDetail(id) {
             try {
                 data = JSON.parse(text);
             } catch (e) {
-                throw new Error('Phản hồi không hợp lệ từ server'); // THÊM
+                throw new Error('Phản hồi không hợp lệ từ server');
             }
             if (data.error) {
                 body.innerHTML = '<div class="text-center py-4 text-danger"><i class="fas fa-exclamation-circle fa-2x mb-2"></i><p>' + data.error + '</p></div>';
@@ -198,31 +212,36 @@ function renderOrderDetail(d) {
     const ghnBtn     = document.getElementById('btnCreateGhn');
     const syncBtn    = document.getElementById('btnSyncGhn');
 
-    // Reset
+    // Reset state
     nextBtn.disabled   = true;
     cancelBtn.disabled = true;
+    // [FIX Bug 1] Reset onclick tại đây để loại bỏ handler từ lần mở trước
     nextBtn.onclick    = null;
     cancelBtn.onclick  = null;
     cancelForm.style.display = 'none';
+
     document.getElementById('cancelOrderId').value = d.id;
     document.getElementById('nextOrderId').value   = d.id;
 
-    // Nút GHN: chỉ hiện khi status=2 (Đang xử lý) và chưa tạo đơn GHN
+    // [FIX Bug 2] Nút GHN: gán onclick ở đây để đảm bảo id luôn đúng trước khi submit
     if (ghnBtn) {
         const showGhn = (d.orderStatus === 2 && !d.isGhnCreated);
         ghnBtn.style.display = showGhn ? 'inline-flex' : 'none';
-        if (showGhn) {
+        // Luôn gán lại onclick dù show hay không để tránh id cũ bị dùng nhầm
+        ghnBtn.onclick = function () {
             document.getElementById('ghnOrderId').value = d.id;
-        }
+            document.getElementById('formCreateGhn').submit();
+        };
     }
 
-    // Nút đồng bộ GHN: hiện khi đã có mã GHN (status 2,3) — cho phép kéo trạng thái về
+    // Nút đồng bộ GHN: hiện khi đã có mã GHN (status 2 hoặc 3)
     if (syncBtn) {
         const showSync = d.isGhnCreated && (d.orderStatus === 2 || d.orderStatus === 3);
         syncBtn.style.display = showSync ? 'inline-flex' : 'none';
-        if (showSync) {
+        syncBtn.onclick = function () {
             document.getElementById('syncGhnOrderId').value = d.id;
-        }
+            document.getElementById('formSyncGhn').submit();
+        };
     }
 
     const canAdvance = !isCancelled && d.orderStatus < 4;
@@ -233,8 +252,13 @@ function renderOrderDetail(d) {
         const nextStatus = d.orderStatus + 1;
         document.getElementById('nextStatusVal').value = nextStatus;
         nextBtn.innerHTML = `<i class="fas fa-arrow-right"></i> Chuyển sang: ${STATUS_LABELS[nextStatus]}`;
+        // [FIX Bug 1] Gán onclick trực tiếp thay vì dùng addEventListener chồng nhiều lần
+        nextBtn.onclick = function () {
+            document.getElementById('formNextStatus').submit();
+        };
     } else {
         nextBtn.innerHTML = `<i class="fas fa-check"></i> Đã hoàn thành`;
+        nextBtn.onclick = null;
     }
 
     if (canCancel) {
@@ -245,11 +269,3 @@ function renderOrderDetail(d) {
         };
     }
 }
-
-// Submit cập nhật trạng thái
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('btnNextStatus').addEventListener('click', function () {
-        if (this.disabled) return;
-        document.getElementById('formNextStatus').submit();
-    });
-});

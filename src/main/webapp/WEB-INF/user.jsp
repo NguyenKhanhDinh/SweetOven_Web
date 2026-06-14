@@ -784,7 +784,7 @@
                                     </c:choose>
                                 </div>
                                 <div>
-                                    <a href="order-detail?id=${o.id}"><i class="fa fa-eye"></i></a>
+                                    <a href="order-detail?id=${o.id}"><i class="fas fa-eye"></i></a>
                                 </div>
                             </div>
                         </c:forEach>

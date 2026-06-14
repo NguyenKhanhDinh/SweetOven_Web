@@ -9,12 +9,10 @@ import java.util.stream.Collectors;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
+import jakarta.servlet.http.*;
 
 import model.Banner;
+import model.User;
 import service.BannerService;
 import utils.CloudinaryUtil;
 
@@ -31,6 +29,17 @@ public class AdminBannerController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        User adminUser = (User) session.getAttribute("user");
+        if (adminUser.getRoleId() != 1) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return;
+        }
 
         String action = request.getParameter("action");
 
@@ -58,6 +67,17 @@ public class AdminBannerController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        User adminUser = (User) session.getAttribute("user");
+        if (adminUser.getRoleId() != 1) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return;
+        }
 
         String action = request.getParameter("action");
 

@@ -1026,7 +1026,51 @@ body {
         padding: 3px 8px;
     }
 }
+.form-check-inline {
+    margin-right: 1.5rem;
+}
 
+.form-check-input:checked {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+.form-check-label {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-sub);
+}
+
+.form-check-label i {
+    margin-right: 4px;
+}
+
+.form-check-label:hover {
+    color: var(--primary);
+}
+.banner-row-loading {
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.banner-row-loading td {
+    position: relative;
+}
+
+.banner-row-loading td::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--accent-light);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
 @media (max-width: 480px) {
     .stat-value {
         font-size: 1.2rem;

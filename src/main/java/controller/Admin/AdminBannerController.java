@@ -7,15 +7,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 
 import model.Banner;
 import service.BannerService;
+import utils.CloudinaryUtil;
 
 @WebServlet("/admin/banners")
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024 * 2,
+        maxFileSize = 1024 * 1024 * 10,
+        maxRequestSize = 1024 * 1024 * 50
+)
 public class AdminBannerController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private BannerService bannerService = new BannerService();
@@ -31,21 +39,239 @@ public class AdminBannerController extends HttpServlet {
             return;
         }
 
+        if ("activate".equals(action)) {
+            handleActivate(request, response);
+            return;
+        }
+        if ("deactivate".equals(action)) {
+            handleDeactivate(request, response);
+            return;
+        }
+        if ("delete".equals(action)) {
+            handleDelete(request, response);
+            return;
+        }
+
         showListPage(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String successMsg = "Thao tác thành công!";
-        request.getSession().setAttribute("successMsg", successMsg);
+
+        String action = request.getParameter("action");
+
+        if ("create".equals(action)) {
+            handleCreate(request, response);
+        } else if ("update".equals(action)) {
+            handleUpdate(request, response);
+        } else {
+            response.sendRedirect(request.getContextPath() + "/admin/banners");
+        }
+    }
+
+    // XỬ LÝ THÊM BANNER MỚI (Dùng Cloudinary)
+    private void handleCreate(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String title = request.getParameter("title");
+        String description = request.getParameter("description");
+        String isActiveParam = request.getParameter("isActive");
+        boolean isActive = "on".equals(isActiveParam);
+
+        // Validate
+        if (title == null || title.trim().isEmpty()) {
+            request.getSession().setAttribute("errorMsg", "Tiêu đề banner không được để trống!");
+            response.sendRedirect(request.getContextPath() + "/admin/banners");
+            return;
+        }
+
+        // Xử lý upload ảnh lên Cloudinary
+        Part filePart = request.getPart("imageFile");
+        String imageUrl = null;
+
+        if (filePart != null && filePart.getSize() > 0) {
+            imageUrl = CloudinaryUtil.uploadImage(filePart);
+            if (imageUrl == null) {
+                request.getSession().setAttribute("errorMsg", "Lỗi upload ảnh lên Cloudinary! Vui lòng thử lại.");
+                response.sendRedirect(request.getContextPath() + "/admin/banners");
+                return;
+            }
+        } else {
+            request.getSession().setAttribute("errorMsg", "Vui lòng chọn hình ảnh cho banner!");
+            response.sendRedirect(request.getContextPath() + "/admin/banners");
+            return;
+        }
+
+        // Tạo banner mới
+        Banner banner = new Banner();
+        banner.setTitle(title.trim());
+        banner.setDescription(description != null ? description.trim() : "");
+        banner.setImageUrl(imageUrl);
+        banner.setActive(isActive);
+
+        int generatedId = bannerService.createBanner(banner);
+
+        if (generatedId > 0) {
+            request.getSession().setAttribute("successMsg", "Thêm banner thành công!");
+        } else {
+            request.getSession().setAttribute("errorMsg", "Thêm banner thất bại!");
+        }
+
         response.sendRedirect(request.getContextPath() + "/admin/banners");
     }
-    //Hiển thị danh sách banner
+
+    // XỬ LÝ CẬP NHẬT BANNER (Dùng Cloudinary)
+    private void handleUpdate(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String idParam = request.getParameter("id");
+        String title = request.getParameter("title");
+        String description = request.getParameter("description");
+        String isActiveParam = request.getParameter("isActive");
+        String existingImageUrl = request.getParameter("existingImageUrl");
+        boolean isActive = "on".equals(isActiveParam);
+
+        if (idParam == null || title == null || title.trim().isEmpty()) {
+            request.getSession().setAttribute("errorMsg", "Dữ liệu không hợp lệ!");
+            response.sendRedirect(request.getContextPath() + "/admin/banners");
+            return;
+        }
+
+        int id = Integer.parseInt(idParam);
+        Banner existingBanner = bannerService.getBannerById(id);
+
+        if (existingBanner == null) {
+            request.getSession().setAttribute("errorMsg", "Không tìm thấy banner!");
+            response.sendRedirect(request.getContextPath() + "/admin/banners");
+            return;
+        }
+
+        // Xử lý upload ảnh mới lên Cloudinary (nếu có)
+        Part filePart = request.getPart("imageFile");
+        String imageUrl = existingImageUrl;
+
+        if (filePart != null && filePart.getSize() > 0) {
+            // Upload ảnh mới
+            String newImageUrl = CloudinaryUtil.uploadImage(filePart);
+            if (newImageUrl == null) {
+                request.getSession().setAttribute("errorMsg", "Lỗi upload ảnh mới lên Cloudinary!");
+                response.sendRedirect(request.getContextPath() + "/admin/banners");
+                return;
+            }
+            imageUrl = newImageUrl;
+            // LƯU Ý: Cloudinary tự động quản lý, không cần xóa ảnh cũ thủ công
+        }
+
+        existingBanner.setTitle(title.trim());
+        existingBanner.setDescription(description != null ? description.trim() : "");
+        existingBanner.setImageUrl(imageUrl);
+        existingBanner.setActive(isActive);
+
+        boolean updated = bannerService.updateBanner(existingBanner);
+
+        if (updated) {
+            request.getSession().setAttribute("successMsg", "Cập nhật banner thành công!");
+        } else {
+            request.getSession().setAttribute("errorMsg", "Cập nhật banner thất bại!");
+        }
+
+        response.sendRedirect(request.getContextPath() + "/admin/banners" + getFilterQueryString(request));
+    }
+
+    // XỬ LÝ KÍCH HOẠT
+    private void handleActivate(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        String idParam = request.getParameter("id");
+
+        if (idParam != null) {
+            try {
+                int id = Integer.parseInt(idParam);
+                if (bannerService.activateBanner(id)) {
+                    request.getSession().setAttribute("successMsg", "Kích hoạt banner thành công!");
+                } else {
+                    request.getSession().setAttribute("errorMsg", "Kích hoạt banner thất bại!");
+                }
+            } catch (NumberFormatException e) {
+                request.getSession().setAttribute("errorMsg", "ID banner không hợp lệ!");
+            }
+        }
+
+        response.sendRedirect(request.getContextPath() + "/admin/banners" + getFilterQueryString(request));
+    }
+
+    // XỬ LÝ NGỪNG KÍCH HOẠT
+    private void handleDeactivate(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        String idParam = request.getParameter("id");
+
+        if (idParam != null) {
+            try {
+                int id = Integer.parseInt(idParam);
+                if (bannerService.deactivateBanner(id)) {
+                    request.getSession().setAttribute("successMsg", "Đã ngừng hoạt động banner!");
+                } else {
+                    request.getSession().setAttribute("errorMsg", "Ngừng hoạt động banner thất bại!");
+                }
+            } catch (NumberFormatException e) {
+                request.getSession().setAttribute("errorMsg", "ID banner không hợp lệ!");
+            }
+        }
+
+        response.sendRedirect(request.getContextPath() + "/admin/banners" + getFilterQueryString(request));
+    }
+
+    // XỬ LÝ XÓA
+    private void handleDelete(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        String idParam = request.getParameter("id");
+
+        if (idParam != null) {
+            try {
+                int id = Integer.parseInt(idParam);
+                if (bannerService.deleteBanner(id)) {
+                    request.getSession().setAttribute("successMsg", "Xóa banner thành công!");
+                } else {
+                    request.getSession().setAttribute("errorMsg", "Xóa banner thất bại!");
+                }
+            } catch (NumberFormatException e) {
+                request.getSession().setAttribute("errorMsg", "ID banner không hợp lệ!");
+            }
+        }
+
+        response.sendRedirect(request.getContextPath() + "/admin/banners" + getFilterQueryString(request));
+    }
+
+    // LẤY FILTER QUERY STRING
+    private String getFilterQueryString(HttpServletRequest request) {
+        String keyword = request.getParameter("keyword");
+        String status = request.getParameter("status");
+        String page = request.getParameter("page");
+
+        StringBuilder qs = new StringBuilder();
+        if (keyword != null && !keyword.isEmpty()) {
+            qs.append("?keyword=").append(keyword);
+            if (status != null && !status.equals("-1")) {
+                qs.append("&status=").append(status);
+            }
+            if (page != null && !page.isEmpty()) {
+                qs.append("&page=").append(page);
+            }
+        } else if (status != null && !status.equals("-1")) {
+            qs.append("?status=").append(status);
+            if (page != null && !page.isEmpty()) {
+                qs.append("&page=").append(page);
+            }
+        }
+
+        return qs.toString();
+    }
+
+    // HIỂN THỊ DANH SÁCH
     private void showListPage(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<Banner> allBanners = bannerService.getAllBanners();
+        List<Banner> allBanners = bannerService.getAllBannersForAdmin();
 
         if (allBanners == null || allBanners.isEmpty()) {
             request.setAttribute("banners", null);
@@ -157,17 +383,7 @@ public class AdminBannerController extends HttpServlet {
             return;
         }
 
-        List<Banner> allBanners = bannerService.getAllBanners();
-        Banner banner = null;
-
-        if (allBanners != null) {
-            for (Banner b : allBanners) {
-                if (b.getId() == id) {
-                    banner = b;
-                    break;
-                }
-            }
-        }
+        Banner banner = bannerService.getBannerById(id);
 
         if (banner == null) {
             response.setContentType("application/json");

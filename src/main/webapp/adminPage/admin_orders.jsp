@@ -343,14 +343,12 @@
                 <button type="button" class="btn-cancel-order" id="btnCancelOrder" disabled>
                     <i class="fas fa-ban"></i> Huỷ đơn
                 </button>
-                <%-- Nút tạo đơn GHN: JS sẽ show/hide tuỳ trạng thái --%>
-                <button type="button" class="btn-next-status" id="btnCreateGhn" style="display:none;background:#0d6efd"
-                        onclick="document.getElementById('formCreateGhn').submit()">
+                <%-- Nút tạo đơn GHN: onclick được gán trong admin_order.js để đảm bảo id luôn đúng trước khi submit --%>
+                <button type="button" class="btn-next-status" id="btnCreateGhn" style="display:none;background:#0d6efd">
                     <i class="fas fa-truck"></i> Tạo đơn GHN
                 </button>
-                <%-- Nút đồng bộ trạng thái GHN: JS sẽ show/hide khi đã có mã GHN --%>
-                <button type="button" class="btn-secondary" id="btnSyncGhn" style="display:none"
-                        onclick="document.getElementById('syncGhnOrderId').value=document.getElementById('ghnOrderId').value;document.getElementById('formSyncGhn').submit()">
+                <%-- Nút đồng bộ trạng thái GHN: onclick được gán trong admin_order.js --%>
+                <button type="button" class="btn-secondary" id="btnSyncGhn" style="display:none">
                     <i class="fas fa-sync-alt"></i> Đồng bộ GHN
                 </button>
                 <button type="button" class="btn-next-status" id="btnNextStatus" disabled>

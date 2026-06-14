@@ -111,14 +111,14 @@
                         <col class="col-action">
                     </colgroup>
                     <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Hình ảnh</th>
-                        <th>Tiêu đề</th>
-                        <th class="hide-mobile">Mô tả</th>
-                        <th style="text-align:center">Trạng thái</th>
-                        <th>Thao tác</th>
-                    </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>Hình ảnh</th>
+                            <th>Tiêu đề</th>
+                            <th class="hide-mobile">Mô tả</th>
+                            <th style="text-align:center">Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
                     </thead>
                     <tbody>
                     <c:choose>
@@ -130,8 +130,8 @@
                                         <h4>Không tìm thấy banner nào</h4>
                                         <p>Thử thay đổi từ khoá hoặc điều chỉnh bộ lọc</p>
                                     </div>
-                                 </td>
-                             </tr>
+                                  </td>
+                              </tr>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="b" items="${banners}" varStatus="st">
@@ -192,14 +192,14 @@
                                             <c:choose>
                                                 <c:when test="${b.active}">
                                                     <button class="action-btn action-btn-deactivate"
-                                                            onclick="confirmDeactivate(${b.id},'${b.title}')"
+                                                            onclick="updateStatusAjax(${b.id}, true)"
                                                             title="Ngừng hoạt động">
                                                         <i class="fas fa-pause"></i>
                                                     </button>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <button class="action-btn action-btn-activate"
-                                                            onclick="confirmActivate(${b.id},'${b.title}')"
+                                                            onclick="updateStatusAjax(${b.id}, false)"
                                                             title="Kích hoạt">
                                                         <i class="fas fa-play"></i>
                                                     </button>
@@ -273,7 +273,7 @@
     </main>
 </div>
 
-<!-- Modal Thêm Banner -->
+<!-- Modal Thêm Banner - ĐÃ SỬA DÙNG RADIO BUTTON -->
 <div class="modal fade" id="addBannerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -305,9 +305,20 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="isActive" id="addIsActive" checked>
-                                <label class="form-check-label" for="addIsActive">Kích hoạt ngay</label>
+                            <label class="form-label">Trạng thái</label>
+                            <div class="mt-2">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="isActive" id="addActive" value="on" checked>
+                                    <label class="form-check-label" for="addActive">
+                                        <i class="fas fa-check-circle text-success"></i> Kích hoạt
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="isActive" id="addInactive" value="off">
+                                    <label class="form-check-label" for="addInactive">
+                                        <i class="fas fa-pause-circle text-danger"></i> Không kích hoạt
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -321,7 +332,7 @@
     </div>
 </div>
 
-<!-- Modal Sửa Banner -->
+<!-- Modal Sửa Banner - ĐÃ SỬA DÙNG RADIO BUTTON -->
 <div class="modal fade" id="editBannerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -355,9 +366,20 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="isActive" id="editIsActive">
-                                <label class="form-check-label" for="editIsActive">Đang hoạt động</label>
+                            <label class="form-label">Trạng thái</label>
+                            <div class="mt-2">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="isActive" id="editActive" value="on">
+                                    <label class="form-check-label" for="editActive">
+                                        <i class="fas fa-check-circle text-success"></i> Kích hoạt
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="isActive" id="editInactive" value="off">
+                                    <label class="form-check-label" for="editInactive">
+                                        <i class="fas fa-pause-circle text-danger"></i> Không kích hoạt
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>

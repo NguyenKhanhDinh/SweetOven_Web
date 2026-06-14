@@ -59,4 +59,13 @@ public class BannerService {
     public List<Banner> getAllBannersForAdmin() {
         return bannerDao.getAllBannersForAdmin();
     }
+
+    public boolean updateBannerStatus(int id, boolean isActive) {
+        Banner banner = getBannerById(id);
+        if (banner != null) {
+            return bannerDao.updateStatus(id, isActive);
+        }
+        return false;
+    }
+
 }

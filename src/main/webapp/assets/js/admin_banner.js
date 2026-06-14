@@ -42,6 +42,25 @@ function previewImage(inputElement, imgId, boxId) {
     const box = document.getElementById(boxId);
 
     if (file) {
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            showToast('error', 'Kích thước file không được vượt quá 5MB!');
+            inputElement.value = '';
+            if (box) box.style.display = 'none';
+            if (img) img.src = '';
+            return;
+        }
+
+        // Validate file type
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            showToast('error', 'Chỉ chấp nhận file ảnh định dạng: JPG, PNG, GIF, WEBP!');
+            inputElement.value = '';
+            if (box) box.style.display = 'none';
+            if (img) img.src = '';
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = function (e) {
             img.src = e.target.result;
@@ -116,8 +135,14 @@ function openEditModal(bannerId) {
             document.getElementById('editId').value = data.id;
             document.getElementById('editTitle').value = data.title || '';
             document.getElementById('editDescription').value = data.description || '';
-            document.getElementById('editIsActive').checked = data.isActive;
             document.getElementById('editExistingImageUrl').value = data.bannerImageUrl || '';
+
+            // Cập nhật radio button dựa trên trạng thái
+            if (data.isActive) {
+                document.getElementById('editActive').checked = true;
+            } else {
+                document.getElementById('editInactive').checked = true;
+            }
 
             // Clear file input and preview
             document.getElementById('editImageFile').value = '';
@@ -129,40 +154,6 @@ function openEditModal(bannerId) {
             new bootstrap.Modal(document.getElementById('editBannerModal')).show();
         })
         .catch(() => showToast('error', 'Không thể tải thông tin banner!'));
-}
-
-function confirmActivate(bannerId, bannerTitle) {
-    Swal.fire({
-        title: 'Kích hoạt banner?',
-        html: `Bạn có chắc muốn kích hoạt banner <strong>${bannerTitle}</strong>?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#28a745',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: '<i class="fas fa-play me-1"></i> Kích hoạt',
-        cancelButtonText: 'Huỷ'
-    }).then(result => {
-        if (result.isConfirmed) {
-            window.location.href = `${CONTEXT_PATH}/admin/banners?action=activate&id=${bannerId}${getFilterQS()}`;
-        }
-    });
-}
-
-function confirmDeactivate(bannerId, bannerTitle) {
-    Swal.fire({
-        title: 'Ngừng hoạt động banner?',
-        html: `Bạn có chắc muốn ngừng hoạt động banner <strong>${bannerTitle}</strong>?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: '<i class="fas fa-pause me-1"></i> Ngừng',
-        cancelButtonText: 'Huỷ'
-    }).then(result => {
-        if (result.isConfirmed) {
-            window.location.href = `${CONTEXT_PATH}/admin/banners?action=deactivate&id=${bannerId}${getFilterQS()}`;
-        }
-    });
 }
 
 function confirmDelete(bannerId, bannerTitle) {
@@ -199,6 +190,72 @@ function formatDateTime(dateArr) {
     }
     if (typeof dateArr === 'string') return dateArr.replace('T', ' ').substring(0, 16);
     return '—';
+}
+
+function updateStatusAjax(bannerId, isActive) {
+    const newStatus = !isActive;
+    const statusText = newStatus ? 'kích hoạt' : 'ngừng hoạt động';
+    const actionText = newStatus ? 'Kích hoạt' : 'Ngừng hoạt động';
+
+    Swal.fire({
+        title: `${actionText} banner?`,
+        text: `Bạn có chắc muốn ${statusText} banner này?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: newStatus ? '#28a745' : '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: `<i class="fas fa-${newStatus ? 'play' : 'pause'} me-1"></i> ${actionText}`,
+        cancelButtonText: 'Huỷ'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Đang xử lý...',
+                text: 'Vui lòng đợi trong giây lát',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch(`${CONTEXT_PATH}/admin/banners`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=updateStatusAjax&id=${bannerId}&status=${newStatus ? 'active' : 'inactive'}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: data.message,
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Thất bại!',
+                        text: data.message,
+                        confirmButtonText: 'Đóng'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: 'Có lỗi xảy ra khi cập nhật trạng thái!',
+                    confirmButtonText: 'Đóng'
+                });
+            });
+        }
+    });
 }
 
 function showToast(type, msg) {

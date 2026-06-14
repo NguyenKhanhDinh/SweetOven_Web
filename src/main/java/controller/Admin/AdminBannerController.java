@@ -65,6 +65,8 @@ public class AdminBannerController extends HttpServlet {
             handleCreate(request, response);
         } else if ("update".equals(action)) {
             handleUpdate(request, response);
+        }else if ("updateStatusAjax".equals(action)) {
+            handleUpdateStatusAjax(request, response);
         } else {
             response.sendRedirect(request.getContextPath() + "/admin/banners");
         }
@@ -77,16 +79,19 @@ public class AdminBannerController extends HttpServlet {
         String title = request.getParameter("title");
         String description = request.getParameter("description");
         String isActiveParam = request.getParameter("isActive");
+
+        System.out.println("isActiveParam = '" + isActiveParam + "'");
+
         boolean isActive = "on".equals(isActiveParam);
 
-        // Validate
+        System.out.println("isActive = " + isActive);
+
         if (title == null || title.trim().isEmpty()) {
             request.getSession().setAttribute("errorMsg", "Tiêu đề banner không được để trống!");
             response.sendRedirect(request.getContextPath() + "/admin/banners");
             return;
         }
 
-        // Xử lý upload ảnh lên Cloudinary
         Part filePart = request.getPart("imageFile");
         String imageUrl = null;
 
@@ -103,7 +108,6 @@ public class AdminBannerController extends HttpServlet {
             return;
         }
 
-        // Tạo banner mới
         Banner banner = new Banner();
         banner.setTitle(title.trim());
         banner.setDescription(description != null ? description.trim() : "");
@@ -417,6 +421,38 @@ public class AdminBannerController extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(json);
+    }
+    private void handleUpdateStatusAjax(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        String idParam = request.getParameter("id");
+        String statusParam = request.getParameter("status");
+
+        if (idParam == null || statusParam == null) {
+            response.getWriter().write("{\"success\": false, \"message\": \"Thiếu thông tin!\"}");
+            return;
+        }
+
+        try {
+            int id = Integer.parseInt(idParam);
+            boolean isActive = "active".equals(statusParam);
+
+            boolean updated = bannerService.updateBannerStatus(id, isActive);
+
+            if (updated) {
+                String message = isActive ? "Kích hoạt banner thành công!" : "Đã ngừng hoạt động banner!";
+                response.getWriter().write(String.format(
+                        "{\"success\": true, \"message\": \"%s\"}", message
+                ));
+            } else {
+                response.getWriter().write("{\"success\": false, \"message\": \"Cập nhật thất bại!\"}");
+            }
+        } catch (NumberFormatException e) {
+            response.getWriter().write("{\"success\": false, \"message\": \"ID không hợp lệ!\"}");
+        }
     }
 
     private String escapeJson(String s) {

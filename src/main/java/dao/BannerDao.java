@@ -11,7 +11,7 @@ public class BannerDao {
     public List<Banner> getAllBanners() {
         String sql = "SELECT id, title, description, " +
                 "image_url AS imageUrl, " +
-                "is_active, " +
+                "is_active AS active, " +
                 "created_at AS createdAt, " +
                 "updated_at AS updatedAt " +
                 "FROM banner " +
@@ -23,7 +23,7 @@ public class BannerDao {
     public List<Banner> getAllBannersForAdmin() {
         String sql = "SELECT id, title, description, " +
                 "image_url AS imageUrl, " +
-                "is_active, " +
+                "is_active AS active, " +
                 "created_at AS createdAt, " +
                 "updated_at AS updatedAt " +
                 "FROM banner " +
@@ -41,7 +41,7 @@ public class BannerDao {
                     .bind("title", banner.getTitle())
                     .bind("description", banner.getDescription())
                     .bind("imageUrl", banner.getImageUrl())
-                    .bind("isActive", banner.isActive())
+                    .bind("isActive", banner.isActive() ? 1 : 0)
                     .bind("createdAt", banner.getCreatedAt())
                     .bind("updatedAt", banner.getUpdatedAt())
                     .executeAndReturnGeneratedKeys("id")
@@ -61,7 +61,7 @@ public class BannerDao {
                     .bind("title", banner.getTitle())
                     .bind("description", banner.getDescription())
                     .bind("imageUrl", banner.getImageUrl())
-                    .bind("isActive", banner.isActive())
+                    .bind("isActive", banner.isActive() ? 1 : 0)
                     .bind("updatedAt", banner.getUpdatedAt())
                     .bind("id", banner.getId())
                     .execute();
@@ -73,7 +73,7 @@ public class BannerDao {
     public Banner getById(int id) {
         String sql = "SELECT id, title, description, " +
                 "image_url AS imageUrl, " +
-                "is_active, " +
+                "is_active AS active, " +
                 "created_at AS createdAt, " +
                 "updated_at AS updatedAt " +
                 "FROM banner WHERE id = :id";
@@ -121,6 +121,16 @@ public class BannerDao {
     }
 
 
+    public boolean updateStatus(int id, boolean isActive) {
+        String sql = "UPDATE banner SET is_active = :isActive, updated_at = :updatedAt WHERE id = :id";
 
-
+        return JdbiConnector.getJdbi().withHandle(handle -> {
+            int rows = handle.createUpdate(sql)
+                    .bind("isActive", isActive ? 1 : 0)
+                    .bind("updatedAt", LocalDateTime.now())
+                    .bind("id", id)
+                    .execute();
+            return rows > 0;
+        });
+    }
 }

@@ -148,7 +148,7 @@ public class OrderDao {
         String sql = """
                 SELECT od.id,od.order_id AS orderId,od.product_id AS productId,od.quantity,od.buy_price AS buyPrice,od.total_price AS totalPrice,
                 p.name AS productName,pi.image_url AS productImage
-                FROM order_details od LEFT JOIN product p  ON od.product_id = p.id
+                FROM order_detail od LEFT JOIN product p  ON od.product_id = p.id
                 LEFT JOIN productimage pi ON od.product_id = pi.product_id AND pi.is_primary = 1
                 WHERE od.order_id = :orderId
                 """;

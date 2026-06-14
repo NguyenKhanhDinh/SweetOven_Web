@@ -459,7 +459,7 @@
         </div>
 
         <div class="social-icons">
-            <a href="#" class="social-btn facebook" title="Đăng nhập bằng Facebook">
+            <a href="${pageContext.request.contextPath}/login-facebook" class="social-btn facebook" title="Đăng nhập bằng Facebook">
                 <i class="fa-brands fa-facebook-f"></i>
             </a>
 

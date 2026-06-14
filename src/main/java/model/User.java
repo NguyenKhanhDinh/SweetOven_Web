@@ -16,6 +16,7 @@ public class User implements Serializable {
     private int roleId;
     private LocalDateTime createdAt;
     private  LocalDateTime updatedAt;
+    private String facebookId;
 
     public User(int id, String avatar, String fullName, String userName, int gender, String email,String phoneNumber,String password,int status,boolean isBlocked,int roleId,LocalDateTime createdAt,LocalDateTime updatedAt) {
         this.id = id;
@@ -31,6 +32,7 @@ public class User implements Serializable {
         this.roleId = roleId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.facebookId = facebookId;
     }
     public User() {}
 
@@ -118,6 +120,6 @@ return isBlocked;
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-
+    public String getFacebookId() {return facebookId;}
+    public void setFacebookId(String facebookId) {this.facebookId = facebookId;}
 }

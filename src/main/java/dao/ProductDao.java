@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class ProductDao {
 
     public List<Product> getFeaturedProducts() {
-        String sql = "SELECT p.*, pi.image_url as image " +
+        String sql = "SELECT p.*, p.is_featured as featured, pi.image_url as image " +
                 "FROM product p " +
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
                 "WHERE p.is_featured = 1 AND p.status = 1 " +
@@ -25,7 +25,7 @@ public class ProductDao {
     }
 
     public List<Product> getListProduct() {
-        String sql = "SELECT p.*, pi.image_url as image " +
+        String sql = "SELECT p.*, p.is_featured as featured, pi.image_url as image " +
                 "FROM product p " +
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
                 "ORDER BY p.id DESC";
@@ -38,7 +38,7 @@ public class ProductDao {
     }
 
     public Product findById(int id) {
-        String sql = "SELECT p.*, pi.image_url as image " +
+        String sql = "SELECT p.*, p.is_featured as featured, pi.image_url as image " +
                 "FROM product p " +
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
                 "WHERE p.id = :id";
@@ -53,7 +53,7 @@ public class ProductDao {
     }
 
     public List<Product> getRelatedProducts(int categoryId, int currentProductId, int limit) {
-        String sql = "SELECT p.*, pi.image_url as image " +
+        String sql = "SELECT p.*, p.is_featured as featured, pi.image_url as image " +
                 "FROM product p " +
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
                 "WHERE p.category_id = :categoryId " +
@@ -73,7 +73,7 @@ public class ProductDao {
     }
 
     public List<Product> getProductsByCategory(int categoryId) {
-        String sql = "SELECT p.*, pi.image_url as image " +
+        String sql = "SELECT p.*, p.is_featured as featured, pi.image_url as image " +
                 "FROM product p " +
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
                 "WHERE p.status = 1 AND p.category_id = :categoryId " +
@@ -137,7 +137,7 @@ public class ProductDao {
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
 
-        String sql = "SELECT p.*, pi.image_url as image FROM product p " +
+        String sql = "SELECT p.*, p.is_featured as featured, pi.image_url as image FROM product p " +
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
                 "WHERE p.id IN (" + placeholders + ") AND p.status = 1";
 
@@ -218,7 +218,7 @@ public class ProductDao {
         int offset = (page - 1) * pageSize;
 
         StringBuilder sql = new StringBuilder("""
-            SELECT p.*, pi.image_url as image
+            SELECT p.*, p.is_featured as featured, pi.image_url as image
             FROM product p
             LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1
             WHERE 1=1

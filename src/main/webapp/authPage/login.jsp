@@ -459,13 +459,13 @@
         </div>
 
         <div class="social-icons">
-            <a href="#" class="social-btn facebook" title="Đăng nhập bằng Facebook">
+            <a href="${pageContext.request.contextPath}/login-facebook" class="social-btn facebook" title="Đăng nhập bằng Facebook">
                 <i class="fa-brands fa-facebook-f"></i>
             </a>
 
             <div id="g_id_onload"
                  data-client_id="1087592609374-l4pgsgu9aofrh2jgo365ebesk6evmeer.apps.googleusercontent.com"
-                 data-login_uri="http://localhost:8080${pageContext.request.contextPath}/login-google"
+                 data-login_uri="https://${pageContext.request.serverName}${pageContext.request.contextPath}/login-google"
                  data-auto_prompt="false">
             </div>
 

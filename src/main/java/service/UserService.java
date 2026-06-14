@@ -13,7 +13,7 @@ public class UserService {
     private UserDao userDao = new UserDao();
     private PasswordResetTokenDao tokenDao = new PasswordResetTokenDao();
 
-    public enum LoginResult { SUCCESS, WRONG_CREDENTIALS, NOT_VERIFIED, BLOCKED }
+    public enum LoginResult {SUCCESS, WRONG_CREDENTIALS, NOT_VERIFIED, BLOCKED}
 
     // login trả về enum để controller hiển thị đúng thông báo lỗi
     public LoginResult loginCheck(String username, String password) {
@@ -82,6 +82,7 @@ public class UserService {
         }
         return userDao.updateAvatar(userId, avatarPath);
     }
+
     public User findOrCreateGoogleUser(String email, String fullName) {
         User existing = userDao.findByEmail(email);
         if (existing != null) {
@@ -96,6 +97,7 @@ public class UserService {
         return userDao.insertGoogleUser(newUser);
 
     }
+
     public enum ValidateResult {
         OK,
         USERNAME_EXISTS,
@@ -256,7 +258,22 @@ public class UserService {
         }
         return ResetPasswordResult.SUCCESS;
     }
+
     public boolean activateByEmail(String email) {
         return userDao.setStatusByEmail(email, 1);
+    }
+
+    public User findOrFacebookUser(String facebookId, String fullName) {
+        User existing = userDao.findByFacebookId(facebookId);
+        if (existing != null) {
+            return existing;
+        }
+        User newUser = new User();
+        newUser.setFullName(fullName);
+        newUser.setFacebookId(facebookId);
+        newUser.setRoleId(2);
+        newUser.setStatus(1);
+        newUser.setBlocked(false);
+        return userDao.insertFacebookUser(newUser);
     }
 }

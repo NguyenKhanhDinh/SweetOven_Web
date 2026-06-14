@@ -35,7 +35,6 @@
             </div>
         </c:if>
 
-        <!-- Page Header -->
         <div class="page-header">
             <h1 class="page-title"><i class="fas fa-box-open"></i> Quản lý sản phẩm</h1>
             <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
@@ -43,7 +42,6 @@
             </button>
         </div>
 
-        <!-- Stats Row -->
         <div class="stats-row">
             <div class="stat-item">
                 <div class="stat-bar sb-total"></div>
@@ -67,7 +65,6 @@
             </div>
         </div>
 
-        <!-- Filter Row -->
         <div class="filter-row">
             <div class="search-wrap">
                 <i class="fas fa-search"></i>
@@ -87,17 +84,18 @@
                 <option value="0" ${filterStatus == '0' ? 'selected' : ''}>Hết hàng</option>
             </select>
             <select id="filterFeatured" class="filter-select">
-                <option value="">Tất cả</option>
-                <option value="true" ${filterFeatured == 'true' ? 'selected' : ''}>Nổi bật</option>
+                <option value="">Tất cả sản phẩm</option>
+                <option value="true" ${filterFeatured == 'true' ? 'selected' : ''}>Sản phẩm nổi bật</option>
                 <option value="false" ${filterFeatured == 'false' ? 'selected' : ''}>Không nổi bật</option>
             </select>
             <select id="sortOrder" class="filter-select">
-                <option value="stock_asc"  ${sortOrder == 'stock_asc'  ? 'selected' : ''}>Tồn kho ↑</option>
-                <option value="stock_desc" ${sortOrder == 'stock_desc' ? 'selected' : ''}>Tồn kho ↓</option>
-                <option value="price_asc"  ${sortOrder == 'price_asc'  ? 'selected' : ''}>Giá ↑</option>
-                <option value="price_desc" ${sortOrder == 'price_desc' ? 'selected' : ''}>Giá ↓</option>
-                <option value="name_asc"   ${sortOrder == 'name_asc'   ? 'selected' : ''}>Tên A→Z</option>
-                <option value="name_desc"  ${sortOrder == 'name_desc'  ? 'selected' : ''}>Tên Z→A</option>
+                <option value="">Sắp xếp mặc định</option>
+                <option value="stock_asc"  ${sortOrder == 'stock_asc'  ? 'selected' : ''}>Tồn kho: thấp → cao</option>
+                <option value="stock_desc" ${sortOrder == 'stock_desc' ? 'selected' : ''}>Tồn kho: cao → thấp</option>
+                <option value="price_asc"  ${sortOrder == 'price_asc'  ? 'selected' : ''}>Giá: thấp → cao</option>
+                <option value="price_desc" ${sortOrder == 'price_desc' ? 'selected' : ''}>Giá: cao → thấp</option>
+                <option value="name_asc"   ${sortOrder == 'name_asc'   ? 'selected' : ''}>Tên: A → Z</option>
+                <option value="name_desc"  ${sortOrder == 'name_desc'  ? 'selected' : ''}>Tên: Z → A</option>
             </select>
             <button class="btn-apply-filter" onclick="applyFilters()">
                 <i class="fas fa-filter"></i> Áp dụng
@@ -107,7 +105,14 @@
             </button>
         </div>
 
-        <!-- Table Card -->
+        <div class="active-filters-bar" id="activeFiltersBar">
+            <span class="active-filters-label"><i class="fas fa-filter"></i> Đang lọc:</span>
+            <div class="active-filters" id="activeFiltersList"></div>
+            <button class="btn-clear-all-filters" id="clearAllFilters" onclick="resetFilters()">
+                <i class="fas fa-xmark"></i> Xoá tất cả
+            </button>
+        </div>
+
         <div class="table-card">
             <div class="table-card-header">
                 <div class="table-card-title">
@@ -137,9 +142,9 @@
                     <thead>
                     <tr>
                         <th>Ảnh</th>
-                        <th>Mã SP</th>
+                        <th class="hide-desktop">Mã SP</th>
                         <th>Tên sản phẩm</th>
-                        <th class="hide-xs">Danh mục</th>
+                        <th class="hide-desktop">Danh mục</th>
                         <th class="hide-mobile">Giá gốc</th>
                         <th class="hide-mobile">Giá KM</th>
                         <th>Tồn kho</th>
@@ -187,14 +192,14 @@
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td><span class="product-code">${p.productCode}</span></td>
+                                    <td class="hide-desktop"><span class="product-code">${p.productCode}</span></td>
                                     <td>
                                         <div class="product-name">${p.name}</div>
                                         <c:if test="${p.featured}">
                                             <span class="badge-featured"><i class="fas fa-star"></i> Nổi bật</span>
                                         </c:if>
                                     </td>
-                                    <td class="hide-xs">
+                                    <td class="hide-desktop">
                                         <c:forEach items="${categories}" var="cat">
                                             <c:if test="${cat.id == p.categoryId}">
                                                 <span class="category-tag">${cat.name}</span>
@@ -305,7 +310,6 @@
     </main>
 </div>
 
-<!-- Modal Thêm sản phẩm -->
 <div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -415,7 +419,6 @@
     </div>
 </div>
 
-<!-- Modal Sửa sản phẩm -->
 <div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -529,7 +532,6 @@
 <script src="${pageContext.request.contextPath}/assets/js/admin_product.js"></script>
 
 <script>
-    // Auto-hide floating alert
     const af = document.getElementById('alertFloating');
     if (af) setTimeout(() => af.classList.add('hide'), 3500);
 </script>

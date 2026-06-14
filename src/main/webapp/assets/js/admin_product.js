@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', function() {
     window.goToPage = goToPage;
     window.openEditModal = openEditModal;
     window.confirmDelete = confirmDelete;
+    window.removeFilter = removeFilter;
+
+    buildActiveFilters();
 });
 
 function applyFilters() {
@@ -51,6 +54,75 @@ function goToPage(page) {
     var urlParams = new URLSearchParams(window.location.search);
     urlParams.set('page', page);
     window.location.href = contextPath + '/admin/products?' + urlParams.toString();
+}
+
+function removeFilter(key) {
+    var urlParams = new URLSearchParams(window.location.search);
+    urlParams.delete(key);
+    urlParams.set('page', '1');
+
+    var query = urlParams.toString();
+    window.location.href = contextPath + '/admin/products' + (query ? '?' + query : '');
+}
+
+function buildActiveFilters() {
+    var bar = document.getElementById('activeFiltersBar');
+    var list = document.getElementById('activeFiltersList');
+
+    if (!bar || !list) return;
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var filters = [];
+
+    var labelOf = function(selectId) {
+        var select = document.getElementById(selectId);
+        if (!select || select.selectedIndex < 0) return '';
+        return select.options[select.selectedIndex].text;
+    };
+
+    var searchValue = (urlParams.get('searchKeyword') || '').trim();
+    if (searchValue) {
+        filters.push({ key: 'searchKeyword', label: 'Từ khoá: "' + searchValue + '"' });
+    }
+
+    if (urlParams.get('categoryId')) {
+        filters.push({ key: 'categoryId', label: 'Danh mục: ' + labelOf('filterCategory') });
+    }
+
+    if (urlParams.get('status') !== null && urlParams.get('status') !== '') {
+        filters.push({ key: 'status', label: 'Trạng thái: ' + labelOf('filterStatus') });
+    }
+
+    if (urlParams.get('featured') !== null && urlParams.get('featured') !== '') {
+        filters.push({ key: 'featured', label: labelOf('filterFeatured') });
+    }
+
+    if (urlParams.get('sort')) {
+        filters.push({ key: 'sort', label: 'Sắp xếp: ' + labelOf('sortOrder') });
+    }
+
+    list.innerHTML = '';
+
+    filters.forEach(function(filter) {
+        var chip = document.createElement('span');
+        chip.className = 'filter-chip';
+
+        var label = document.createElement('span');
+        label.textContent = filter.label;
+
+        var removeIcon = document.createElement('i');
+        removeIcon.className = 'fas fa-xmark';
+        removeIcon.title = 'Bỏ bộ lọc này';
+        removeIcon.addEventListener('click', function() {
+            removeFilter(filter.key);
+        });
+
+        chip.appendChild(label);
+        chip.appendChild(removeIcon);
+        list.appendChild(chip);
+    });
+
+    bar.classList.toggle('show', filters.length > 0);
 }
 
 function openEditModal(productId) {
@@ -102,7 +174,7 @@ function openEditModal(productId) {
 
             var featuredCheckbox = document.getElementById('editFeatured');
             if (featuredCheckbox) {
-                featuredCheckbox.checked = product.featured === true;
+                featuredCheckbox.checked = product.featured === true || product.featured === 'true';
             }
 
             var imagesContainer = document.getElementById('currentImagesContainer');
@@ -114,7 +186,7 @@ function openEditModal(productId) {
                     var imgSrc = '';
 
                     if (product.image.startsWith('http://') || product.image.startsWith('https://')) {
-                        imgSrc = product.image; // Giữ nguyên link đám mây
+                        imgSrc = product.image;
                     } else {
                         imgSrc = product.image.startsWith('/')
                             ? contextPath + product.image

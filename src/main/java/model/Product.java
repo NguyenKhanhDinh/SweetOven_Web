@@ -18,6 +18,7 @@ public class Product implements Serializable {
     private int status;
     private String description;
     private String ingredients;
+    private boolean isDeleted;
     private boolean featured;
     private String image;
     private LocalDateTime createdAt;
@@ -103,6 +104,12 @@ public class Product implements Serializable {
     public void setIngredients(String ingredients) {
         this.ingredients = ingredients;
     }
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+    public void setDeleted(boolean deleted) {
+        this.isDeleted = deleted;
+    }
     public boolean isFeatured() {
         return featured;
     }
@@ -145,4 +152,3 @@ public class Product implements Serializable {
         return BigDecimal.ZERO;
     }
 }
-

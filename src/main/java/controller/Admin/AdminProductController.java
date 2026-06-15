@@ -38,7 +38,7 @@ public class AdminProductController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        
+
         String action = req.getParameter("action");
 
         if ("api".equals(action)) {
@@ -321,7 +321,6 @@ public class AdminProductController extends HttpServlet {
             Product product = productService.findById(id);
 
             if (product != null) {
-                productImageService.deleteByProductId(id);
                 boolean deleted = productService.deleteProductById(id);
                 if (deleted) {
                     req.setAttribute("success", "Đã xóa sản phẩm thành công!");

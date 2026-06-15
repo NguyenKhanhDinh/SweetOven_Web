@@ -10,6 +10,7 @@ public class DashboardData {
     private int totalUsers;
     private List<DashboardRevenueData> monthlyRevenue;
     private List<DashboardRevenueData> yearlyRevenue;
+    private List<DashboardRevenueData> weeklyRevenue;
     private List<DashboardProductSales> topSellingProducts;
     private List<DashboardProductSales> slowMovingProducts;
     private BigDecimal currentMonthRevenue;
@@ -45,6 +46,8 @@ public class DashboardData {
     public void setTotalProducts(int totalProducts) { this.totalProducts = totalProducts; }
     public int getTotalUsers() { return totalUsers; }
     public void setTotalUsers(int totalUsers) { this.totalUsers = totalUsers; }
+    public List<DashboardRevenueData> getWeeklyRevenue() { return this.weeklyRevenue; }
+    public void setWeeklyRevenue(List<DashboardRevenueData> list) { this.weeklyRevenue = list; }
     public List<DashboardRevenueData> getMonthlyRevenue() { return monthlyRevenue; }
     public void setMonthlyRevenue(List<DashboardRevenueData> monthlyRevenue) { this.monthlyRevenue = monthlyRevenue; }
     public List<DashboardRevenueData> getYearlyRevenue() { return yearlyRevenue; }

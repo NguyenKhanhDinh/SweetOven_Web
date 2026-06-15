@@ -1,5 +1,6 @@
 package dao;
 
+import model.DashboardData;
 import model.DashboardProductSales;
 import model.DashboardRevenueData;
 import utils.JdbiConnector;
@@ -155,6 +156,24 @@ public class DashboardDao {
                         .map((rs, ctx) -> new DashboardRevenueData(rs.getInt("year"), rs.getBigDecimal("revenue")))
                         .list()
         );
+    }
+    public List<DashboardRevenueData> getWeeklyRevenue(int year, int month) {
+        String sql = """
+         SELECT CEIL(DAY(order_date)/7) as week_num, COALESCE(SUM(total_amount), 0) as revenue
+         FROM `order`WHERE YEAR(order_date) = :year AND MONTH(order_date) = :month AND order_status = 4
+         GROUP BY CEIL(DAY(order_date)/7) ORDER BY week_num 
+        """;
+        List<DashboardRevenueData> result = JdbiConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql).bind("year", year).bind("month", month)
+                        .map((rs, ctx) -> new DashboardRevenueData(rs.getInt("week_num"), rs.getBigDecimal("revenue"))).list());
+        ;
+    List<DashboardRevenueData> fullResult = new ArrayList<>();
+    for (int i=1; i<5; i++) {
+        final int week = i;
+    DashboardRevenueData existing = result.stream().filter(r ->r.getPeriod()== week).findFirst().orElse(new DashboardRevenueData(week,BigDecimal.ZERO));
+    fullResult.add(existing);
+    }
+    return fullResult;
     }
 
     // Tổng người dùng

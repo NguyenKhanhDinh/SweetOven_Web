@@ -36,17 +36,14 @@ public class UserDao {
     public boolean updateProfile(User user) {
         String sql = "UPDATE user SET full_name = :fullName, email = :email, phone_number = :phone, gender = :gender WHERE id = :id ";
         try {
-            Handle handle = JdbiConnector.getJdbi().open();
-            int rows = handle.createUpdate(sql).bind("fullName", user.getFullName())
+            return JdbiConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql).bind("fullName", user.getFullName())
                     .bind("email", user.getEmail())
                     .bind("phone", user.getPhoneNumber())
                     .bind("gender", user.getGender())
                     .bind("id", user.getId())
-                    .execute();
-            return (rows > 0);
-
+                    .execute() )>0;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+           return false;
         }
     }
 

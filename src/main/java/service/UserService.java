@@ -50,30 +50,41 @@ public class UserService {
     }
 
     // dùng cập nhật thông tin trang profile
-    public boolean updateProfile(User user) {
+    public enum UpdateProfileResult {SUCCESS, EMAIL_TAKEN,PHONE_TAKEN, INVALID_INPUT,ERROR}
+    public UpdateProfileResult updateProfile(User user) {
 
         if (user == null) {
-            return false;
+            return UpdateProfileResult.INVALID_INPUT;
         }
 
         if (user.getFullName() == null || user.getFullName().isBlank()) {
-            return false;
+            return UpdateProfileResult.INVALID_INPUT;
         }
 
         Integer gender = user.getGender();
         if (gender != 0 && gender != 1 && gender != 2) {
-            return false;
+            return UpdateProfileResult.INVALID_INPUT;
         }
 
         if (user.getEmail() == null || user.getEmail().isBlank()) {
-            return false;
+            return UpdateProfileResult.INVALID_INPUT;
         }
 
         if (user.getPhoneNumber() == null || !user.getPhoneNumber().matches("\\d{9,11}")) {
-            return false;
+            return UpdateProfileResult.INVALID_INPUT;
         }
-
-        return userDao.updateProfile(user);
+        User existingEmail = userDao.findByEmailAny(user.getEmail());
+        if (existingEmail != null && existingEmail.getId() != user.getId()) {
+            return UpdateProfileResult.EMAIL_TAKEN;
+        }
+        User currentUser = userDao.findById(user.getId());
+        if (currentUser != null && !user.getPhoneNumber().equals(currentUser.getPhoneNumber())) {
+            if (UserDao.isPhoneExists(user.getPhoneNumber())) {
+                return UpdateProfileResult.PHONE_TAKEN;
+            }
+        }
+        boolean ok = userDao.updateProfile(user);
+        return ok ? UpdateProfileResult.SUCCESS : UpdateProfileResult.ERROR;
     }
 
     public boolean updateAvatar(int userId, String avatarPath) {

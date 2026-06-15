@@ -1,4 +1,4 @@
-package controller.momo;
+package controller.checkout;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -11,7 +11,6 @@ import utils.MomoUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 @WebServlet("/momo-ipn")
 public class MoMoIpnController extends HttpServlet {

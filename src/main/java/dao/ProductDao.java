@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 public class ProductDao {
 
     public List<Product> getFeaturedProducts() {
-        String sql = "SELECT p.*, pi.image_url as image " +
+        String sql = "SELECT p.*, p.is_featured as featured, pi.image_url as image " +
                 "FROM product p " +
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
-                "WHERE p.is_featured = 1 AND p.status = 1 " +
+                "WHERE p.is_featured = 1 AND p.status = 1 AND p.is_deleted = 0 " +
                 "ORDER BY RAND() " +
                 "LIMIT 4";
 
@@ -25,9 +25,10 @@ public class ProductDao {
     }
 
     public List<Product> getListProduct() {
-        String sql = "SELECT p.*, pi.image_url as image " +
+        String sql = "SELECT p.*, p.is_featured as featured, pi.image_url as image " +
                 "FROM product p " +
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
+                "WHERE p.is_deleted = 0 " +
                 "ORDER BY p.id DESC";
 
         return JdbiConnector.getJdbi().withHandle(handle ->
@@ -38,7 +39,7 @@ public class ProductDao {
     }
 
     public Product findById(int id) {
-        String sql = "SELECT p.*, pi.image_url as image " +
+        String sql = "SELECT p.*, p.is_featured as featured, pi.image_url as image " +
                 "FROM product p " +
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
                 "WHERE p.id = :id";
@@ -53,12 +54,12 @@ public class ProductDao {
     }
 
     public List<Product> getRelatedProducts(int categoryId, int currentProductId, int limit) {
-        String sql = "SELECT p.*, pi.image_url as image " +
+        String sql = "SELECT p.*, p.is_featured as featured, pi.image_url as image " +
                 "FROM product p " +
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
                 "WHERE p.category_id = :categoryId " +
                 "AND p.id != :currentProductId " +
-                "AND p.status = 1 " +
+                "AND p.status = 1 AND p.is_deleted = 0 " +
                 "ORDER BY RAND() " +
                 "LIMIT :limit";
 
@@ -73,10 +74,10 @@ public class ProductDao {
     }
 
     public List<Product> getProductsByCategory(int categoryId) {
-        String sql = "SELECT p.*, pi.image_url as image " +
+        String sql = "SELECT p.*, p.is_featured as featured, pi.image_url as image " +
                 "FROM product p " +
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
-                "WHERE p.status = 1 AND p.category_id = :categoryId " +
+                "WHERE p.status = 1 AND p.is_deleted = 0 AND p.category_id = :categoryId " +
                 "ORDER BY p.id DESC";
 
         return JdbiConnector.getJdbi().withHandle(handle ->
@@ -88,18 +89,13 @@ public class ProductDao {
     }
 
     public void deleteById(int id) {
-        String sqlImage = "DELETE FROM productimage WHERE product_id = :id";
-        String sqlProduct = "DELETE FROM product WHERE id = :id";
+        String sql = "UPDATE product SET is_deleted = 1, status = 0, updated_at = NOW() WHERE id = :id";
 
-        JdbiConnector.getJdbi().useHandle(handle -> {
-            handle.createUpdate(sqlImage)
-                    .bind("id", id)
-                    .execute();
-
-            handle.createUpdate(sqlProduct)
-                    .bind("id", id)
-                    .execute();
-        });
+        JdbiConnector.getJdbi().useHandle(handle ->
+                handle.createUpdate(sql)
+                        .bind("id", id)
+                        .execute()
+        );
     }
 
     public int addProduct(Product p) {
@@ -137,9 +133,9 @@ public class ProductDao {
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
 
-        String sql = "SELECT p.*, pi.image_url as image FROM product p " +
+        String sql = "SELECT p.*, p.is_featured as featured, pi.image_url as image FROM product p " +
                 "LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1 " +
-                "WHERE p.id IN (" + placeholders + ") AND p.status = 1";
+                "WHERE p.id IN (" + placeholders + ") AND p.status = 1 AND p.is_deleted = 0";
 
         return JdbiConnector.getJdbi().withHandle(handle ->
                 handle.createQuery(sql)
@@ -218,10 +214,10 @@ public class ProductDao {
         int offset = (page - 1) * pageSize;
 
         StringBuilder sql = new StringBuilder("""
-            SELECT p.*, pi.image_url as image
+            SELECT p.*, p.is_featured as featured, pi.image_url as image
             FROM product p
             LEFT JOIN productimage pi ON p.id = pi.product_id AND pi.is_primary = 1
-            WHERE 1=1
+            WHERE p.is_deleted = 0
         """);
 
         List<Object> params = new ArrayList<>();
@@ -297,7 +293,7 @@ public class ProductDao {
         StringBuilder sql = new StringBuilder("""
             SELECT COUNT(*)
             FROM product p
-            WHERE 1=1
+            WHERE p.is_deleted = 0
         """);
 
         List<Object> params = new ArrayList<>();
@@ -338,7 +334,7 @@ public class ProductDao {
     }
 
     public int countAll() {
-        String sql = "SELECT COUNT(*) FROM product";
+        String sql = "SELECT COUNT(*) FROM product WHERE is_deleted = 0";
         return JdbiConnector.getJdbi().withHandle(handle ->
                 handle.createQuery(sql)
                         .mapTo(Integer.class)
@@ -347,7 +343,7 @@ public class ProductDao {
     }
 
     public int countAvailable() {
-        String sql = "SELECT COUNT(*) FROM product WHERE status = 1 AND stock_quantity > 0";
+        String sql = "SELECT COUNT(*) FROM product WHERE status = 1 AND stock_quantity > 0 AND is_deleted = 0";
         return JdbiConnector.getJdbi().withHandle(handle ->
                 handle.createQuery(sql)
                         .mapTo(Integer.class)
@@ -356,7 +352,7 @@ public class ProductDao {
     }
 
     public int countOutOfStock() {
-        String sql = "SELECT COUNT(*) FROM product WHERE status = 0 OR stock_quantity = 0";
+        String sql = "SELECT COUNT(*) FROM product WHERE (status = 0 OR stock_quantity = 0) AND is_deleted = 0";
         return JdbiConnector.getJdbi().withHandle(handle ->
                 handle.createQuery(sql)
                         .mapTo(Integer.class)
@@ -365,11 +361,20 @@ public class ProductDao {
     }
 
     public int countFeatured() {
-        String sql = "SELECT COUNT(*) FROM product WHERE is_featured = 1";
+        String sql = "SELECT COUNT(*) FROM product WHERE is_featured = 1 AND is_deleted = 0";
         return JdbiConnector.getJdbi().withHandle(handle ->
                 handle.createQuery(sql)
                         .mapTo(Integer.class)
                         .one()
+        );
+    }
+    public void restoreById(int id) {
+        String sql = "UPDATE product SET is_deleted = 0, updated_at = NOW() WHERE id = :id";
+
+        JdbiConnector.getJdbi().useHandle(handle ->
+                handle.createUpdate(sql)
+                        .bind("id", id)
+                        .execute()
         );
     }
 }

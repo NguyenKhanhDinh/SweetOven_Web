@@ -1,4 +1,4 @@
-package controller;
+package controller.profile;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;

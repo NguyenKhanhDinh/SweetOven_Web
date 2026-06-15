@@ -1,4 +1,4 @@
-package controller;
+package controller.profile;
 
 import dao.UserFavoritesDao;
 import jakarta.servlet.ServletException;
@@ -83,15 +83,25 @@ public class ProfileController extends HttpServlet {
           loginUser.setGender(-1);
         }
 
-        boolean result = userService.updateProfile(loginUser);
+        UserService.UpdateProfileResult result = userService.updateProfile(loginUser);
 
-        if (result) {
-            User freshUser = userService.findById(loginUser.getId());
-            session.setAttribute("user", freshUser);
-
-            session.setAttribute("successMsg", "Cập nhật thành công!");
-        } else {
-            session.setAttribute("errorMsg", "Cập nhật thất bại!");
+        switch (result){
+            case SUCCESS:
+                User freshUser = userService.findById(loginUser.getId());
+                session.setAttribute("user", freshUser);
+                session.setAttribute("successMsg", "Cập nhật thành công!");
+                break;
+            case EMAIL_TAKEN:
+                session.setAttribute("errorMsg", "Email đã được sử dụng bởi một tài khoản khác!");
+                break;
+            case PHONE_TAKEN:
+                session.setAttribute("errorMsg","Số điện thoại này đã được sử dụng bởi một tài khoản khác!");
+                break;
+            case INVALID_INPUT:
+                session.setAttribute("errorMsg","Thông tin không hợp lệ, vui lòng kiểm tra lại!");
+                break;
+            default:
+                session.setAttribute("errorMsg","Cập nhật thất bại, vui lòng thử lại!");
         }
         response.sendRedirect(request.getContextPath() + "/profile");
     }

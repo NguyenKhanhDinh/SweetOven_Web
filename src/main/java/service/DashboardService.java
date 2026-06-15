@@ -46,6 +46,10 @@ public class DashboardService {
         return dashboardDao.getMonthlyRevenue(year);
     }
 
+    public List<DashboardRevenueData> getWeeklyRevenue(int year, int month) {
+        return dashboardDao.getWeeklyRevenue(year, month);
+    }
+
     // Lấy doanh thu theo từng năm
     public List<DashboardRevenueData> getYearlyRevenue() {
         return dashboardDao.getYearlyRevenue();
@@ -89,6 +93,8 @@ public class DashboardService {
         dashboard.setTotalRevenue(getTotalRevenue());
         dashboard.setTotalProducts(getTotalProducts());
         dashboard.setTotalUsers(getTotalUsers());
+
+        dashboard.setWeeklyRevenue(getWeeklyRevenue(year,month));
 
         // Doanh thu theo tháng
         dashboard.setMonthlyRevenue(getMonthlyRevenue(year));

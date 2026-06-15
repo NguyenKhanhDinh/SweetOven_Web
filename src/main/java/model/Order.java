@@ -158,10 +158,10 @@ public class Order implements Serializable {
 
 
     private String formatMoney(BigDecimal value) {
-        if (value == null) return "0 đ";
+        if (value == null) return "0 VNĐ";
 
         NumberFormat nf = NumberFormat.getInstance(new Locale("vi", "VN"));
-        return nf.format(value) + " đ";
+        return nf.format(value) + " VNĐ";
     }
 
     public String getSubTotalFormatted() {

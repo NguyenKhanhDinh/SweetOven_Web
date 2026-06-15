@@ -1,0 +1,184 @@
+/* ── Tái sử dụng từ admin_user.css ──────────────────────────────────────────
+   .page-header, .page-title, .btn-primary, .stats-row, .stat-item, .stat-bar,
+   .stat-value, .stat-label, .filter-row, .search-wrap, .filter-select,
+   .btn-apply-filter, .btn-reset-filter, .table-card, .table-card-header,
+   .table-card-title, .page-meta, .table-responsive, table.data-table,
+   .empty-state, .table-footer, .result-info, .pagination,
+   .modal-content, .form-label, .form-control, .btn-secondary,
+   .alert-floating  —  đã có trong admin_user.css
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* ── Thanh thống kê màu sắc riêng cho discounts ───────────────────────────── */
+.sb-discount-total   { background: var(--accent); }
+.sb-discount-active  { background: var(--success); }
+.sb-discount-expired { background: var(--danger); }
+.sb-discount-percent { background: #a78bfa; }
+.sb-discount-fixed   { background: var(--info); }
+
+/* ── Cột bảng ─────────────────────────────────────────────────────────────── */
+table.data-table col.col-no         { width: 48px; }
+table.data-table col.col-code       { width: 16%; }
+table.data-table col.col-desc       { width: 24%; }
+table.data-table col.col-type       { width: 11%; }
+table.data-table col.col-value      { width: 13%; }
+table.data-table col.col-minorder   { width: 13%; }
+table.data-table col.col-period     { width: 14%; }
+table.data-table col.col-action     { width: 148px; }
+
+/* ── Badge loại khuyến mãi ─────────────────────────────────────────────────── */
+.type-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 5px;
+    font-size: .72rem; font-weight: 700; white-space: nowrap;
+}
+.type-percent { background: #ede9fe; color: #6d28d9; border: 1px solid #c4b5fd; }
+.type-fixed   { background: var(--info-bg); color: var(--info); border: 1px solid #c4e8ee; }
+
+/* ── Badge trạng thái hiệu lực ────────────────────────────────────────────── */
+.status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 6px;
+    font-size: .75rem; font-weight: 700; white-space: nowrap;
+}
+.ds-active   { background: var(--success-bg); color: var(--success); border: 1px solid #bce8cc; }
+.ds-expired  { background: var(--danger-bg);  color: var(--danger);  border: 1px solid #f4c3bf; }
+.ds-upcoming { background: var(--warning-bg); color: var(--warning); border: 1px solid #f0dda0; }
+
+/* ── Ô mã khuyến mãi ──────────────────────────────────────────────────────── */
+.code-cell {
+    display: flex; flex-direction: column; gap: 3px;
+}
+.code-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent-soft); color: var(--primary);
+    border: 1.5px dashed var(--accent);
+    padding: 4px 10px; border-radius: 6px;
+    font-size: .88rem; font-weight: 800; letter-spacing: 1px;
+    font-family: "Courier New", monospace;
+    cursor: pointer; transition: var(--transition);
+    width: fit-content;
+}
+.code-chip:hover { background: var(--accent); color: var(--primary); }
+.code-chip i     { font-size: .72rem; opacity: .7; }
+.code-id { font-size: .73rem; color: var(--text-muted); font-weight: 500; }
+
+/* ── Ô mô tả ──────────────────────────────────────────────────────────────── */
+.desc-cell {
+    font-size: .86rem; font-weight: 600; color: var(--text-main);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+/* ── Giá trị giảm ─────────────────────────────────────────────────────────── */
+.value-cell {
+    font-weight: 800; font-size: .92rem; color: var(--primary);
+}
+
+/* ── Khoảng thời gian ─────────────────────────────────────────────────────── */
+.period-cell {
+    display: flex; flex-direction: column; gap: 2px;
+    font-size: .78rem; font-weight: 600; color: var(--text-sub);
+}
+.period-cell .from { color: var(--success); }
+.period-cell .to   { color: var(--danger); }
+.period-cell i     { font-size: .7rem; }
+
+/* ── Action buttons ────────────────────────────────────────────────────────── */
+.action-btn-edit-d {
+    border-color: #f0dda0; color: var(--warning); background: var(--warning-bg);
+}
+.action-btn-edit-d:hover { background: var(--warning); color: #fff; border-color: var(--warning); }
+
+.action-btn-delete {
+    border-color: #f4c3bf; color: var(--danger); background: var(--danger-bg);
+}
+.action-btn-delete:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+.action-btn-view-d {
+    border-color: #c4e8ee; color: var(--info); background: var(--info-bg);
+}
+.action-btn-view-d:hover { background: var(--info); color: #fff; border-color: var(--info); }
+
+/* ── Modal: view discount ──────────────────────────────────────────────────── */
+.discount-modal-header {
+    display: flex; align-items: center; gap: 14px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 18px;
+}
+.discount-modal-icon {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: var(--accent-soft); border: 2px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; color: var(--primary); flex-shrink: 0;
+}
+.discount-modal-code {
+    font-size: 1.2rem; font-weight: 800; color: var(--primary);
+    letter-spacing: 1.5px; font-family: "Courier New", monospace;
+}
+.discount-modal-desc {
+    font-size: .84rem; color: var(--text-muted); font-weight: 500; margin-top: 3px;
+}
+
+.dinfo-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    overflow: hidden; margin-bottom: 16px;
+}
+.dinfo-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px; border-bottom: 1px solid var(--border); gap: 8px;
+}
+.dinfo-row:nth-last-child(-n+2) { border-bottom: none; }
+.dinfo-row:nth-child(odd)       { border-right: 1px solid var(--border); }
+.dinfo-row.full-row             { grid-column: span 2; border-right: none; }
+.dinfo-row.full-row:last-child  { border-bottom: none; }
+.dinfo-lbl {
+    font-size: .76rem; font-weight: 700; color: var(--text-sub);
+    display: flex; align-items: center; gap: 5px; white-space: nowrap;
+}
+.dinfo-lbl i { color: var(--accent); font-size: .72rem; width: 14px; text-align: center; }
+.dinfo-val   { font-size: .84rem; font-weight: 700; color: var(--text-main); text-align: right; }
+
+/* ── Form thêm / sửa ──────────────────────────────────────────────────────── */
+.form-section-title {
+    font-size: .82rem; font-weight: 800; color: var(--primary);
+    display: flex; align-items: center; gap: 6px;
+    margin: 18px 0 12px; padding-top: 14px;
+    border-top: 1px solid var(--border);
+}
+.form-section-title:first-child { margin-top: 0; border-top: none; }
+.form-section-title i { color: var(--accent); }
+
+.type-radio-group {
+    display: flex; gap: 10px;
+}
+.type-radio-item {
+    flex: 1; display: flex; align-items: center; gap: 8px;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    cursor: pointer; transition: var(--transition);
+    font-size: .88rem; font-weight: 600; color: var(--text-sub);
+    background: var(--bg);
+}
+.type-radio-item input[type="radio"] { accent-color: var(--accent); }
+.type-radio-item:has(input:checked) {
+    border-color: var(--accent); background: var(--accent-soft); color: var(--primary);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+    table.data-table col.col-desc   { width: 28%; }
+    table.data-table col.col-period { width: 0; }
+}
+
+@media (max-width: 768px) {
+    .dinfo-grid { grid-template-columns: 1fr; }
+    .dinfo-row:nth-child(odd)       { border-right: none; }
+    .dinfo-row:nth-last-child(-n+2) { border-bottom: 1px solid var(--border); }
+    .dinfo-row:last-child           { border-bottom: none; }
+    .type-radio-group { flex-direction: column; }
+}
+
+@media (max-width: 480px) {
+    table.data-table thead th.hide-xs,
+    table.data-table tbody td.hide-xs { display: none; }
+}

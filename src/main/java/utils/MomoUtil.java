@@ -19,8 +19,8 @@ public class MomoUtil {
     private static final String SECRET_KEY = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
     private static final String ENDPOINT = "https://test-payment.momo.vn/v2/gateway/api/create";
 
-    private static final String REDIRECT_URL = "https://gerbil-padded-glazing.ngrok-free.dev/momo-return";
-    private static final String IPN_URL = "https://gerbil-padded-glazing.ngrok-free.dev/momo-ipn";
+    private static final String REDIRECT_URL = "https://app.sweetoven.id.vn/momo-return";
+    private static final String IPN_URL = "https://app.sweetoven.id.vn/momo-ipn";
 
     private static final HttpClient  HTTP_CLIENT = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(30)).build();
 

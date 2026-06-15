@@ -1,524 +1,351 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sweet Oven - Dashboard</title>
-
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sweet Oven — Dashboard</title>
     <link rel="icon" href="${pageContext.request.contextPath}/assets/picture/logo.png">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/components/css/sidebar.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin_dashboard.css">
+    <script>const CONTEXT_PATH = '${pageContext.request.contextPath}';</script>
 </head>
-
 <body>
-
 <div class="admin-wrapper">
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
+    <%@ include file="/components/sidebar.jsp" %>
 
-        <div class="d-flex flex-column h-100 p-3">
+    <main class="main-content">
 
-            <div class="sidebar-header text-center mb-4 mt-3">
-                <h3 class="text-white fw-bold mb-0">SWEET OVEN</h3>
-                <p class="text-white-50 small mt-2">
-                    Quản trị hệ thống
-                </p>
+        <div class="page-header">
+            <div class="page-header-left">
+                <div class="page-header-icon"><i class="fas fa-chart-pie"></i></div>
+                <div>
+                    <h1 class="page-title">Dashboard thống kê</h1>
+                    <div class="page-subtitle">Phân tích doanh thu, đơn hàng và sản phẩm · Sweet Oven</div>
+                </div>
             </div>
+            <div class="header-actions">
 
-            <ul class="nav nav-pills flex-column mb-auto">
-
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/dashboard"
-                       class="nav-link active">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/products"
-                       class="nav-link">
-                        <i class="fas fa-box"></i>
-                        <span>Sản phẩm</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/categories"
-                       class="nav-link">
-                        <i class="fas fa-list"></i>
-                        <span>Danh mục</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/users"
-                       class="nav-link">
-                        <i class="fas fa-users"></i>
-                        <span>Người dùng</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/orders"
-                       class="nav-link">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Đơn hàng</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/promotions"
-                       class="nav-link">
-                        <i class="fas fa-tag"></i>
-                        <span>Khuyến mãi</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/banners"
-                       class="nav-link">
-                        <i class="fas fa-images"></i>
-                        <span>Banner</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/feedback"
-                       class="nav-link">
-                        <i class="fas fa-envelope"></i>
-                        <span>Phản hồi</span>
-                    </a>
-                </li>
-
-            </ul>
-
-            <div class="dropdown mt-auto pt-3 border-top border-secondary">
-                <a href="#"
-                   class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                   data-bs-toggle="dropdown">
-
-                    <i class="fas fa-user-circle fa-2x me-2"></i>
-                    <strong>Quản trị viên</strong>
-                </a>
-
-                <ul class="dropdown-menu dropdown-menu-dark shadow">
-                    <li>
-                        <a class="dropdown-item"
-                           href="${pageContext.request.contextPath}/logout">
-                            <i class="fas fa-sign-out-alt me-2"></i>
-                            Đăng xuất
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- MAIN -->
-    <div class="main-content">
-
-        <div class="admin-header d-flex justify-content-between align-items-end">
-
-            <div>
-                <h1 class="h3 mb-1">
-                    Dashboard Thống kê
-                </h1>
-
-                <p class="mb-0">
-                    Phân tích doanh thu và sản phẩm
-                </p>
-            </div>
+                <div class="current-time" id="currentTime">
+                    <i class="fas fa-clock"></i>
+                    <span id="clockText"></span>
+                </div>
                 <a href="${pageContext.request.contextPath}/admin/dashboard?action=print&year=${selectedYear}&month=${selectedMonth}"
-                   class="btn btn-dark"
-                   target="_blank">
-                    <i class="fas fa-print me-2"></i>
-                    In báo cáo
+                   class="btn-print" target="_blank">
+                    <i class="fas fa-print"></i> In báo cáo
                 </a>
-
+            </div>
         </div>
-        <!-- FILTER -->
 
-        <div class="filter-bar">
-            <form method="get"
-                  action="${pageContext.request.contextPath}/admin/dashboard"
-                  class="row g-3 align-items-end">
-
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">
-                        <i class="fas fa-calendar me-1"></i>
-                        Năm
-                    </label>
-
+        <div class="filter-card">
+            <div class="filter-label"><i class="fas fa-sliders-h"></i> Bộ lọc thời gian</div>
+            <form method="get" action="${pageContext.request.contextPath}/admin/dashboard" class="filter-form">
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-calendar-alt"></i> Năm</label>
                     <select name="year" class="form-select">
                         <c:forEach var="y" items="${years}">
-                            <option value="${y}"
-                                ${y == selectedYear ? 'selected' : ''}>
-                                Năm ${y}
-                            </option>
+                            <option value="${y}" ${y == selectedYear ? 'selected' : ''}>Năm ${y}</option>
                         </c:forEach>
                     </select>
                 </div>
-
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">
-                        <i class="fas fa-calendar-week me-1"></i>
-                        Tháng
-                    </label>
-
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-calendar-week"></i> Tháng</label>
                     <select name="month" class="form-select">
                         <c:forEach var="m" begin="1" end="12">
-                            <option value="${m}"
-                                ${m == selectedMonth ? 'selected' : ''}>
-                                Tháng ${m}
-                            </option>
+                            <option value="${m}" ${m == selectedMonth ? 'selected' : ''}>Tháng ${m}</option>
                         </c:forEach>
                     </select>
                 </div>
-
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-dark w-100">
-                        <i class="fas fa-chart-line me-2"></i>
-                        Xem thống kê
-                    </button>
-                </div>
-
+                <button type="submit" class="btn-apply-filter">
+                    <i class="fas fa-search"></i> Xem thống kê
+                </button>
             </form>
         </div>
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card text-white text-center" style="background: linear-gradient(135deg, #3C2F27, #5A463A); border-radius: 20px;">
-                    <div class="card-body">
-                        <p class="mb-2 opacity-75">Doanh thu tháng ${selectedMonth}/${selectedYear}</p>
-                        <h3 class="fw-bold"><fmt:formatNumber value="${dashboard.currentMonthRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></h3>
-                        <small class="${dashboard.currentMonthRevenue >= dashboard.previousMonthRevenue ? 'text-success' : 'text-danger'}">
-                            <i class="fas ${dashboard.currentMonthRevenue >= dashboard.previousMonthRevenue ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
-                            ${dashboard.monthlyGrowthRate}
-                        </small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card text-white text-center" style="background: linear-gradient(135deg, #5A463A, #7A5C4A); border-radius: 20px;">
-                    <div class="card-body">
-                        <p class="mb-2 opacity-75">Doanh thu tháng trước</p>
-                        <h3 class="fw-bold"><fmt:formatNumber value="${dashboard.previousMonthRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card text-white text-center" style="background: linear-gradient(135deg, #D4A76A, #C19A6B); border-radius: 20px;">
-                    <div class="card-body">
-                        <p class="mb-2 opacity-75">Doanh thu năm ${selectedYear}</p>
-                        <h3 class="fw-bold"><fmt:formatNumber value="${dashboard.currentYearRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></h3>
-                        <small class="${dashboard.currentYearRevenue >= dashboard.previousYearRevenue ? 'text-success' : 'text-danger'}">
-                            <i class="fas ${dashboard.currentYearRevenue >= dashboard.previousYearRevenue ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
-                            vs năm trước
-                        </small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card text-white text-center" style="background: linear-gradient(135deg, #E7C79B, #D4A76A); border-radius: 20px;">
-                    <div class="card-body">
-                        <p class="mb-2 opacity-75">Doanh thu năm ${selectedYear-1}</p>
-                        <h3 class="fw-bold"><fmt:formatNumber value="${dashboard.previousYearRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></h3>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="chart-container">
-            <div class="chart-title"><i class="fas fa-chart-line"></i> Doanh thu theo năm</div>
-            <canvas id="yearlyRevenueChart" height="100"></canvas>
-        </div>
+        <div class="kpi-grid">
 
-        <!-- STATS -->
-
-        <div class="stats-grid">
-
-            <div class="stats-card">
-                <div class="stats-icon bg-warning bg-opacity-10">
-                    <i class="fas fa-shopping-cart fa-2x text-warning"></i>
+            <div class="kpi-card kpi-month">
+                <div class="kpi-header">
+                    <div class="kpi-icon-wrap"><i class="fas fa-calendar-check"></i></div>
+                    <span class="kpi-badge ${dashboard.currentMonthRevenue >= dashboard.previousMonthRevenue ? 'badge-up' : 'badge-down'}">
+                        <i class="fas ${dashboard.currentMonthRevenue >= dashboard.previousMonthRevenue ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}"></i>
+                        ${dashboard.monthlyGrowthRate}
+                    </span>
                 </div>
-
-                <div class="stats-content">
-                    <p>Tổng đơn hàng</p>
-                    <h3>${dashboard.totalOrders}</h3>
-                    <span>đơn hàng</span>
+                <div class="kpi-value" data-count="${dashboard.currentMonthRevenue}">
+                    <fmt:formatNumber value="${dashboard.currentMonthRevenue}" type="number" maxFractionDigits="0"/>
+                    <span class="kpi-unit">VNĐ</span>
+                </div>
+                <div class="kpi-label">Doanh thu tháng ${selectedMonth}/${selectedYear}</div>
+                <div class="kpi-divider"></div>
+                <div class="kpi-compare">
+                    <span class="kpi-compare-label">Tháng trước</span>
+                    <span class="kpi-compare-val">
+                        <fmt:formatNumber value="${dashboard.previousMonthRevenue}" type="number" maxFractionDigits="0"/> VNĐ
+                    </span>
                 </div>
             </div>
 
-
-            <div class="stats-card">
-                <div class="stats-icon">
-                    <i class="fas fa-dollar-sign fa-2x"></i>
+            <div class="kpi-card kpi-year">
+                <div class="kpi-header">
+                    <div class="kpi-icon-wrap"><i class="fas fa-calendar-alt"></i></div>
+                    <span class="kpi-badge ${dashboard.currentYearRevenue >= dashboard.previousYearRevenue ? 'badge-up' : 'badge-down'}">
+                        <i class="fas ${dashboard.currentYearRevenue >= dashboard.previousYearRevenue ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}"></i>
+                        vs ${selectedYear-1}
+                    </span>
                 </div>
-
-                <div class="stats-content">
-                    <p>Tổng doanh thu</p>
-                    <h3>
-                        <fmt:formatNumber
-                            value="${dashboard.totalRevenue}"
-                            type="currency"
-                            currencySymbol="₫"
-                            maxFractionDigits="0"/>
-                    </h3>
-                    <span>VNĐ</span>
+                <div class="kpi-value">
+                    <fmt:formatNumber value="${dashboard.currentYearRevenue}" type="number" maxFractionDigits="0"/>
+                    <span class="kpi-unit">VNĐ</span>
                 </div>
-            </div>
-
-            <div class="stats-card">
-                <div class="stats-icon">
-                    <i class="fas fa-box fa-2x"></i>
-                </div>
-
-                <div class="stats-content">
-                    <p>Tổng sản phẩm</p>
-                    <h3>${dashboard.totalProducts}</h3>
-                    <span>sản phẩm</span>
+                <div class="kpi-label">Doanh thu năm ${selectedYear}</div>
+                <div class="kpi-divider"></div>
+                <div class="kpi-compare">
+                    <span class="kpi-compare-label">Năm ${selectedYear-1}</span>
+                    <span class="kpi-compare-val">
+                        <fmt:formatNumber value="${dashboard.previousYearRevenue}" type="number" maxFractionDigits="0"/> VNĐ
+                    </span>
                 </div>
             </div>
 
-            <div class="stats-card">
-                <div class="stats-icon">
-                    <i class="fas fa-users fa-2x"></i>
+            <div class="kpi-card kpi-total-rev">
+                <div class="kpi-header">
+                    <div class="kpi-icon-wrap"><i class="fas fa-coins"></i></div>
                 </div>
+                <div class="kpi-value">
+                    <fmt:formatNumber value="${dashboard.totalRevenue}" type="number" maxFractionDigits="0"/>
+                    <span class="kpi-unit">VNĐ</span>
+                </div>
+                <div class="kpi-label">Tổng doanh thu</div>
+                <div class="kpi-divider"></div>
+                <div class="kpi-compare">
+                    <span class="kpi-compare-label">Toàn bộ lịch sử</span>
+                    <span class="kpi-compare-val kpi-all-time">Tất cả đơn hoàn thành</span>
+                </div>
+            </div>
 
-                <div class="stats-content">
-                    <p>Khách hàng</p>
-                    <h3>${dashboard.totalUsers}</h3>
-                    <span>người dùng</span>
+            <div class="kpi-card kpi-orders">
+                <div class="kpi-header">
+                    <div class="kpi-icon-wrap"><i class="fas fa-shopping-bag"></i></div>
+                </div>
+                <div class="kpi-value">${dashboard.totalOrders}</div>
+                <div class="kpi-label">Tổng đơn hàng</div>
+                <div class="kpi-divider"></div>
+                <div class="kpi-compare">
+                    <span class="kpi-compare-label">Tất cả thời gian</span>
+                    <span class="kpi-compare-val kpi-all-time">Mọi trạng thái</span>
+                </div>
+            </div>
+
+            <div class="kpi-card kpi-products">
+                <div class="kpi-header">
+                    <div class="kpi-icon-wrap"><i class="fas fa-box-open"></i></div>
+                </div>
+                <div class="kpi-value">${dashboard.totalProducts}</div>
+                <div class="kpi-label">Tổng sản phẩm</div>
+                <div class="kpi-divider"></div>
+                <div class="kpi-compare">
+                    <span class="kpi-compare-label">Đang kinh doanh</span>
+                    <span class="kpi-compare-val kpi-all-time">Trong hệ thống</span>
+                </div>
+            </div>
+
+            <div class="kpi-card kpi-users">
+                <div class="kpi-header">
+                    <div class="kpi-icon-wrap"><i class="fas fa-users"></i></div>
+                </div>
+                <div class="kpi-value">${dashboard.totalUsers}</div>
+                <div class="kpi-label">Khách hàng</div>
+                <div class="kpi-divider"></div>
+                <div class="kpi-compare">
+                    <span class="kpi-compare-label">Đã đăng ký</span>
+                    <span class="kpi-compare-val kpi-all-time">Tài khoản hoạt động</span>
                 </div>
             </div>
 
         </div>
 
-        <!-- CHART -->
 
-        <div class="chart-container">
+        <div class="chart-card">
+            <div class="chart-card-header">
+                <div class="chart-title-group">
+                    <h2 class="chart-card-title">
+                        <i class="fas fa-chart-line"></i> Biểu đồ doanh thu
+                    </h2>
+                    <div class="chart-subtitle" id="chartSubtitle">Tổng quan theo từng năm</div>
+                </div>
 
-            <div class="chart-title">
-                <i class="fas fa-chart-bar me-2"></i>
-                Doanh thu theo tháng
+                <div class="chart-tabs">
+                    <button class="chart-tab active" data-tab="yearly">
+                        <i class="fas fa-calendar-alt"></i> Theo năm
+                    </button>
+                    <button class="chart-tab" data-tab="monthly">
+                        <i class="fas fa-calendar"></i> Theo tháng
+                    </button>
+                    <button class="chart-tab" data-tab="weekly">
+                        <i class="fas fa-calendar-week"></i> Theo tuần
+                    </button>
+                </div>
             </div>
-
-            <canvas id="monthlyChart" height="100"></canvas>
-
+            <div class="chart-card-body">
+                <div class="chart-summary" id="chartSummary"></div>
+                <div class="chart-wrap">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
         </div>
 
-        <!-- TOP PRODUCT -->
+        <div class="tables-row">
 
-        <div class="chart-container">
 
-            <div class="chart-title">
-                <i class="fas fa-fire me-2"></i>
-                Top sản phẩm bán chạy nhất
-            </div>
-
-            <div class="table-responsive">
-
-                <table class="table table-hover">
-
-                    <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Hình ảnh</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Mã SP</th>
-                        <th>Số lượng bán</th>
-                        <th>Doanh thu</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-
-                    <c:forEach items="${dashboard.topSellingProducts}"
-                               var="p"
-                               varStatus="loop">
-
+            <div class="table-card">
+                <div class="table-card-header">
+                    <h2 class="table-card-title"><i class="fas fa-fire"></i> Top sản phẩm bán chạy</h2>
+                    <span class="table-badge">Top 10</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
                         <tr>
-                            <td>
-                                <span class="badge bg-warning">
-                                    ${loop.index + 1}
-                                </span>
-                            </td>
-                            <td>
-                                <img src="${p.image}"
-                                     style="width:45px;height:45px;border-radius:10px;object-fit:cover"
-                                     onerror="this.src='${pageContext.request.contextPath}/assets/picture/logo.png'">
-                            </td>
-
-                            <td class="fw-bold">
-                                ${p.name}
-                            </td>
-
-                            <td>
-                                <span class="badge bg-secondary">
-                                    ${p.productCode}
-                                </span>
-                            </td>
-
-                            <td class="fw-bold text-success">
-                                ${p.totalSold}
-                            </td>
-
-                            <td class="fw-bold text-primary">
-                                <fmt:formatNumber
-                                        value="${p.totalRevenue}"
-                                        type="currency"
-                                        currencySymbol="₫"
-                                        maxFractionDigits="0"/>
-                            </td>
+                            <th style="width:44px">#</th>
+                            <th style="width:52px">Ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th style="width:90px">Mã SP</th>
+                            <th style="width:90px">Đã bán</th>
+                            <th>Doanh thu</th>
                         </tr>
-
-                    </c:forEach>
-
-                    <c:if test="${empty dashboard.topSellingProducts}">
-                        <tr>
-                            <td colspan="6" class="text-center py-5">
-                                Chưa có dữ liệu
-                            </td>
-                        </tr>
-                    </c:if>
-
-                    </tbody>
-
-                </table>
-
+                        </thead>
+                        <tbody>
+                        <c:set var="maxSold" value="${dashboard.topSellingProducts[0].totalSold}"/>
+                        <c:forEach items="${dashboard.topSellingProducts}" var="p" varStatus="loop">
+                            <tr>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${loop.index == 0}"><span class="rank-medal">🥇</span></c:when>
+                                        <c:when test="${loop.index == 1}"><span class="rank-medal">🥈</span></c:when>
+                                        <c:when test="${loop.index == 2}"><span class="rank-medal">🥉</span></c:when>
+                                        <c:otherwise><span class="rank-num">${loop.index + 1}</span></c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <img src="${p.image}" class="prod-thumb"
+                                         onerror="this.src='${pageContext.request.contextPath}/assets/picture/logo.png'">
+                                </td>
+                                <td>
+                                    <span class="prod-name">${p.name}</span>
+                                    <div class="sold-bar">
+                                        <div class="sold-bar-fill sold-bar-hot"
+                                             style="width: ${maxSold > 0 ? (p.totalSold * 100 / maxSold) : 0}%"></div>
+                                    </div>
+                                </td>
+                                <td><span class="prod-code">${p.productCode}</span></td>
+                                <td><span class="text-sold">${p.totalSold}</span></td>
+                                <td>
+                                    <span class="text-revenue">
+                                        <fmt:formatNumber value="${p.totalRevenue}" type="number" maxFractionDigits="0"/>
+                                        <small>VNĐ</small>
+                                    </span>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty dashboard.topSellingProducts}">
+                            <tr><td colspan="6"><div class="empty-state">
+                                <div class="empty-icon"><i class="fas fa-box-open"></i></div>
+                                <p>Chưa có dữ liệu</p>
+                            </div></td></tr>
+                        </c:if>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-        </div>
-        <!-- SLOW MOVING PRODUCT -->
-
-        <div class="chart-container">
-
-            <div class="chart-title">
-                <i class="fas fa-turtle me-2"></i>
-                Sản phẩm bán chậm (cần nhập nguyên liệu)
-            </div>
-
-            <div class="table-responsive">
-
-                <table class="table table-hover">
-
-                    <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Hình ảnh</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Mã SP</th>
-                        <th>Số lượng bán</th>
-                        <th>Doanh thu</th>
-                        <th>Gợi ý</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-
-                    <c:forEach items="${dashboard.slowMovingProducts}"
-                               var="p"
-                               varStatus="loop">
-
+            <div class="table-card">
+                <div class="table-card-header">
+                    <h2 class="table-card-title"><i class="fas fa-arrow-trend-down"></i> Sản phẩm cần đẩy mạnh</h2>
+                    <span class="table-badge table-badge-warn">Chú ý</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
                         <tr>
-                            <td>
-                                <span class="badge bg-danger">
-                                    ${loop.index + 1}
-                                </span>
-                            </td>
-                            <td>
-                                <img src="${p.image}"
-                                     style="width:45px;height:45px;border-radius:10px;object-fit:cover"
-                                     onerror="this.src='${pageContext.request.contextPath}/assets/picture/logo.png'">
-                            </td>
-
-                            <td class="fw-bold">${p.name}</td>
-
-                            <td>
-                                <span class="badge bg-secondary">
-                                    ${p.productCode}
-                                </span>
-                            </td>
-
-                            <td class="fw-bold text-warning">
-                                ${p.totalSold}
-                            </td>
-
-                            <td class="fw-bold">
-                                <fmt:formatNumber
-                                        value="${p.totalRevenue}"
-                                        type="currency"
-                                        currencySymbol="₫"
-                                        maxFractionDigits="0"/>
-                            </td>
-
-                            <td>
-                                <span class="badge bg-info">
-                                    Cần đẩy mạnh
-                                </span>
-                            </td>
+                            <th style="width:44px">#</th>
+                            <th style="width:52px">Ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th style="width:90px">Mã SP</th>
+                            <th style="width:90px">Đã bán</th>
+                            <th>Gợi ý</th>
                         </tr>
-
-                    </c:forEach>
-
-                    <c:if test="${empty dashboard.slowMovingProducts}">
-                        <tr>
-                            <td colspan="7" class="text-center py-5">
-                                Chưa có dữ liệu
-                            </td>
-                        </tr>
-                    </c:if>
-
-                    </tbody>
-
-                </table>
-
+                        </thead>
+                        <tbody>
+                        <c:forEach items="${dashboard.slowMovingProducts}" var="p" varStatus="loop">
+                            <tr>
+                                <td><span class="rank-num rank-slow">${loop.index + 1}</span></td>
+                                <td>
+                                    <img src="${p.image}" class="prod-thumb"
+                                         onerror="this.src='${pageContext.request.contextPath}/assets/picture/logo.png'">
+                                </td>
+                                <td>
+                                    <span class="prod-name">${p.name}</span>
+                                    <div class="sold-bar">
+                                        <div class="sold-bar-fill sold-bar-slow" style="width:${p.totalSold > 0 ? 20 : 4}%"></div>
+                                    </div>
+                                </td>
+                                <td><span class="prod-code">${p.productCode}</span></td>
+                                <td><span class="text-sold-low">${p.totalSold}</span></td>
+                                <td><span class="tag-suggest"><i class="fas fa-bolt"></i> Cần đẩy mạnh</span></td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty dashboard.slowMovingProducts}">
+                            <tr><td colspan="6"><div class="empty-state">
+                                <div class="empty-icon"><i class="fas fa-box-open"></i></div>
+                                <p>Chưa có dữ liệu</p>
+                            </div></td></tr>
+                        </c:if>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
 
-    </div>
-
+    </main>
 </div>
+
 <script>
-const monthlyData = [
-<c:forEach items="${dashboard.monthlyRevenue}" var="m" varStatus="loop">
-${m.revenue}${!loop.last ? ',' : ''}
-</c:forEach>
-];
+    const monthlyData = [
+        <c:forEach items="${dashboard.monthlyRevenue}" var="m" varStatus="loop">
+        ${m.revenue}${!loop.last ? ',' : ''}
+        </c:forEach>
+    ];
+    const yearlyLabels = [
+        <c:forEach items="${dashboard.yearlyRevenue}" var="y" varStatus="loop">
+        '${y.period}'${!loop.last ? ',' : ''}
+        </c:forEach>
+    ];
+    const yearlyValues = [
+        <c:forEach items="${dashboard.yearlyRevenue}" var="y" varStatus="loop">
+        ${y.revenue}${!loop.last ? ',' : ''}
+        </c:forEach>
+    ];
 
-const yearlyLabels = [
-<c:forEach items="${dashboard.yearlyRevenue}" var="y" varStatus="loop">
-'${y.period}'${!loop.last ? ',' : ''}
-</c:forEach>
-];
-
-const yearlyValues = [
-<c:forEach items="${dashboard.yearlyRevenue}" var="y" varStatus="loop">
-${y.revenue}${!loop.last ? ',' : ''}
-</c:forEach>
-];
+    const weeklyData = [
+        <c:forEach items="${dashboard.weeklyRevenue}" var="w" varStatus="loop">
+        ${w.revenue}${!loop.last ? ',' : ''}
+        </c:forEach>
+    ];
+    const selectedMonth = ${selectedMonth};
+    const selectedYear  = ${selectedYear};
 </script>
 
-<script src="${pageContext.request.contextPath}/assets/js/admin_dashboard.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="${pageContext.request.contextPath}/components/js/sidebar.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/admin_dashboard.js"></script>
-
 </body>
 </html>

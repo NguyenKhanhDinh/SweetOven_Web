@@ -117,21 +117,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const success = urlParams.get('success');
     const error = urlParams.get('error');
 
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true
-    });
-
     if (success) {
         let msg = 'Thao tác thực hiện thành công!';
         if (success === 'added') msg = 'Thêm danh mục mới thành công! 🎉';
         if (success === 'updated') msg = 'Cập nhật danh mục thành công! ✨';
         if (success === 'deleted') msg = 'Xóa dữ liệu danh mục thành công! 🗑️';
 
-        Toast.fire({ icon: 'success', title: msg });
+        showToast('success', msg);
     }
 
     if (error) {
@@ -139,25 +131,41 @@ document.addEventListener('DOMContentLoaded', function () {
         if (error === 'has_products') errMsg = 'Danh mục đang có chứa sản phẩm, không thể xóa!';
         if (error === 'not_found') errMsg = 'Không tồn tại hoặc không tìm thấy danh mục yêu cầu!';
 
-        Swal.fire({
-            icon: 'error',
-            title: 'Thao tác thất bại',
-            text: errMsg,
-            confirmButtonColor: '#8B4513'
-        });
+        showToast('error', errMsg);
     }
 });
 
 document.getElementById('addCategoryForm')?.addEventListener('submit', function (e) {
     if (!document.getElementById('add-name').value.trim()) {
         e.preventDefault();
-        Swal.fire({ icon: 'error', title: 'Thiếu dữ liệu', text: 'Tên danh mục bắt buộc không được bỏ trống!' });
+        showToast('error', 'Tên danh mục bắt buộc không được bỏ trống!');
     }
 });
 
 document.getElementById('editCategoryForm')?.addEventListener('submit', function (e) {
     if (!document.getElementById('edit-name').value.trim()) {
         e.preventDefault();
-        Swal.fire({ icon: 'error', title: 'Thiếu dữ liệu', text: 'Tên danh mục bắt buộc không được bỏ trống!' });
+        showToast('error', 'Tên danh mục bắt buộc không được bỏ trống!');
     }
 });
+
+function showToast(type, msg) {
+    var existing = document.getElementById('alertFloating');
+    if (existing) existing.remove();
+
+    var icon = (type === 'success') ? 'fa-check-circle' : 'fa-exclamation-circle';
+    var cls = (type === 'success') ? 'alert-success' : 'alert-danger';
+
+    var el = document.createElement('div');
+    el.id = 'alertFloating';
+    el.className = 'alert-floating ' + cls;
+    el.innerHTML = '<i class="fas ' + icon + '"></i> ' + msg;
+
+    document.body.appendChild(el);
+
+    setTimeout(function() {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.5s';
+        setTimeout(function() { el.remove(); }, 500);
+    }, 4000);
+}

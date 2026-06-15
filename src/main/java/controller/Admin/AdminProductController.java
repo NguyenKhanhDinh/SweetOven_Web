@@ -12,6 +12,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 
 import java.io.File;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import model.User;
 
 @WebServlet("/admin/products")
 @MultipartConfig
@@ -39,6 +41,18 @@ public class AdminProductController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
+
+        User adminUser = (User) session.getAttribute("user");
+        if (adminUser.getRoleId() != 1) {
+            resp.sendRedirect(req.getContextPath() + "/");
+            return;
+        }
+
         String action = req.getParameter("action");
 
         if ("api".equals(action)) {
@@ -53,12 +67,10 @@ public class AdminProductController extends HttpServlet {
                     int id = Integer.parseInt(idParam);
                     deleteProduct(id, req, resp);
                 } catch (NumberFormatException e) {
-                    req.setAttribute("error", "ID sản phẩm không hợp lệ!");
-                    listProducts(req, resp);
+                    resp.sendRedirect(req.getContextPath() + "/admin/products?error=invalid_id");
                 }
             } else {
-                req.setAttribute("error", "Không tìm thấy ID sản phẩm!");
-                listProducts(req, resp);
+                resp.sendRedirect(req.getContextPath() + "/admin/products?error=invalid_id");
             }
         } else {
             listProducts(req, resp);
@@ -95,6 +107,18 @@ public class AdminProductController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
+
+        User adminUser = (User) session.getAttribute("user");
+        if (adminUser.getRoleId() != 1) {
+            resp.sendRedirect(req.getContextPath() + "/");
+            return;
+        }
 
         String action = req.getParameter("action");
 
@@ -191,6 +215,17 @@ public class AdminProductController extends HttpServlet {
         }
     }
 
+    private boolean isAjaxRequest(HttpServletRequest req) {
+        return "XMLHttpRequest".equalsIgnoreCase(req.getHeader("X-Requested-With"));
+    }
+
+    private void sendJsonResult(HttpServletResponse resp, boolean success, String message)
+            throws IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        resp.getWriter().write("{\"success\":" + success + ",\"message\":\"" + escapeJson(message) + "\"}");
+    }
+
     private void addProduct(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
@@ -239,17 +274,29 @@ public class AdminProductController extends HttpServlet {
                 if (uploadedFileUrl != null) {
                     productImageService.insertImage(generatedId, uploadedFileUrl, true);
                 }
-                req.setAttribute("success", "Thêm sản phẩm thành công! Mã SP: " + productCode);
+                if (isAjaxRequest(req)) {
+                    sendJsonResult(resp, true, "Thêm sản phẩm thành công! 🎉");
+                } else {
+                    resp.sendRedirect(req.getContextPath() + "/admin/products?success=added");
+                }
             } else {
-                req.setAttribute("error", "Thêm sản phẩm thất bại!");
+                if (isAjaxRequest(req)) {
+                    sendJsonResult(resp, false, "Thêm sản phẩm thất bại!");
+                } else {
+                    resp.sendRedirect(req.getContextPath() + "/admin/products?error=add_failed");
+                }
             }
+            return;
 
         } catch (Exception e) {
             e.printStackTrace();
-            req.setAttribute("error", "Lỗi: " + e.getMessage());
+            if (isAjaxRequest(req)) {
+                sendJsonResult(resp, false, "Thêm sản phẩm thất bại!");
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/admin/products?error=add_failed");
+            }
+            return;
         }
-
-        listProducts(req, resp);
     }
 
     private void editProduct(HttpServletRequest req, HttpServletResponse resp)
@@ -272,6 +319,10 @@ public class AdminProductController extends HttpServlet {
 
             Product product = productService.findById(id);
             if (product == null) {
+                if (isAjaxRequest(req)) {
+                    sendJsonResult(resp, false, "Không tìm thấy sản phẩm!");
+                    return;
+                }
                 req.setAttribute("error", "Không tìm thấy sản phẩm!");
                 listProducts(req, resp);
                 return;
@@ -301,17 +352,29 @@ public class AdminProductController extends HttpServlet {
 
             boolean updated = productService.updateProduct(product);
             if (updated) {
-                req.setAttribute("success", "Cập nhật sản phẩm thành công!");
+                if (isAjaxRequest(req)) {
+                    sendJsonResult(resp, true, "Cập nhật sản phẩm thành công! ✨");
+                } else {
+                    resp.sendRedirect(req.getContextPath() + "/admin/products?success=updated");
+                }
             } else {
-                req.setAttribute("error", "Cập nhật sản phẩm thất bại!");
+                if (isAjaxRequest(req)) {
+                    sendJsonResult(resp, false, "Cập nhật sản phẩm thất bại!");
+                } else {
+                    resp.sendRedirect(req.getContextPath() + "/admin/products?error=update_failed");
+                }
             }
+            return;
 
         } catch (Exception e) {
             e.printStackTrace();
-            req.setAttribute("error", "Lỗi: " + e.getMessage());
+            if (isAjaxRequest(req)) {
+                sendJsonResult(resp, false, "Cập nhật sản phẩm thất bại!");
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/admin/products?error=update_failed");
+            }
+            return;
         }
-
-        listProducts(req, resp);
     }
 
     private void deleteProduct(int id, HttpServletRequest req, HttpServletResponse resp)
@@ -323,20 +386,18 @@ public class AdminProductController extends HttpServlet {
             if (product != null) {
                 boolean deleted = productService.deleteProductById(id);
                 if (deleted) {
-                    req.setAttribute("success", "Đã xóa sản phẩm thành công!");
+                    resp.sendRedirect(req.getContextPath() + "/admin/products?success=deleted");
                 } else {
-                    req.setAttribute("error", "Xóa sản phẩm thất bại!");
+                    resp.sendRedirect(req.getContextPath() + "/admin/products?error=delete_failed");
                 }
             } else {
-                req.setAttribute("error", "Không tìm thấy sản phẩm!");
+                resp.sendRedirect(req.getContextPath() + "/admin/products?error=not_found");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            req.setAttribute("error", "Lỗi khi xóa: " + e.getMessage());
+            resp.sendRedirect(req.getContextPath() + "/admin/products?error=delete_failed");
         }
-
-        listProducts(req, resp);
     }
 
     private String saveFile(Part part, String folder) throws IOException {

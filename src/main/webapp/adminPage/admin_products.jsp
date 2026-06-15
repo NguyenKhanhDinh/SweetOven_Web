@@ -24,17 +24,6 @@
 
     <main class="main-content">
 
-        <c:if test="${not empty success}">
-            <div id="alertFloating" class="alert-floating alert-success">
-                <i class="fas fa-check-circle"></i> ${success}
-            </div>
-        </c:if>
-        <c:if test="${not empty error}">
-            <div id="alertFloating" class="alert-floating alert-danger">
-                <i class="fas fa-exclamation-circle"></i> ${error}
-            </div>
-        </c:if>
-
         <div class="page-header">
             <h1 class="page-title"><i class="fas fa-box-open"></i> Quản lý sản phẩm</h1>
             <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
@@ -530,10 +519,5 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 <script src="${pageContext.request.contextPath}/components/js/sidebar.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/admin_product.js"></script>
-
-<script>
-    const af = document.getElementById('alertFloating');
-    if (af) setTimeout(() => af.classList.add('hide'), 3500);
-</script>
 </body>
 </html>

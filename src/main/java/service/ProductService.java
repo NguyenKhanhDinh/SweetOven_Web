@@ -109,6 +109,16 @@ public class ProductService {
         }
     }
 
+    public boolean restoreProductById(int id) {
+        try {
+            productDao.restoreById(id);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean updateProductStatus(int productId, int status) {
         try {
             productDao.updateStatus(productId, status);

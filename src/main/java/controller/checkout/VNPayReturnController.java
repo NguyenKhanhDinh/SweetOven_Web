@@ -2,6 +2,7 @@ package controller.checkout;
 
 import controller.voucher.PlaceOrderController;
 import dao.OrderDao;
+import dao.VNPayPendingOrderDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,18 +22,14 @@ import java.util.Map;
 @WebServlet("/vnpay-return")
 public class VNPayReturnController extends HttpServlet {
     private final OrderService orderService = new OrderService();
-    private final OrderDao orderDao = new OrderDao();
+    private final VNPayPendingOrderDao  vNPayPendingOrderDao = new VNPayPendingOrderDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            response.sendRedirect(request.getContextPath() + "/checkout");
-            return;
-        }
+        HttpSession session = request.getSession(true);
 
         Map<String, String> params = new HashMap<>();
         request.getParameterMap().forEach((key, values) -> {
@@ -43,7 +40,6 @@ public class VNPayReturnController extends HttpServlet {
         String vnpResponseCode = nvl(params.get("vnp_ResponseCode"));
         String vnpTxnRef = nvl(params.get("vnp_TxnRef"));
         String vnpTransactionNo = nvl(params.get("vnp_TransactionNo"));
-        String vnpAmount = nvl(params.get("vnp_Amount"));
         String vnpMessage = vnpResponseCode.equals("00") ? "Thành công" : "Thất bại(mã: " + vnpResponseCode + ")";
 
         System.out.println("[VNPay Return] TxnRef=" + vnpTxnRef + " ResponseCode=" + vnpResponseCode + " TransactionNo= " + vnpTransactionNo);
@@ -55,40 +51,44 @@ public class VNPayReturnController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/checkout");
             return;
         }
-        String sessionKey = "vnpay_pending" + vnpTxnRef;
-        VNPayPendingOrder pending = (VNPayPendingOrder) session.getAttribute(sessionKey);
 
-        if (!"00".equals(vnpResponseCode) || pending == null) {
-            if (pending == null) {
-                System.out.println("[VNPay Return] Không tìm thấy pending order. sessionKey=" + sessionKey);
-            }
-            session.removeAttribute(sessionKey);
+
+        if (!"00".equals(vnpResponseCode)) {
+            vNPayPendingOrderDao.delete(vnpTxnRef);
             session.setAttribute("errorMsg", "Thanh toán VNPay thất bại hoặc bị hủy. Vui lòng thử lại! (" + vnpMessage + ")");
             response.sendRedirect(request.getContextPath() + "/checkout");
             return;
         }
-        Order order = PlaceOrderController.buildOrder(
-                pending.orderCode, pending.user, pending.fullName, pending.phone, pending.fullAddr,
-                pending.discountId, pending.subTotal, pending.discountAmount, pending.shippingFee,
-                pending.totalAmount, pending.note, 3
-        );
+        VNPayPendingOrder pending = vNPayPendingOrderDao.findByOrderCode(vnpTxnRef);
+        if (pending == null){
+        Order existingOrder = orderService.getOrderByOrderCode(vnpTxnRef);
+        if (existingOrder != null){
+            session.setAttribute("paymentSuccess","Thanh toán qua VNPay thành công! Mã GD:" +vnpTransactionNo);
+            response.sendRedirect(request.getContextPath() + "/order-detail?id=" + existingOrder.getId());
+        }else{
+            session.setAttribute("paymentSuccess","Thanh toán thành công đơn hàng đang được xử lý. Mã GD: " +vnpTransactionNo);
+            response.sendRedirect(request.getContextPath() + "/");
+        }
+        return;
+        }
+        Order order = PlaceOrderController.buildOrder(pending.orderCode,pending.user,pending.fullName,pending.phone,pending.fullAddr,
+                pending.discountId,pending.subTotal,pending.discountAmount,pending.shippingFee,pending.totalAmount,pending.note,3);
         int orderId;
         try {
             orderId = orderService.createOrder(order, pending.checkoutItems);
         } catch (Exception e) {
             e.printStackTrace();
-            session.removeAttribute(sessionKey);
             session.setAttribute("errorMsg", "Đã thanh toán qua VNPay thành công nhưng lỗi khi lưu đơn hàng." + "Vui lòng liên hệ hỗ trợ! Mã GD: " + vnpTransactionNo);
             response.sendRedirect(request.getContextPath() + "/checkout");
             return;
         }
         if (orderId <= 0) {
-            session.removeAttribute(sessionKey);
             session.setAttribute("errorMsg", "Đã thanh toán qua VNPay thành công nhưng lỗi khi lưu đơn hàng." + "Vui lòng liên hệ hỗ trợ! Mã GD: " + vnpTransactionNo);
             response.sendRedirect(request.getContextPath() + "/checkout");
             return;
         }
         order.setId(orderId);
+        vNPayPendingOrderDao.delete(vnpTxnRef);
         if (pending.user == null && pending.guestEmail != null && !pending.guestEmail.isEmpty()) {
             final String emailTo = pending.guestEmail;
             final Order orderCopy = order;
@@ -110,7 +110,6 @@ public class VNPayReturnController extends HttpServlet {
         session.setAttribute("checkoutSelectedIds", pending.checkoutSelectedIds);
         ctrl.cleanCart(session,pending.user,pending.checkoutItems);
 
-        session.removeAttribute(sessionKey);
         session.setAttribute("paymentSuccess", "Thanh toán qua VNPay thành công! Mã GD: " + vnpTransactionNo + " Đơn hàng sẽ được xử lý sau khi admim xác nhận.");
         response.sendRedirect(request.getContextPath() + "/order-detail?id=" + orderId);
     }

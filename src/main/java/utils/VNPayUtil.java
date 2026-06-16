@@ -19,11 +19,14 @@ public class VNPayUtil {
     private static final String VNP_CURR_CODE = "VND";
     private static final String VNP_LOCALE = "vn";
     private static final String VNP_ORDER_TYPE = "other";
+    private static final TimeZone VN_TIMEZONE = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
 
-    public static String createPaymentUrl(String keySession, long amount, String orderCode, String ipAddress) throws Exception {
+    public static String createPaymentUrl( long amount, String orderCode, String ipAddress) throws Exception {
         String vnpTxnRef = orderCode;
         String vnpOrderInfo = "Thanh toan hoa don" + orderCode;
-        String vnpCreateDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        sdf.setTimeZone(VN_TIMEZONE);
+        String vnpCreateDate = sdf.format(new Date());
         String vnpExpireDate = getExpireDate(15);
 
         long vnpAmount = amount * 100;
@@ -69,9 +72,11 @@ public class VNPayUtil {
     }
 
     private static String getExpireDate(int minutesFromNow) {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        Calendar cal = Calendar.getInstance(VN_TIMEZONE);
         cal.add(Calendar.MINUTE, minutesFromNow);
-        return new SimpleDateFormat("yyyyMMddHHmmss").format(cal.getTime());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        sdf.setTimeZone(VN_TIMEZONE);
+        return sdf.format(cal.getTime());
     }
 
     public static boolean verifySignature(Map<String, String> params) {

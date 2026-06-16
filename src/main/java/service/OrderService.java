@@ -98,4 +98,7 @@ public class OrderService {
         }
         return orderDao.updateOrderStatus(orderId,newStatus) ? UpdateResult.SUCCESS : UpdateResult.ERROR;
     }
+    public Order getOrderByOrderCode(String orderCode) {
+        return orderDao.getOrderByOrderCode(orderCode);
+    }
 }

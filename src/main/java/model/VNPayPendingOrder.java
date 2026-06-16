@@ -7,6 +7,7 @@ import java.util.List;
 public class VNPayPendingOrder implements Serializable {
     public String orderCode;
     public User user;
+    public Integer userId;
     public String guestEmail;
     public String fullName;
     public String phone;

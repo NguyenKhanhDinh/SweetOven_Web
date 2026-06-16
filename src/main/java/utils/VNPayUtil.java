@@ -11,7 +11,7 @@ import java.util.*;
 public class VNPayUtil {
     private static final String VNP_TMN_CODE = "TQO4LXFS";
     private static final String VNP_HASH_SECRET = "GQXWLZR6VQCQLYSUSMYUQBNK9CXRQ0AK";
-    private static final String VNP_URL = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+    private static final String VNP_URL = "https://pay.vnpayment.vn/paymentv2/vpcpay.html";
     private static final String VNP_RETURN_URL = "https://app.sweetoven.id.vn/vnpay-return";
 
     private static final String VNP_VERSION = "2.1.0";

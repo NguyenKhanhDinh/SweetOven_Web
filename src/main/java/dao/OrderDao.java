@@ -162,4 +162,8 @@ public class OrderDao {
         String sql = "UPDATE `order` SET order_status = 5,cancel_reason = :reason,updated_at = NOW() WHERE id = :id";
         return JdbiConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql).bind("reason",reason).bind("id",orderId).execute()>0);
     }
+    public Order getOrderByOrderCode(String orderCode) {
+        String sql = "SELECT * FROM `order` WHERE order_code = :orderCode";
+        return JdbiConnector.getJdbi().withHandle(handle ->handle.createQuery(sql).bind("orderCode",orderCode).mapToBean(Order.class).findFirst().orElse(null));
+    }
 }

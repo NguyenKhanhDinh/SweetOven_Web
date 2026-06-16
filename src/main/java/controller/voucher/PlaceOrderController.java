@@ -2,6 +2,7 @@ package controller.voucher;
 
 import dao.CartDao;
 import dao.OrderDao;
+import dao.VNPayPendingOrderDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -178,13 +179,12 @@ public class PlaceOrderController extends HttpServlet {
             }
             return;
         }
-        if (paymentMethod == 3) {
+        if(paymentMethod == 3){
             String orderCode = "ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-            String sessionKey = "vnpay_pending" + orderCode;
-
             VNPayPendingOrder pending = new VNPayPendingOrder();
             pending.orderCode = orderCode;
             pending.user = user;
+            pending.userId = user != null ?user.getId() : null;
             pending.guestEmail = guestEmail;
             pending.fullName = fullName;
             pending.phone = phone;
@@ -203,16 +203,22 @@ public class PlaceOrderController extends HttpServlet {
             pending.checkoutItems = checkoutItems;
             pending.checkoutSelectedIds = (String) session.getAttribute("checkoutSelectedIds");
 
-            session.setAttribute(sessionKey, pending);
+            VNPayPendingOrderDao  pendingDao = new VNPayPendingOrderDao();
+            boolean saved = pendingDao.save(pending);
+            if (!saved) {
+                session.setAttribute("errorMsg","Lỗi khởi tạo thanh toán VNPay.Vui lòng thử lại!");
+                response.sendRedirect(request.getContextPath() + "/checkout");
+                return;
+            }
             try {
-                String ipAdress = request.getHeader("X-Forwarded-For");
-                if (ipAdress == null) ipAdress = request.getRemoteAddr();
-                String vnpayUrl = VNPayUtil.createPaymentUrl(sessionKey, totalAmount.longValue(), orderCode,ipAdress);
+                String ipAddress = request.getHeader("X-Forwarded-For");
+                if (ipAddress == null) ipAddress = request.getRemoteAddr();
+                String vnpayUrl = VNPayUtil.createPaymentUrl(totalAmount.longValue(),orderCode,ipAddress);
                 response.sendRedirect(vnpayUrl);
             } catch (Exception e) {
-                System.err.println("[VNPay] Lỗi link thanh toán: " + e.getMessage());
-                session.removeAttribute(sessionKey);
-                session.setAttribute("errorMsg","Không thể kết nối VNPay. Vui lòng chọn phương thức thanh toán khác!");
+                System.err.println("[VNPay] Lỗi link thanh toán:" + e.getMessage());
+                pendingDao.delete(orderCode);
+                session.setAttribute("errorMsg","Không thể kết nối VNPay. Vui lòng thử phương thức thanh toán khác!");
                 response.sendRedirect(request.getContextPath() + "/checkout");
             }
             return;
